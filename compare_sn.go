@@ -137,8 +137,6 @@ func runSnCompareWindow() {
 	}.Run()
 }
 
-/*
 func main() {
 	runSnCompareWindow()
 }
-*/
