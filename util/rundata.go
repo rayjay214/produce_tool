@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"produce_tool/conf"
 	"produce_tool/db"
-	"produce_tool/mes"
 	"produce_tool/model"
 	"reflect"
 	"strings"
@@ -245,10 +244,6 @@ func DoFinish(myport *MyPort, item *MyTableRow) {
 			continue
 		}
 
-		if fieldTypeTableRow.Name == "Mes" {
-			continue
-		}
-
 		if fieldTypeTableRow.Name == "Version" {
 			if ContainsOne(fieldValueTableRow.String(), "失败", "超时", "等待") {
 				bPass = false
@@ -280,10 +275,8 @@ func DoFinish(myport *MyPort, item *MyTableRow) {
 		conf.PassedCnt += 1
 		conf.CntMutex.Unlock()
 
-		//go SaveResultToMysql(*item, "通过")
-		//go SaveResultToExcel(*item, "通过")
-		//go SaveResultToCsv(*item, "通过")
-		go SaveResultToMes(item, myport)
+		go SaveResultToMysql(*item, "通过", "")
+		go SaveResultToCsv(*item, "通过", "")
 	}
 
 	if bPass && item.Sn != "13100018888" && CompareVersion != "" && PoweroffAfterTest {
@@ -326,35 +319,4 @@ func SaveResultToExcel(item MyTableRow, result string, mes string) {
 func SaveResultToCsv(item MyTableRow, result string, mes string) {
 	record := makeRecord(item, result, mes)
 	db.InsertRecordCsv(record)
-}
-
-func SaveResultToMes(item *MyTableRow, myport *MyPort) {
-	detail := ""
-	rv := reflect.ValueOf(item)
-	if rv.Kind() == reflect.Ptr {
-		rv = rv.Elem()
-	}
-	rt := rv.Type()
-	for i := 0; i < rv.NumField(); i++ {
-		fieldValue := rv.Field(i)
-		fieldType := rt.Field(i)
-		if fieldType.Name == "Com" || fieldType.Name == "Pass" {
-			continue
-		}
-		s := fmt.Sprintf("%v|%v;", fieldType.Name, fieldValue.String())
-		detail += s
-	}
-
-	result := mes.SetMesReq(item.Sn, detail, "DIGNWEIQICESHI")
-	if result {
-		item.Mes = "成功"
-		go SaveResultToCsv(*item, "通过", "通过")
-		go SaveResultToMysql(*item, "通过", "通过")
-	} else {
-		item.Mes = "失败"
-		go SaveResultToCsv(*item, "通过", "失败")
-		go SaveResultToMysql(*item, "通过", "失败")
-	}
-	model := GetTableModel()
-	model.PublishRowChanged(PortNameRowidx[myport.Name])
 }

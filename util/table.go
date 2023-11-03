@@ -8,7 +8,6 @@ import (
 type MyTableRow struct {
 	Com     string
 	Pass    string
-	Mes     string
 	Version string
 	Signal  string
 	Wifi    string
@@ -68,15 +67,13 @@ func RefreshTableModel() {
 func ArrangeCols() {
 	ColumnIdxNames[0] = "Com"
 	ColumnIdxNames[1] = "Pass"
-	ColumnIdxNames[2] = "Mes"
 	ColumnNamesIdx["Com"] = 0
 	ColumnNamesIdx["Pass"] = 1
-	ColumnNamesIdx["Mes"] = 2
 	items := GetAllTestItems()
 	for i, item := range items {
 		if item.IsShow {
-			ColumnIdxNames[i+2] = item.ModelColName
-			ColumnNamesIdx[item.ModelColName] = i + 2
+			ColumnIdxNames[i+1] = item.ModelColName
+			ColumnNamesIdx[item.ModelColName] = i + 1
 		}
 	}
 }
