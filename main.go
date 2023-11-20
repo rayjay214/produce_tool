@@ -535,7 +535,7 @@ func runMainWindow() {
 										walk.MsgBox(nil, "Error", "请选择型号", walk.MsgBoxIconError)
 										return
 									}
-									//util.CheckPorts() //USB的需要重新打开端口，串口的不需要，可以不调用此函数
+									util.CheckPorts() //USB的需要重新打开端口，串口的不需要，可以不调用此函数
 									util.DoTestAllPortsAllItems()
 								},
 							},
