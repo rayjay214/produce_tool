@@ -56,7 +56,7 @@ func init() {
 		{"信号", "Signal", "AT+CSQ\r\n", []string{"OK", "ERROR"}, "+CSQ:", 2000, true},
 		{"卫星", "Gps", "AT+GPS\r\n", []string{"OK"}, "+GPS", 2000, true},
 		{"重力", "Gsensor", "AT+GS\r\n", []string{"move", "still"}, "AT+GS", 2000, true},
-		{"WIFI", "Wifi", "AT+WF\r\n", []string{"OK", "ERROR"}, "wifi test:", 3000, true},
+		{"WIFI", "Wifi", "AT+WF\r\n", []string{"OK", "ERROR"}, "wifi test:", 6000, true},
 		{"光感", "Light", "AT+PX\r\n", []string{"put on", "fall off"}, "AT+PX", 1000, true},
 		{"IP地址", "MainIp", "AT+IP?\r\n", []string{"OK", "ERROR"}, "IP:", 1000, true},
 		{"副IP地址", "ViceIp", "AT+IP2?\r\n", []string{"OK", "ERROR"}, "IP2:", 1000, true},

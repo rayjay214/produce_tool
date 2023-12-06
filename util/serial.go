@@ -342,7 +342,7 @@ func readPort(myPort *MyPort, pass *PassParam) {
 	buf := make([]byte, 128)
 	for {
 		if pass.stopReader {
-			fmt.Println("aaa reader stop")
+			fmt.Println("reader stop")
 			break
 		}
 		if !myPort.Vaild {
@@ -502,6 +502,7 @@ func writeComm(myport *MyPort, item TestItem, pass *PassParam) bool {
 			for _, retkey := range item.ReturnKey {
 				contains := strings.Contains(pass.str, retkey)
 				if contains {
+					//log.Infof("get response %v", pass.str)
 					return true
 				}
 			}
@@ -512,7 +513,11 @@ func writeComm(myport *MyPort, item TestItem, pass *PassParam) bool {
 
 func doubleCheck(wg *sync.WaitGroup, myPort *MyPort, lastValue string, item TestItem) {
 	defer wg.Done()
-	time.Sleep(1000 * time.Millisecond)
+	if SelectedDeviceType.WifiOpen > 0 { //2G的wifi测试，需要3s+才能返回结果，避免跟重力同时测试发生冲突
+		time.Sleep(4000 * time.Millisecond)
+	} else {
+		time.Sleep(1000 * time.Millisecond)
+	}
 	model := GetTableModel()
 	tableItem := model.items[PortNameRowidx[myPort.Name]]
 	pass := new(PassParam)
