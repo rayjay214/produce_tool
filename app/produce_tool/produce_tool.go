@@ -112,7 +112,6 @@ func initTableColumns() {
 	tableColumns = []TableViewColumn{
 		TableViewColumn{Title: "COM", Width: 70, Name: "Com"},
 		TableViewColumn{Title: "通过", Width: 90, Name: "Pass"},
-		TableViewColumn{Title: "MES", Width: 70, Name: "Mes"},
 	}
 
 	for _, item := range items {
@@ -174,14 +173,12 @@ func styleFunc(style *walk.CellStyle) {
 		passTest := true
 		allColumnFilled := true
 		waiting := false
-		mesFailed := false
 		for i := 0; i < rv.NumField(); i++ {
 			fieldValue := rv.Field(i)
 			fieldType := rt.Field(i)
 			_, ok := util.ColumnNamesIdx[fieldType.Name]
 			if i == 2 { //固定为MES
 				if util.ContainsOne(fieldValue.String(), "失败") {
-					mesFailed = true
 					passTest = false
 				}
 				continue
@@ -207,9 +204,6 @@ func styleFunc(style *walk.CellStyle) {
 		} else if allColumnFilled {
 			item.Pass = "测试失败"
 			style.BackgroundColor = walk.RGB(255, 0, 0)
-		} else if mesFailed {
-			item.Pass = "MES失败"
-			style.BackgroundColor = walk.RGB(100, 100, 100)
 		}
 	}
 }
