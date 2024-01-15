@@ -8,7 +8,7 @@ import (
 )
 
 func GetDeviceTypes() map[string]DeviceTypeInfo {
-	filePath := "deivce_types.json"
+	filePath := "device_types.json"
 
 	_, err := os.Stat(filePath)
 	if err != nil {
@@ -39,7 +39,7 @@ func GetDeviceTypes() map[string]DeviceTypeInfo {
 }
 
 func SyncDeviceTypes(types map[string]DeviceTypeInfo) {
-	filePath := "deivce_types.json"
+	filePath := "device_types.json"
 	file, err := os.OpenFile(filePath, os.O_TRUNC|os.O_CREATE, 0666)
 	if err != nil {
 		fmt.Println("Failed to open or create file:", err)

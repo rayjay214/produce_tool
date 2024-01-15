@@ -45,7 +45,7 @@ type DeviceTypeInfo struct {
 
 var DeviceTypeInfoMap map[string]DeviceTypeInfo
 
-func init() {
+func LoadDeviceType() {
 	DeviceTypeInfoMap = make(map[string]DeviceTypeInfo, 0)
 	types := GetDeviceTypes()
 	AllTypes = make([]DeviceTypeInfo, 0)

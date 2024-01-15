@@ -15,10 +15,6 @@ type CheckSnRecord struct {
 
 var CheckSnCsv *os.File
 
-func init() {
-	LoadCheckSnCsv()
-}
-
 func initCheckSnCsv() (*os.File, error) {
 	file, err := os.Create("查号记录.csv")
 	if err != nil {
