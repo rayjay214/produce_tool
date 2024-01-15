@@ -2,14 +2,12 @@ package db
 
 import (
 	"encoding/csv"
+	"fmt"
+	log "github.com/sirupsen/logrus"
 	"os"
 )
 
 var TestRstCsv *os.File
-
-func init() {
-	LoadCsv()
-}
 
 func initNewCsv() (*os.File, error) {
 	file, err := os.Create("测试记录.csv")
@@ -40,7 +38,7 @@ func initNewCsv() (*os.File, error) {
 	return file, nil
 }
 
-func LoadCsv() {
+func LoadTestRstCsv() {
 	file, err := os.OpenFile("测试记录.csv", os.O_APPEND, 0644)
 	if err != nil {
 		newFile, err := initNewCsv()
@@ -54,14 +52,15 @@ func LoadCsv() {
 
 func InsertRecordCsv(record TestRecord) {
 	if TestRstCsv == nil {
-		LoadCsv()
+		LoadTestRstCsv()
 	}
 
+	strSim := fmt.Sprintf("S:%v", record.Sim)
 	data := []string{}
 	data = append(data, record.Pass)
 	data = append(data, record.Mes)
 	data = append(data, record.Version)
-	data = append(data, record.Sim)
+	data = append(data, strSim)
 	data = append(data, record.Imei)
 	data = append(data, record.Sn)
 	data = append(data, record.Signal)
@@ -73,6 +72,8 @@ func InsertRecordCsv(record TestRecord) {
 	data = append(data, record.ViceIp)
 	data = append(data, record.SetType)
 	data = append(data, record.CreateTime.Format("2006-01-02 15:04:05"))
+
+	log.Infof("csv data:%v", data)
 
 	writer := csv.NewWriter(TestRstCsv)
 	writer.Write(data)
