@@ -798,6 +798,7 @@ func runMainWindow() {
 	}.Run()
 }
 
+/*
 func main() {
 	log.Info("start")
 	walk.AppendToWalkInit(func() {
@@ -808,3 +809,4 @@ func main() {
 
 	runMainWindow()
 }
+*/
