@@ -31,7 +31,12 @@ var SelectedDeviceType model.DeviceTypeInfo
 
 var allTestItems []TestItem
 var allModifyDeviceItems []TestItem
+
+// 用于sn对比工具
 var compareSnTestItems []TestItem
+
+// 用于写号工具
+var readSnTestItems []TestItem
 
 var CurrTestItems []TestItem
 
@@ -76,6 +81,11 @@ func init() {
 		{"SN", "Sn", "AT+SN?\r\n", []string{"OK", "ERROR"}, "SN:", 200, true},
 	}
 
+	readSnTestItems = []TestItem{
+		//{"开启回显", "Back", "ATE1\r\n", []string{"OK"}, "", 2000, false},
+		{"SN", "Sn", "AT+SN?\r\n", []string{"OK", "ERROR"}, "SN:", 2000, true},
+	}
+
 	OpenAllPorts()
 	LastPassParam = make(map[string]*PassParam, 0)
 	LastGsensorPassParam = make(map[string]*PassParam, 0)
@@ -101,6 +111,10 @@ func GetAllTestItems() []TestItem {
 
 func GetCompareSnTestItems() []TestItem {
 	return compareSnTestItems
+}
+
+func GetReadSnTestItems() []TestItem {
+	return readSnTestItems
 }
 
 func GetTestItem(desc string) []TestItem {

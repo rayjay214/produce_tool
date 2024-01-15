@@ -7,8 +7,13 @@ package main
 import (
 	"github.com/lxn/walk"
 	. "github.com/lxn/walk/declarative"
+	"produce_tool/db"
 	"produce_tool/util"
 )
+
+func init() {
+	db.LoadCheckSnCsv()
+}
 
 func runSnCompareWindow() {
 	mw, _ := walk.NewMainWindow()

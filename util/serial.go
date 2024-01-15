@@ -342,7 +342,7 @@ func readPort(myPort *MyPort, pass *PassParam) {
 	buf := make([]byte, 128)
 	for {
 		if pass.stopReader {
-			fmt.Println("reader stop")
+			log.Infoln("reader stop")
 			break
 		}
 		if !myPort.Vaild {
@@ -483,7 +483,6 @@ func writeComm(myport *MyPort, item TestItem, pass *PassParam) bool {
 		log.Infof("write to port %v, %v", myport.Name, string(item.AtCmd))
 		_, err := myport.Port.Write([]byte(item.AtCmd))
 		if err != nil {
-			fmt.Printf("err is %v\n", err)
 			log.Errorf("err is %v, port is %v", err, myport.Name)
 			myport.Vaild = false
 			return false
@@ -495,14 +494,14 @@ func writeComm(myport *MyPort, item TestItem, pass *PassParam) bool {
 		startTime := time.Now()
 		for {
 			if time.Since(startTime) >= timeout {
-				fmt.Println("Timeout!")
+				log.Println("Timeout!")
 				break
 			}
 			time.Sleep(10 * time.Millisecond)
 			for _, retkey := range item.ReturnKey {
 				contains := strings.Contains(pass.str, retkey)
 				if contains {
-					//log.Infof("get response %v", pass.str)
+					log.Infof("get response %v", pass.str)
 					return true
 				}
 			}
@@ -582,8 +581,6 @@ func readSnImei(myport *MyPort, items []TestItem, pass *PassParam) (string, stri
 	pass.stopReader = true
 	pass.stopWriter = true
 
-	fmt.Println(sn, imei)
-
 	return sn, imei
 }
 
@@ -643,6 +640,120 @@ func DoTestOnePortCompareSn(portName string, scanSnEdit *walk.LineEdit, prefix s
 		brush, _ := walk.NewSolidColorBrush(walk.RGB(255, 0, 0))
 		resultEdit.SetBackground(brush)
 		resultEdit.SetText("FAIL")
+	}
+
+}
+
+func readCommSn(myport *MyPort, items []TestItem, pass *PassParam) string {
+	var sn string
+	for _, item := range items {
+		b := writeComm(myport, item, pass)
+		_, respValue := getValue(pass.str, item.ShowKey)
+		var showValue string
+		if b && !strings.Contains(pass.str, "ERROR") {
+			showValue = respValue
+		} else if !b {
+			showValue = "获取超时"
+		} else {
+			showValue = "失败"
+		}
+
+		if item.Desc == "SN" {
+			sn = showValue
+		}
+	}
+	pass.stopReader = true
+	pass.stopWriter = true
+
+	return sn
+}
+
+func writeCommSn(myport *MyPort, pass *PassParam, writeValue string) string {
+	modifyDeviceItem := GetModifyDeviceItem("Sn")
+	if modifyDeviceItem == nil {
+		return ""
+	}
+
+	writeSuccess := false
+	rstSuccess := false
+	for i := 0; i < 1; i++ {
+		strCmd := fmt.Sprintf(modifyDeviceItem.AtCmd, writeValue)
+		_, err := myport.Port.Write([]byte(strCmd))
+		if err != nil {
+			writeSuccess = false
+			break
+		}
+		time.Sleep(100 * time.Millisecond)
+
+		//等待设备返回结果
+		timeout := time.Duration(modifyDeviceItem.Timeout) * time.Millisecond
+		startTime := time.Now()
+		for {
+			if time.Since(startTime) >= timeout {
+				writeSuccess = false
+				break
+			}
+			time.Sleep(10 * time.Millisecond)
+			if strings.Contains(pass.str, "OK") || strings.Contains(pass.str, "ok") {
+				writeSuccess = true
+				rstSuccess = true
+				break
+			}
+			if strings.Contains(pass.str, "ERROR") || strings.Contains(pass.str, "error") {
+				writeSuccess = true
+				rstSuccess = false
+				break
+			}
+		}
+	}
+
+	var showValue string
+	if writeSuccess && rstSuccess {
+		showValue = fmt.Sprintf("写入成功(%s)", writeValue)
+	} else if writeSuccess && !rstSuccess {
+		showValue = "写入失败"
+	} else {
+		showValue = "超时"
+	}
+
+	pass.stopReader = true
+	pass.stopWriter = true
+
+	return showValue
+}
+
+// 用于写号工具
+func DoTestOnePortWriteSn(portName string, SnValue string, readSn *walk.LineEdit, resultEdit *walk.LineEdit, scanSn *walk.LineEdit) {
+	myPort := GetPort(portName)
+	writeRst := ""
+	if myPort.Name == portName {
+		pass := new(PassParam)
+		go readPort(myPort, pass)
+		writeRst = writeCommSn(myPort, pass, SnValue)
+	}
+
+	time.Sleep(1000 * time.Millisecond)
+	var sn string
+	items := GetReadSnTestItems()
+
+	if myPort.Name == portName {
+		pass := new(PassParam)
+		go readPort(myPort, pass)
+		sn = readCommSn(myPort, items, pass)
+	}
+	readSn.SetText(sn)
+
+	log.Infof("rayjay rst:%v, sn:%v", writeRst, sn)
+
+	if strings.Contains(writeRst, "成功") && sn == SnValue {
+		brush, _ := walk.NewSolidColorBrush(walk.RGB(0, 255, 0))
+		resultEdit.SetBackground(brush)
+		resultEdit.SetText("SN写入成功")
+		scanSn.SetText("")
+	} else {
+		brush, _ := walk.NewSolidColorBrush(walk.RGB(255, 0, 0))
+		resultEdit.SetBackground(brush)
+		resultEdit.SetText("SN写入失败")
 	}
 
 }
