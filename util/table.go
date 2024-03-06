@@ -6,20 +6,21 @@ import (
 )
 
 type MyTableRow struct {
-	Com     string
-	Pass    string
-	Version string
-	Signal  string
-	Wifi    string
-	Sim     string
-	Sn      string
-	Imei    string
-	Gps     string
-	Light   string
-	MainIp  string
-	ViceIp  string
-	Gsensor string
-	SetType string
+	Com         string
+	Pass        string
+	Version     string
+	Signal      string
+	Wifi        string
+	Sim         string
+	Sn          string
+	Imei        string
+	Gps         string
+	Light       string
+	MainIp      string
+	ViceIp      string
+	Gsensor     string
+	SetType     string
+	ViceIpWrite string
 }
 
 type MyTableModel struct {

@@ -261,6 +261,9 @@ func refreshType() {
 	if selectedType.ViceIpReadOpen <= 0 {
 		tv.Columns().ByName("ViceIp").SetVisible(false)
 	}
+	if selectedType.ViceIpWriteOpen <= 0 {
+		tv.Columns().ByName("ViceIpWrite").SetVisible(false)
+	}
 	/*
 		if selectedType.DialOpen <= 0 {
 			tv.Columns().ByName("Dial").SetVisible(false)

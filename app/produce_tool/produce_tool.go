@@ -229,6 +229,8 @@ func refreshType() {
 	util.SyncTestItems()
 	util.RefreshTableModel()
 
+	a := tv.Columns().Len()
+	_ = a
 	for i := 0; i < tv.Columns().Len(); i++ {
 		tv.Columns().At(i).SetVisible(true)
 	}
@@ -266,6 +268,9 @@ func refreshType() {
 	}
 	if selectedType.ViceIpReadOpen <= 0 {
 		tv.Columns().ByName("ViceIp").SetVisible(false)
+	}
+	if selectedType.ViceIpWriteOpen <= 0 {
+		tv.Columns().ByName("ViceIpWrite").SetVisible(false)
 	}
 	/*
 		if selectedType.DialOpen <= 0 {
