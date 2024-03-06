@@ -65,13 +65,14 @@ func init() {
 		{"IP地址", "MainIp", "AT+IP?\r\n", []string{"OK", "ERROR"}, "IP:", 1000, true},
 		{"副IP地址", "ViceIp", "AT+IP2?\r\n", []string{"OK", "ERROR"}, "IP2:", 1000, true},
 		{"设置型号", "SetType", "AT+SET=\r\n", []string{"OK", "ERROR"}, "\n\rat+set=", 2000, true},
+		{"设置副IP", "ViceIpWrite", "AT+IP2=%v\r\n", []string{"OK", "ERROR"}, "IP2=", 1000, true},
 	}
 
 	allModifyDeviceItems = []TestItem{
 		{"IMEI", "Imei", "AT+WIMEI=%v\r\n", []string{"OK", "ERROR"}, "AT+IMEI", 1000, true},
 		{"SN", "Sn", "AT+SN=%v\r\n", []string{"OK", "ERROR"}, "SN:", 1000, true},
 		{"设置型号", "SetType", "AT+SET=%v\r\n", []string{"OK", "ERROR"}, "\n\rat+set=", 1000, true},
-		{"设置副IP", "SetViceIp", "AT+IP2=%v#%v#\r\n", []string{"OK", "ERROR"}, "IP2=", 1000, false},
+		{"设置副IP", "ViceIpWrite", "AT+IP2=%v\r\n", []string{"OK", "ERROR"}, "IP2=", 1000, false},
 	}
 
 	compareSnTestItems = []TestItem{
@@ -232,7 +233,12 @@ func SyncTestItems() {
 			if SelectedDeviceType.ViceIpReadOpen > 0 {
 				CurrTestItems = append(CurrTestItems, item)
 			}
+		case "ViceIpWrite":
+			if SelectedDeviceType.ViceIpWriteOpen > 0 {
+				CurrTestItems = append(CurrTestItems, item)
+			}
 		}
+
 	}
 }
 
