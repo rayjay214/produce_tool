@@ -620,26 +620,30 @@ func DoTestOnePortCompareSn(portName string, scanSnEdit *walk.LineEdit, prefix s
 	}
 
 	if sn == scanSn && imei == (prefix+scanSn) {
-		//匹配通过，去上报MES
-		result := mes.CheckMesReq(scanSn, "CHAHAO")
-		if result {
-			result = mes.SetMesReq(scanSn, "", "CHAHAO")
+		/*
+			//匹配通过，去上报MES
+			result := mes.CheckMesReq(scanSn, "CHAHAO")
 			if result {
-				brush, _ := walk.NewSolidColorBrush(walk.RGB(0, 255, 0))
-				resultEdit.SetBackground(brush)
-				resultEdit.SetText("PASS")
-				scanSnEdit.SetText("")
-				db.InsertCheckSnCsv(record)
+				result = mes.SetMesReq(scanSn, "", "CHAHAO")
+				if result {
+					brush, _ := walk.NewSolidColorBrush(walk.RGB(0, 255, 0))
+					resultEdit.SetBackground(brush)
+					resultEdit.SetText("PASS")
+					scanSnEdit.SetText("")
+					db.InsertCheckSnCsv(record)
+				} else {
+					brush, _ := walk.NewSolidColorBrush(walk.RGB(255, 0, 0))
+					resultEdit.SetBackground(brush)
+					resultEdit.SetText("MES过站失败")
+				}
 			} else {
 				brush, _ := walk.NewSolidColorBrush(walk.RGB(255, 0, 0))
 				resultEdit.SetBackground(brush)
-				resultEdit.SetText("MES过站失败")
+				resultEdit.SetText("MES查号失败")
 			}
-		} else {
-			brush, _ := walk.NewSolidColorBrush(walk.RGB(255, 0, 0))
-			resultEdit.SetBackground(brush)
-			resultEdit.SetText("MES查号失败")
-		}
+		*/
+		//db.InsertCheckSnCsv(record)
+		db.WriteCheckSnLog(record)
 	} else if sn != scanSn {
 		brush, _ := walk.NewSolidColorBrush(walk.RGB(255, 0, 0))
 		resultEdit.SetBackground(brush)

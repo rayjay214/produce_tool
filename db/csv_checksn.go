@@ -2,6 +2,7 @@ package db
 
 import (
 	"encoding/csv"
+	"fmt"
 	"os"
 	"time"
 )
@@ -59,4 +60,18 @@ func InsertCheckSnCsv(record CheckSnRecord) {
 	writer := csv.NewWriter(CheckSnCsv)
 	writer.Write(data)
 	writer.Flush()
+}
+
+func WriteCheckSnLog(record CheckSnRecord) {
+	file, err := os.Create(fmt.Sprintf("%v.txt", record.Sn))
+	if err != nil {
+		return
+	}
+	defer file.Close()
+
+	data := []byte(fmt.Sprintf("%v,%v,%v", record.Sn, record.Imei, record.CreateTime))
+	_, err = file.Write(data)
+	if err != nil {
+		return
+	}
 }
