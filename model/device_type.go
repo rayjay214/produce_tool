@@ -33,7 +33,7 @@ type DeviceTypeInfo struct {
 	ImeiOpen        int    //是否开启读取Imei
 	LightOpen       int    //是否开启光感测试
 	GsensorOpen     int    //是否开启重力测试
-	EchoOpen        int    //是否开启回音测试
+	PowerOpen       int    //是否开启电量测试
 	EndDialOpen     int    //是否开启挂断测试
 	TamperOpen      int    //是否开启防拆测试
 	SetTypeOpen     int    //是否开启设置型号

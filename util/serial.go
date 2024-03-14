@@ -212,8 +212,14 @@ func writeItems(myport *MyPort, items []TestItem, pass *PassParam) {
 			}
 		}
 
-		if item.ModelColName == "Version" && CompareVersion != "" {
+		if showValue == respValue && item.ModelColName == "Power" {
+			mpResult := GetFromStatus(respValue)
+			if value, ok := mpResult["Voltage"]; ok {
+				showValue = value
+			}
+		}
 
+		if item.ModelColName == "Version" && CompareVersion != "" {
 			if showValue != CompareVersion {
 				fmt.Printf("show value %v, compare value %v\n", showValue, CompareVersion)
 				showValue = fmt.Sprintf("%v(匹配失败)", showValue)

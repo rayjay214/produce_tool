@@ -56,7 +56,7 @@ func StupidCopy(src DeviceTypeInfo, dst *DeviceTypeInfo) {
 	dst.ImeiOpen = src.ImeiOpen
 	dst.LightOpen = src.LightOpen
 	dst.GsensorOpen = src.GsensorOpen
-	dst.EchoOpen = src.EchoOpen
+	dst.PowerOpen = src.PowerOpen
 	dst.EndDialOpen = src.EndDialOpen
 	dst.TamperOpen = src.TamperOpen
 	dst.SetTypeOpen = src.SetTypeOpen
@@ -739,9 +739,9 @@ func RunDialogAddType(owner walk.Form, selectedCb *walk.ComboBox) (int, error) {
 									RadioButtonGroupBox{
 										MinSize:    Size{Width: 160, Height: 50},
 										MaxSize:    Size{Width: 160, Height: 50},
-										Title:      "回音",
+										Title:      "电量",
 										Layout:     HBox{},
-										DataMember: "EchoOpen",
+										DataMember: "PowerOpen",
 										Buttons: []RadioButton{
 											{
 												Value:   1,

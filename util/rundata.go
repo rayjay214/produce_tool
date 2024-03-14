@@ -66,6 +66,7 @@ func init() {
 		{"副IP地址", "ViceIp", "AT+IP2?\r\n", []string{"OK", "ERROR"}, "IP2:", 1000, true},
 		{"设置型号", "SetType", "AT+SET=\r\n", []string{"OK", "ERROR"}, "\n\rat+set=", 2000, true},
 		{"设置副IP", "ViceIpWrite", "AT+IP2=%v\r\n", []string{"OK", "ERROR"}, "IP2=", 1000, true},
+		{"电量", "Power", "AT+STATUS\r\n", []string{"AT+STATUS"}, "AT+STATUS", 1000, true},
 	}
 
 	allModifyDeviceItems = []TestItem{
@@ -237,8 +238,11 @@ func SyncTestItems() {
 			if SelectedDeviceType.ViceIpWriteOpen > 0 {
 				CurrTestItems = append(CurrTestItems, item)
 			}
+		case "Power":
+			if SelectedDeviceType.PowerOpen > 0 {
+				CurrTestItems = append(CurrTestItems, item)
+			}
 		}
-
 	}
 }
 

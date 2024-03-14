@@ -1,6 +1,8 @@
 package util
 
-import "strings"
+import (
+	"strings"
+)
 
 func getValue(str, findS string) (int, string) {
 	sLeft := ""
@@ -38,4 +40,19 @@ func ContainsOne(str string, substrs ...string) bool {
 		}
 	}
 	return false
+}
+
+func GetFromStatus(data string) map[string]string {
+	fields := strings.Split(data, ",")
+	result := make(map[string]string)
+	for _, field := range fields {
+		keyValue := strings.SplitN(field, ":", 2)
+		if len(keyValue) != 2 {
+			continue
+		}
+		key := strings.TrimSpace(keyValue[0])
+		value := strings.TrimSpace(keyValue[1])
+		result[key] = value
+	}
+	return result
 }

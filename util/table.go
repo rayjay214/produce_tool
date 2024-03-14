@@ -21,6 +21,7 @@ type MyTableRow struct {
 	Gsensor     string
 	SetType     string
 	ViceIpWrite string
+	Power       string
 }
 
 type MyTableModel struct {
