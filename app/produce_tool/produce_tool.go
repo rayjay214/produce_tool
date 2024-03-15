@@ -266,12 +266,12 @@ func refreshType() {
 	if selectedType.ViceIpWriteOpen <= 0 {
 		tv.Columns().ByName("ViceIpWrite").SetVisible(false)
 	}
+	if selectedType.PowerOpen <= 0 {
+		tv.Columns().ByName("Power").SetVisible(false)
+	}
 	/*
 		if selectedType.DialOpen <= 0 {
 			tv.Columns().ByName("Dial").SetVisible(false)
-		}
-		if selectedType.EchoOpen <= 0 {
-			tv.Columns().ByName("Echo").SetVisible(false)
 		}
 		if selectedType.EndDialOpen <= 0 {
 			tv.Columns().ByName("EndDial").SetVisible(false)
