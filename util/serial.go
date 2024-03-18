@@ -19,9 +19,16 @@ import (
 
 type SortByName []*MyPort
 
-func (a SortByName) Len() int           { return len(a) }
-func (a SortByName) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a SortByName) Less(i, j int) bool { return a[i].Name < a[j].Name }
+func (a SortByName) Len() int      { return len(a) }
+func (a SortByName) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
+func (a SortByName) Less(i, j int) bool {
+	strNumi := a[i].Name[3:]
+	strNumj := a[j].Name[3:]
+	numi, _ := strconv.Atoi(strNumi)
+	numj, _ := strconv.Atoi(strNumj)
+	return numi < numj
+	//return a[i].Name < a[j].Name
+}
 
 const (
 	Init = iota
