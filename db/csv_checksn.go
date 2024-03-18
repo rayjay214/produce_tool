@@ -63,7 +63,7 @@ func InsertCheckSnCsv(record CheckSnRecord) {
 }
 
 func WriteCheckSnLog(record CheckSnRecord) {
-	file, err := os.Create(fmt.Sprintf("%v.txt", record.Sn))
+	file, err := os.Create(fmt.Sprintf("log/%v.txt", record.Sn))
 	if err != nil {
 		return
 	}

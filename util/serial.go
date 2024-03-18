@@ -214,8 +214,9 @@ func writeItems(myport *MyPort, items []TestItem, pass *PassParam) {
 
 		if showValue == respValue && item.ModelColName == "Power" {
 			mpResult := GetFromStatus(respValue)
-			if value, ok := mpResult["Voltage"]; ok {
-				showValue = value
+			log.Infof("rayjay value %v, result %v", showValue, mpResult)
+			if value, ok := mpResult["ADC"]; ok {
+				showValue = value + "mV"
 			}
 		}
 
@@ -649,6 +650,10 @@ func DoTestOnePortCompareSn(portName string, scanSnEdit *walk.LineEdit, prefix s
 			}
 		*/
 		//db.InsertCheckSnCsv(record)
+		brush, _ := walk.NewSolidColorBrush(walk.RGB(0, 255, 0))
+		resultEdit.SetBackground(brush)
+		resultEdit.SetText("PASS")
+		scanSnEdit.SetText("")
 		db.WriteCheckSnLog(record)
 	} else if sn != scanSn {
 		brush, _ := walk.NewSolidColorBrush(walk.RGB(255, 0, 0))
