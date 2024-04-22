@@ -797,3 +797,117 @@ func DoTestOnePortWriteSn(portName string, SnValue string, readSn *walk.LineEdit
 	}
 
 }
+
+// 用于写IMEI工具
+func writeCommImei(myport *MyPort, pass *PassParam, writeValue string) string {
+	modifyDeviceItem := GetModifyDeviceItem("Imei")
+	if modifyDeviceItem == nil {
+		return ""
+	}
+
+	writeSuccess := false
+	rstSuccess := false
+	for i := 0; i < 1; i++ {
+		strCmd := fmt.Sprintf(modifyDeviceItem.AtCmd, writeValue)
+		_, err := myport.Port.Write([]byte(strCmd))
+		if err != nil {
+			writeSuccess = false
+			break
+		}
+		time.Sleep(100 * time.Millisecond)
+
+		//等待设备返回结果
+		timeout := time.Duration(modifyDeviceItem.Timeout) * time.Millisecond
+		startTime := time.Now()
+		for {
+			if time.Since(startTime) >= timeout {
+				writeSuccess = false
+				break
+			}
+			time.Sleep(10 * time.Millisecond)
+			if strings.Contains(pass.str, "OK") || strings.Contains(pass.str, "ok") {
+				writeSuccess = true
+				rstSuccess = true
+				break
+			}
+			if strings.Contains(pass.str, "ERROR") || strings.Contains(pass.str, "error") {
+				writeSuccess = true
+				rstSuccess = false
+				break
+			}
+		}
+	}
+
+	var showValue string
+	if writeSuccess && rstSuccess {
+		showValue = fmt.Sprintf("写入成功(%s)", writeValue)
+	} else if writeSuccess && !rstSuccess {
+		showValue = "写入失败"
+	} else {
+		showValue = "超时"
+	}
+
+	pass.stopReader = true
+	pass.stopWriter = true
+
+	return showValue
+}
+
+func readCommImei(myport *MyPort, items []TestItem, pass *PassParam) string {
+	var imei string
+	for _, item := range items {
+		b := writeComm(myport, item, pass)
+		_, respValue := getValue(pass.str, item.ShowKey)
+		var showValue string
+		if b && !strings.Contains(pass.str, "ERROR") {
+			showValue = respValue
+		} else if !b {
+			showValue = "获取超时"
+		} else {
+			showValue = "失败"
+		}
+
+		if item.Desc == "IMEI" {
+			imei = showValue
+		}
+	}
+	pass.stopReader = true
+	pass.stopWriter = true
+
+	return imei
+}
+
+// 用于写IMEI工具
+func DoTestOnePortWriteImei(portName string, ImeiValue string, readImei *walk.LineEdit, resultEdit *walk.LineEdit, scanImei *walk.LineEdit) {
+	myPort := GetPort(portName)
+	writeRst := ""
+	if myPort.Name == portName {
+		pass := new(PassParam)
+		go readPort(myPort, pass)
+		writeRst = writeCommImei(myPort, pass, ImeiValue)
+	}
+
+	time.Sleep(1000 * time.Millisecond)
+	var imei string
+	items := GetReadImeiTestItems()
+
+	if myPort.Name == portName {
+		pass := new(PassParam)
+		go readPort(myPort, pass)
+		imei = readCommImei(myPort, items, pass)
+	}
+	readImei.SetText(imei)
+
+	log.Infof("rayjay rst:%v, imei:%v", writeRst, imei)
+
+	if strings.Contains(writeRst, "成功") && imei == ImeiValue {
+		brush, _ := walk.NewSolidColorBrush(walk.RGB(0, 255, 0))
+		resultEdit.SetBackground(brush)
+		resultEdit.SetText("IMEI写入成功")
+		scanImei.SetText("")
+	} else {
+		brush, _ := walk.NewSolidColorBrush(walk.RGB(255, 0, 0))
+		resultEdit.SetBackground(brush)
+		resultEdit.SetText("IMEI写入失败")
+	}
+}

@@ -37,6 +37,9 @@ var compareSnTestItems []TestItem
 // 用于写号工具
 var readSnTestItems []TestItem
 
+// 用于写IMEI工具
+var readImeiTestItems []TestItem
+
 var CurrTestItems []TestItem
 
 var LastPassParam map[string]*PassParam
@@ -87,6 +90,11 @@ func init() {
 		{"SN", "Sn", "AT+SN?\r\n", []string{"OK", "ERROR"}, "SN:", 2000, true},
 	}
 
+	readImeiTestItems = []TestItem{
+		{"开启回显", "Back", "ATE1\r\n", []string{"OK"}, "", 2000, false},
+		{"IMEI", "Imei", "AT+IMEI\r\n", []string{"OK", "ERROR"}, "AT+IMEI", 200, true},
+	}
+
 	OpenAllPorts()
 	LastPassParam = make(map[string]*PassParam, 0)
 	LastGsensorPassParam = make(map[string]*PassParam, 0)
@@ -116,6 +124,10 @@ func GetCompareSnTestItems() []TestItem {
 
 func GetReadSnTestItems() []TestItem {
 	return readSnTestItems
+}
+
+func GetReadImeiTestItems() []TestItem {
+	return readImeiTestItems
 }
 
 func GetTestItem(desc string) []TestItem {

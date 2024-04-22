@@ -7,48 +7,26 @@ package main
 import (
 	"github.com/lxn/walk"
 	. "github.com/lxn/walk/declarative"
-	log "github.com/sirupsen/logrus"
-	"os"
-	"produce_tool/db"
 	"produce_tool/util"
 )
 
-func init() {
-	db.LoadCheckSnCsv()
-	initLog()
-}
-
-func initLog() {
-	log.SetFormatter(&log.JSONFormatter{})
-	log.SetLevel(log.InfoLevel)
-	log.SetReportCaller(true)
-	file, err := os.OpenFile("tool.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-	if err != nil {
-		log.Fatal("Failed to create log file: ", err)
-	} else {
-		log.SetOutput(file)
-	}
-}
-
-func runSnCompareWindow() {
+func runWriteSnWindow() {
 	mw, _ := walk.NewMainWindow()
 
 	fontFamily := "Microsoft YaHei"
 	viceFontSize := 12
 
 	var selectedCom *walk.ComboBox
-	var scanSn *walk.LineEdit
-	var readSn *walk.LineEdit
+	var scanImei *walk.LineEdit
 	var readImei *walk.LineEdit
-	var imeiPrefix *walk.LineEdit
-	//var resultButton *walk.PushButton
 	var resultEdit *walk.LineEdit
+	var imeiPrefix *walk.LineEdit
 
 	MainWindow{
 		AssignTo: &mw,
-		Title:    "SN比对工具",
+		Title:    "写号工具",
 		Font:     Font{PointSize: viceFontSize, Family: fontFamily},
-		Size:     Size{Width: 600, Height: 350},
+		Size:     Size{Width: 600, Height: 250},
 		Layout:   VBox{Alignment: AlignHNearVNear},
 		Children: []Widget{
 			HSplitter{
@@ -73,37 +51,36 @@ func runSnCompareWindow() {
 								DisplayMember: "Name",
 							},
 							Label{
-								Text:    "扫描SN:",
+								Text:    "IMEI前缀:",
 								Font:    Font{PointSize: viceFontSize, Family: fontFamily},
 								MinSize: Size{Width: 35},
-								MaxSize: Size{Width: 60},
+								MaxSize: Size{Width: 80},
 							},
 							LineEdit{
-								AssignTo: &scanSn,
+								AssignTo: &imeiPrefix,
+								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
+								MinSize:  Size{Width: 35},
+								MaxSize:  Size{Width: 200},
+							},
+							Label{
+								Text:    "写入IMEI:",
+								Font:    Font{PointSize: viceFontSize, Family: fontFamily},
+								MinSize: Size{Width: 35},
+								MaxSize: Size{Width: 80},
+							},
+							LineEdit{
+								AssignTo: &scanImei,
 								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
 								MinSize:  Size{Width: 50},
 								MaxSize:  Size{Width: 200},
 								OnKeyPress: func(key walk.Key) {
 									if key == walk.KeyReturn {
-										util.DoTestOnePortCompareSn(selectedCom.Text(), scanSn, imeiPrefix.Text(), readSn, readImei, resultEdit)
+										util.DoTestOnePortWriteImei(selectedCom.Text(), imeiPrefix.Text()+scanImei.Text(), readImei, resultEdit, scanImei)
 									}
 								},
 								OnMouseDown: func(x, y int, button walk.MouseButton) {
-									scanSn.SetText("")
+									scanImei.SetText("")
 								},
-							},
-							Label{
-								Text:    "读取SN:",
-								Font:    Font{PointSize: viceFontSize, Family: fontFamily},
-								MinSize: Size{Width: 35},
-								MaxSize: Size{Width: 60},
-							},
-							LineEdit{
-								AssignTo: &readSn,
-								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
-								MinSize:  Size{Width: 35},
-								MaxSize:  Size{Width: 200},
-								ReadOnly: true,
 							},
 							Label{
 								Text:    "读取IMEI:",
@@ -118,18 +95,6 @@ func runSnCompareWindow() {
 								MaxSize:  Size{Width: 200},
 								ReadOnly: true,
 							},
-							Label{
-								Text:    "IMEI前缀:",
-								Font:    Font{PointSize: viceFontSize, Family: fontFamily},
-								MinSize: Size{Width: 35},
-								MaxSize: Size{Width: 80},
-							},
-							LineEdit{
-								AssignTo: &imeiPrefix,
-								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
-								MinSize:  Size{Width: 35},
-								MaxSize:  Size{Width: 200},
-							},
 						},
 					},
 
@@ -140,17 +105,6 @@ func runSnCompareWindow() {
 							PointSize: 30,
 						},
 					},
-
-					/*
-						PushButton{
-							AssignTo: &resultButton,
-							Font: Font{
-								PointSize: 20,
-								Family:    fontFamily,
-							},
-							Enabled: false,
-						},
-					*/
 				},
 			},
 		},
@@ -158,5 +112,5 @@ func runSnCompareWindow() {
 }
 
 func main() {
-	runSnCompareWindow()
+	runWriteSnWindow()
 }
