@@ -45,6 +45,7 @@ var checkSignalMin *walk.TextEdit
 var checkSignalMax *walk.TextEdit
 var checkGpsValue *walk.TextEdit
 var checkWifiValue *walk.TextEdit
+var checkPowerValue *walk.TextEdit
 
 // 比较校验
 var compareVersion *walk.TextEdit
@@ -219,6 +220,7 @@ func refreshType() {
 	checkSignalMin.SetText(selectedType.SignalMin)
 	checkGpsValue.SetText(selectedType.GpsMin)
 	checkWifiValue.SetText(selectedType.WifiMin)
+	checkPowerValue.SetText(selectedType.PowerMin)
 	util.SelectedDeviceType = selectedType
 	util.SyncTestItems()
 	util.RefreshTableModel()
@@ -562,8 +564,8 @@ func runMainWindow() {
 						Title:   "屏蔽COM口",
 						Font:    Font{PointSize: viceFontSize, Family: fontFamily},
 						Layout:  Grid{Columns: 1},
-						MinSize: Size{Width: 150, Height: 80},
-						MaxSize: Size{Width: 300, Height: 80},
+						MinSize: Size{Width: 150, Height: 100},
+						MaxSize: Size{Width: 300, Height: 100},
 						Children: []Widget{
 							TextEdit{
 								AssignTo: &blockedCom,
@@ -598,8 +600,8 @@ func runMainWindow() {
 						Title:   "GSM信号值",
 						Font:    Font{PointSize: viceFontSize, Family: fontFamily},
 						Layout:  Grid{Columns: 2},
-						MinSize: Size{Width: 70, Height: 80},
-						MaxSize: Size{Width: 150, Height: 80},
+						MinSize: Size{Width: 70, Height: 100},
+						MaxSize: Size{Width: 150, Height: 100},
 						Children: []Widget{
 							Label{
 								Text:    "最大值:",
@@ -632,11 +634,11 @@ func runMainWindow() {
 						},
 					},
 					GroupBox{
-						Title:   "定位信号值",
+						Title:   "测试阈值",
 						Font:    Font{PointSize: viceFontSize, Family: fontFamily},
 						Layout:  Grid{Columns: 2},
-						MinSize: Size{Width: 70, Height: 80},
-						MaxSize: Size{Width: 150, Height: 80},
+						MinSize: Size{Width: 70, Height: 100},
+						MaxSize: Size{Width: 150, Height: 120},
 						Children: []Widget{
 							Label{
 								Text:    "GPS:",
@@ -666,13 +668,27 @@ func runMainWindow() {
 								MaxSize:  Size{Width: 150, Height: 25},
 								ReadOnly: true,
 							},
+							Label{
+								Text:    "电量:",
+								Font:    Font{PointSize: viceFontSize, Family: fontFamily},
+								MinSize: Size{Width: 35, Height: 25},
+								MaxSize: Size{Width: 40, Height: 25},
+							},
+							TextEdit{
+								Text:     "1",
+								AssignTo: &checkPowerValue,
+								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
+								MinSize:  Size{Width: 35, Height: 25},
+								MaxSize:  Size{Width: 150, Height: 25},
+								ReadOnly: true,
+							},
 						},
 					},
 					GroupBox{
 						Title:   "IP地址, 端口",
 						Font:    Font{PointSize: viceFontSize, Family: fontFamily},
 						Layout:  Grid{Columns: 2},
-						MinSize: Size{Width: 180, Height: 80},
+						MinSize: Size{Width: 180, Height: 100},
 						MaxSize: Size{Width: 300, Height: 100},
 						Children: []Widget{
 							Label{
@@ -707,8 +723,8 @@ func runMainWindow() {
 					},
 					Composite{
 						Layout:  VBox{},
+						MinSize: Size{Width: 250, Height: 100},
 						MaxSize: Size{Width: 500, Height: 100},
-						MinSize: Size{Width: 250, Height: 80},
 						Children: []Widget{
 							Composite{
 								Layout: Grid{Columns: 2},

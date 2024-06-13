@@ -41,6 +41,7 @@ type DeviceTypeInfo struct {
 	ViceIpReadOpen  int    //是否开启读取副IP
 	ApnWriteOpen    int    //是否开启写入APN
 	ViceIpWriteOpen int    //是否开启写入副IP
+	PowerMin        string //电量测试通过的最小值
 }
 
 var DeviceTypeInfoMap map[string]DeviceTypeInfo

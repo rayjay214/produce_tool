@@ -64,6 +64,7 @@ func StupidCopy(src DeviceTypeInfo, dst *DeviceTypeInfo) {
 	dst.ViceIpReadOpen = src.ViceIpReadOpen
 	dst.ApnWriteOpen = src.ApnWriteOpen
 	dst.ViceIpWriteOpen = src.ViceIpWriteOpen
+	dst.PowerMin = src.PowerMin
 }
 
 func RunCheckPwdDialog(owner walk.Form, selectedCb *walk.ComboBox) (int, error) {
@@ -433,6 +434,19 @@ func RunDialogAddType(owner walk.Form, selectedCb *walk.ComboBox) (int, error) {
 								Children: []Widget{
 									LineEdit{
 										Text:    Bind("DeviceType", SelRequired{}),
+										MinSize: Size{Width: 100, Height: 30},
+										MaxSize: Size{Width: 120, Height: 30},
+									},
+								},
+							},
+							GroupBox{
+								MinSize: Size{Width: 160, Height: 50},
+								MaxSize: Size{Width: 160, Height: 50},
+								Title:   "电量告警阈值",
+								Layout:  HBox{},
+								Children: []Widget{
+									LineEdit{
+										Text:    Bind("PowerMin"),
 										MinSize: Size{Width: 100, Height: 30},
 										MaxSize: Size{Width: 120, Height: 30},
 									},

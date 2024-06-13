@@ -221,9 +221,15 @@ func writeItems(myport *MyPort, items []TestItem, pass *PassParam) {
 
 		if showValue == respValue && item.ModelColName == "Power" {
 			mpResult := GetFromStatus(respValue)
+			nPowerMin, err := strconv.Atoi(SelectedDeviceType.PowerMin)
 			log.Infof("rayjay value %v, result %v", showValue, mpResult)
-			if value, ok := mpResult["ADC"]; ok {
-				showValue = value + "mV"
+			if value, ok := mpResult["ADC"]; ok && err == nil && nPowerMin != 0 {
+				nValue, _ := strconv.Atoi(value)
+				if nValue >= nPowerMin {
+					showValue = fmt.Sprintf("通过(%vmV)", nValue)
+				} else {
+					showValue = fmt.Sprintf("失败(%vmV)", nValue)
+				}
 			}
 		}
 
