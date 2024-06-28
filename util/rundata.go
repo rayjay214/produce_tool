@@ -40,6 +40,9 @@ var readSnTestItems []TestItem
 // 用于写IMEI工具
 var readImeiTestItems []TestItem
 
+// 用于录音测试工具
+var recordTestItems []TestItem
+
 var CurrTestItems []TestItem
 
 var LastPassParam map[string]*PassParam
@@ -95,6 +98,10 @@ func init() {
 		{"IMEI", "Imei", "AT+IMEI\r\n", []string{"OK", "ERROR"}, "AT+IMEI", 200, true},
 	}
 
+	recordTestItems = []TestItem{
+		{"录音测试", "Record", "AT+CREC\r\n", []string{"OK", "ERROR"}, "+CREC:0", 200, true},
+	}
+
 	OpenAllPorts()
 	LastPassParam = make(map[string]*PassParam, 0)
 	LastGsensorPassParam = make(map[string]*PassParam, 0)
@@ -128,6 +135,10 @@ func GetReadSnTestItems() []TestItem {
 
 func GetReadImeiTestItems() []TestItem {
 	return readImeiTestItems
+}
+
+func GetRecodTestItems() []TestItem {
+	return recordTestItems
 }
 
 func GetTestItem(desc string) []TestItem {
