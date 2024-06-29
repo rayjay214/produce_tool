@@ -94,7 +94,7 @@ func init() {
 	}
 
 	readImeiTestItems = []TestItem{
-		{"开启回显", "Back", "ATE1\r\n", []string{"OK"}, "", 2000, false},
+		{"开启回显", "Back", "ATE1\r\n", []string{"OK"}, "", 5000, false},
 		{"IMEI", "Imei", "AT+IMEI\r\n", []string{"OK", "ERROR"}, "AT+IMEI", 200, true},
 	}
 

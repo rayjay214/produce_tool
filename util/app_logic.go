@@ -8,6 +8,7 @@ import (
 	"github.com/lxn/walk"
 	log "github.com/sirupsen/logrus"
 	"os"
+	"os/exec"
 	"produce_tool/db"
 	"strconv"
 	"strings"
@@ -353,7 +354,7 @@ func checkRecordTest(mw *walk.MainWindow, myport *MyPort, items []TestItem, pass
 			})
 		}
 		if len(pass.str) == wavLength { //录音文件接收完成
-			os.WriteFile(fmt.Sprintf("record/%v.wav", imei), []byte(pass.str), 0644)
+			os.WriteFile(fmt.Sprintf("record/%v.amr", imei), []byte(pass.str), 0644)
 			pass.str = ""
 			mw.Synchronize(func() {
 				resultEdit.SetText("录音接收完成")
@@ -363,7 +364,15 @@ func checkRecordTest(mw *walk.MainWindow, myport *MyPort, items []TestItem, pass
 			mw.Synchronize(func() {
 				resultEdit.SetText("播放录音中")
 			})
-			playWav(fmt.Sprintf("record/%v.wav", imei))
+			//转码amr->wav
+			src := fmt.Sprintf("record/%v.amr", imei)
+			dst := fmt.Sprintf("record/%v.wav", imei)
+			cmd := exec.Command("./ffmpeg", "-y", "-i", src, dst)
+			err = cmd.Run()
+			if err != nil {
+				fmt.Println("failed to convert AMR to WAV: %w", err)
+			}
+			playWav(dst)
 			result = "测试完成"
 			break
 		}
@@ -380,6 +389,10 @@ func checkRecordTest(mw *walk.MainWindow, myport *MyPort, items []TestItem, pass
 // 用于录音测试工具
 func DoTestRecord(mw *walk.MainWindow, portName string, readImei *walk.LineEdit, resultEdit *walk.LineEdit) {
 	myPort := GetPort(portName)
+
+	//首先清空窗口颜色
+	brush, _ := walk.NewSolidColorBrush(walk.RGB(255, 255, 255))
+	resultEdit.SetBackground(brush)
 
 	//读取IMEI
 	var imei string
@@ -412,7 +425,7 @@ func DoTestRecord(mw *walk.MainWindow, portName string, readImei *walk.LineEdit,
 	pass := new(PassParam)
 	go readPort(myPort, pass)
 	result := checkRecordTest(mw, myPort, recordItems, pass, imei, resultEdit)
-	brush, _ := walk.NewSolidColorBrush(walk.RGB(0, 255, 0))
+	brush, _ = walk.NewSolidColorBrush(walk.RGB(0, 255, 0))
 	resultEdit.SetBackground(brush)
 	resultEdit.SetText(result)
 }
