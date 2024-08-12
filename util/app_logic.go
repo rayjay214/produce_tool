@@ -223,7 +223,8 @@ func writeCommImei(myport *MyPort, pass *PassParam, writeValue string) string {
 		time.Sleep(100 * time.Millisecond)
 
 		//等待设备返回结果
-		timeout := time.Duration(modifyDeviceItem.Timeout) * time.Millisecond
+		//timeout := time.Duration(modifyDeviceItem.Timeout) * time.Millisecond
+		timeout := time.Duration(4000) * time.Millisecond
 		startTime := time.Now()
 		for {
 			if time.Since(startTime) >= timeout {
@@ -232,8 +233,27 @@ func writeCommImei(myport *MyPort, pass *PassParam, writeValue string) string {
 			}
 			time.Sleep(10 * time.Millisecond)
 			if strings.Contains(pass.str, "OK") || strings.Contains(pass.str, "ok") {
-				writeSuccess = true
-				rstSuccess = true
+				//返回两次，第一次表示开始执行，第二次表示执行成功
+				for {
+					pass.str = ""
+					if time.Since(startTime) >= timeout {
+						writeSuccess = false
+						break
+					}
+					time.Sleep(10 * time.Millisecond)
+					if strings.Contains(pass.str, "OK") || strings.Contains(pass.str, "ok") {
+						writeSuccess = true
+						rstSuccess = true
+						break
+					}
+					if strings.Contains(pass.str, "ERROR") || strings.Contains(pass.str, "error") {
+						writeSuccess = true
+						rstSuccess = false
+						break
+					}
+				}
+				//writeSuccess = true
+				//rstSuccess = true
 				break
 			}
 			if strings.Contains(pass.str, "ERROR") || strings.Contains(pass.str, "error") {
@@ -293,7 +313,7 @@ func DoTestOnePortWriteImei(portName string, ImeiValue string, readImei *walk.Li
 		writeRst = writeCommImei(myPort, pass, ImeiValue)
 	}
 
-	time.Sleep(1000 * time.Millisecond)
+	//time.Sleep(1000 * time.Millisecond)
 	var imei string
 	items := GetReadImeiTestItems()
 
