@@ -2,6 +2,7 @@ package util
 
 import (
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"produce_tool/conf"
 	"produce_tool/db"
 	"produce_tool/model"
@@ -161,11 +162,11 @@ func setBit(num, pos int) int {
 
 /*
  * 写入设备功能位序说明
- * ----------------------------------------------------------------------------------------------------------------
- * |   0     |   1    |   2    |   3    |   4    |   5    |   6    |   7    |   8    |   9    |   10    |   11    |
- * ----------------------------------------------------------------------------------------------------------------
- * | 周期定位 | 监听   |短信设置  |防拆报警 |震动报警 |低电报警 |超速报警 |支持灯控  | ACC    | 继电器  |   录音  | 单片机   |
- * ----------------------------------------------------------------------------------------------------------------
+ * -------------------------------------------------------------------------------------------------------------------------------------------------
+ * |   0     |   1    |   2    |   3    |   4    |   5     |   6    |   7      |   8    |   9    |   10   |   11    |   12    |   13    |    14    |
+ * -------------------------------------------------------------------------------------------------------------------------------------------------
+ * | 周期定位  | 监听   |短信设置  |防拆报警 | 震动报警 | 低电报警 | 超速报警 | 支持灯控  | ACC    | 继电器  |   录音  | 单片机   |  急加速  |   急减速  |   急转弯  |
+ * -------------------------------------------------------------------------------------------------------------------------------------------------
  *
  * at+set=功能,版本,IP:端口
  * eg：at+set=00000000,SK,192.168.1.1:9000
@@ -197,11 +198,22 @@ func GetWriteTypeParam() string {
 	if SelectedDeviceType.Recording > 0 {
 		devFunc = setBit(devFunc, 10)
 	}
+	if SelectedDeviceType.RapidAccleAlarm > 0 {
+		devFunc = setBit(devFunc, 12)
+	}
+	if SelectedDeviceType.RapidDecleAlarm > 0 {
+		devFunc = setBit(devFunc, 13)
+	}
+	if SelectedDeviceType.SharpTurnAlarm > 0 {
+		devFunc = setBit(devFunc, 14)
+	}
+
 	if SelectedDeviceType.DeviceType == "" || SelectedDeviceType.MainIp == "" || SelectedDeviceType.MainPort == "" {
 		return ""
 	}
 
 	param := fmt.Sprintf("%08x,%s,%s:%s", devFunc, SelectedDeviceType.DeviceType, SelectedDeviceType.MainIp, SelectedDeviceType.MainPort)
+	log.Infof("settype param is %v", param)
 	return param
 }
 

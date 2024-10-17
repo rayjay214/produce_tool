@@ -34,6 +34,9 @@ func StupidCopy(src DeviceTypeInfo, dst *DeviceTypeInfo) {
 	dst.ShakeAlarm = src.ShakeAlarm
 	dst.Recording = src.Recording
 	dst.LowpowerAlarm = src.LowpowerAlarm
+	dst.RapidAccleAlarm = src.RapidAccleAlarm
+	dst.RapidDecleAlarm = src.RapidDecleAlarm
+	dst.SharpTurnAlarm = src.SharpTurnAlarm
 	dst.MainIp = src.MainIp
 	dst.MainPort = src.MainPort
 	dst.ViceIp = src.ViceIp
@@ -238,27 +241,6 @@ func RunDialogAddType(owner walk.Form, selectedCb *walk.ComboBox) (int, error) {
 							RadioButtonGroupBox{
 								MinSize:    Size{Width: 160, Height: 50},
 								MaxSize:    Size{Width: 160, Height: 50},
-								Title:      "短信设置",
-								Layout:     HBox{},
-								DataMember: "Sms",
-								Buttons: []RadioButton{
-									{
-										Text:    "支持",
-										Value:   1,
-										MinSize: Size{Width: 60, Height: 30},
-										MaxSize: Size{Width: 70, Height: 30},
-									},
-									{
-										Text:    "不支持",
-										Value:   0,
-										MinSize: Size{Width: 60, Height: 30},
-										MaxSize: Size{Width: 70, Height: 30},
-									},
-								},
-							},
-							RadioButtonGroupBox{
-								MinSize:    Size{Width: 160, Height: 50},
-								MaxSize:    Size{Width: 160, Height: 50},
 								Title:      "防拆报警",
 								Layout:     HBox{},
 								DataMember: "TamperAlarm",
@@ -325,6 +307,69 @@ func RunDialogAddType(owner walk.Form, selectedCb *walk.ComboBox) (int, error) {
 								Title:      "低电报警",
 								Layout:     HBox{},
 								DataMember: "LowpowerAlarm",
+								Buttons: []RadioButton{
+									{
+										Text:    "支持",
+										Value:   1,
+										MinSize: Size{Width: 60, Height: 30},
+										MaxSize: Size{Width: 70, Height: 30},
+									},
+									{
+										Text:    "不支持",
+										Value:   0,
+										MinSize: Size{Width: 60, Height: 30},
+										MaxSize: Size{Width: 70, Height: 30},
+									},
+								},
+							},
+							RadioButtonGroupBox{
+								MinSize:    Size{Width: 160, Height: 50},
+								MaxSize:    Size{Width: 160, Height: 50},
+								Title:      "急转弯报警",
+								Layout:     HBox{},
+								DataMember: "SharpTurnAlarm",
+								Buttons: []RadioButton{
+									{
+										Text:    "支持",
+										Value:   1,
+										MinSize: Size{Width: 60, Height: 30},
+										MaxSize: Size{Width: 70, Height: 30},
+									},
+									{
+										Text:    "不支持",
+										Value:   0,
+										MinSize: Size{Width: 60, Height: 30},
+										MaxSize: Size{Width: 70, Height: 30},
+									},
+								},
+							},
+							RadioButtonGroupBox{
+								MinSize:    Size{Width: 160, Height: 50},
+								MaxSize:    Size{Width: 160, Height: 50},
+								Title:      "急加速报警",
+								Layout:     HBox{},
+								DataMember: "RapidAccleAlarm",
+								Buttons: []RadioButton{
+									{
+										Text:    "支持",
+										Value:   1,
+										MinSize: Size{Width: 60, Height: 30},
+										MaxSize: Size{Width: 70, Height: 30},
+									},
+									{
+										Text:    "不支持",
+										Value:   0,
+										MinSize: Size{Width: 60, Height: 30},
+										MaxSize: Size{Width: 70, Height: 30},
+									},
+								},
+							},
+							RadioButtonGroupBox{
+								MinSize:    Size{Width: 160, Height: 50},
+								MaxSize:    Size{Width: 160, Height: 50},
+								Title:      "急减速报警",
+								Layout:     HBox{},
+								DataMember: "RapidDecleAlarm",
 								Buttons: []RadioButton{
 									{
 										Text:    "支持",

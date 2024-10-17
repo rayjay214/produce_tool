@@ -241,7 +241,7 @@ func writeCommImei(myport *MyPort, pass *PassParam, writeValue string) string {
 						break
 					}
 					time.Sleep(10 * time.Millisecond)
-					if strings.Contains(pass.str, "OK") || strings.Contains(pass.str, "ok") {
+					if strings.Contains(pass.str, "OK") && strings.Contains(pass.str, "IMEI:") {
 						writeSuccess = true
 						rstSuccess = true
 						break

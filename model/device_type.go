@@ -11,6 +11,9 @@ type DeviceTypeInfo struct {
 	ShakeAlarm      int    //是否支持震动报警
 	Recording       int    //是否支持录音
 	LowpowerAlarm   int    //是否支持低电报警
+	RapidAccleAlarm int    //是否支持急加速报警
+	RapidDecleAlarm int    //是否支持急减速报警
+	SharpTurnAlarm  int    //是否支持急转弯报警
 	MainIp          string //主IP地址
 	MainPort        string //主IP端口
 	ViceIp          string //副IP地址
