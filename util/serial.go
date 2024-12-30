@@ -403,6 +403,30 @@ func readPort(myPort *MyPort, pass *PassParam) {
 	}
 }
 
+func ReadPort(myPort *MyPort, pass *PassParam) {
+	buf := make([]byte, 128)
+	for {
+		if pass.stopReader {
+			log.Infoln("reader stop")
+			break
+		}
+		if !myPort.Vaild {
+			log.Errorf("port %v invalid", myPort.Name)
+			return
+		}
+		n, err := myPort.Port.Read(buf)
+		if err != nil {
+			log.Errorf("read err %v, port %v", err, myPort)
+			myPort.Vaild = false
+			return
+		}
+		if n > 0 {
+			data := buf[:n]
+			pass.str += string(data)
+		}
+	}
+}
+
 func DoCloseDevice(myPort *MyPort, Sn string) {
 	pass := new(PassParam)
 	go readPort(myPort, pass)

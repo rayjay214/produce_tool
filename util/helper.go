@@ -56,3 +56,19 @@ func GetFromStatus(data string) map[string]string {
 	}
 	return result
 }
+
+func StopReader(param *PassParam) {
+	param.stopReader = true
+}
+
+func StopWriter(param *PassParam) {
+	param.stopWriter = true
+}
+
+func GetPassParamStr(param *PassParam) string {
+	return param.str
+}
+
+func SetPassParamStr(param *PassParam, value string) {
+	param.str = value
+}
