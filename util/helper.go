@@ -1,6 +1,9 @@
 package util
 
 import (
+	"github.com/lxn/walk"
+	"produce_tool/model"
+	"reflect"
 	"strings"
 )
 
@@ -71,4 +74,33 @@ func GetPassParamStr(param *PassParam) string {
 
 func SetPassParamStr(param *PassParam, value string) {
 	param.str = value
+}
+
+func FilterTableColumn(tv *walk.TableView, selectedType model.DeviceTypeInfo) {
+	v := reflect.ValueOf(selectedType)
+	t := v.Type()
+	for i := 0; i < t.NumField(); i++ {
+		field := t.Field(i)
+		fieldName := field.Name
+
+		if ContainsOne(fieldName, "DialOpen", "EndDialOpen", "TamperOpen", "ApnWriteOpen") {
+			continue
+		}
+
+		if strings.Contains(fieldName, "Open") {
+			value := v.Field(i).Interface()
+			if intValue, ok := value.(int); ok {
+				if intValue <= 0 {
+					colName := fieldName[:len(fieldName)-4]
+					if colName == "MainIpRead" {
+						colName = "MainIp"
+					}
+					if colName == "ViceIpRead" {
+						colName = "ViceIp"
+					}
+					tv.Columns().ByName(colName).SetVisible(false)
+				}
+			}
+		}
+	}
 }

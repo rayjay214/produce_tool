@@ -153,28 +153,43 @@ func setViceIp(myport *MyPort, pass *PassParam) {
 	modifyDevice(myport, pass, "ViceIpWrite", value, false)
 }
 
+func setProtocol(myport *MyPort, pass *PassParam) {
+	value := fmt.Sprintf("%v", SelectedDeviceType.ProtocolValue)
+	modifyDevice(myport, pass, "ProtocolWrite", value, false)
+}
+
+func setDevice(myport *MyPort, pass *PassParam, colName string) {
+	switch colName {
+	case "SetType":
+		setDevType(myport, pass)
+	case "ViceIpWrite":
+		setViceIp(myport, pass)
+	case "ProtocolWrite":
+		setProtocol(myport, pass)
+	}
+}
+
 func writeItems(myport *MyPort, items []TestItem, pass *PassParam) {
 	var wg sync.WaitGroup
 	model := GetTableModel()
 	tableItem := model.items[PortNameRowidx[myport.Name]]
 	bForceStop := false
 	for _, item := range items {
-		if item.ModelColName == "SetType" {
-			setDevType(myport, pass)
+		//设置操作此处处理，下面的是读取值
+		if ContainsOne(item.ModelColName, "SetType", "ViceIpWrite", "ProtocolWrite") {
+			setDevice(myport, pass, item.ModelColName)
 			continue
 		}
 
-		if item.ModelColName == "ViceIpWrite" {
-			setViceIp(myport, pass)
-			continue
+		//查询协议通常有设置协议，先sleep一下， 等待协议写完
+		if item.ModelColName == "Protocol" {
+			time.Sleep(time.Millisecond * 500)
 		}
-
 		b := writeComm(myport, item, pass)
 		if pass.stopWriter {
 			bForceStop = true
 			break
 		}
-
 		_, respValue := getValue(pass.str, item.ShowKey)
 		var showValue string
 		if b && !strings.Contains(pass.str, "ERROR") {
@@ -237,6 +252,16 @@ func writeItems(myport *MyPort, items []TestItem, pass *PassParam) {
 			}
 		}
 
+		if showValue == respValue && item.ModelColName == "Protocol" {
+			switch showValue {
+			case "0":
+				showValue = "GT06"
+			case "1":
+				showValue = "JT808"
+			}
+		}
+
+		//需要匹配结果的展示项
 		if item.ModelColName == "Version" && CompareVersion != "" {
 			if showValue != CompareVersion {
 				fmt.Printf("show value %v, compare value %v\n", showValue, CompareVersion)

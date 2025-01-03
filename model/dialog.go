@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/lxn/walk"
 	. "github.com/lxn/walk/declarative"
+	"reflect"
 )
 
 func KnownTypesString() []string {
@@ -64,10 +65,32 @@ func StupidCopy(src DeviceTypeInfo, dst *DeviceTypeInfo) {
 	dst.TamperOpen = src.TamperOpen
 	dst.SetTypeOpen = src.SetTypeOpen
 	dst.MainIpReadOpen = src.MainIpReadOpen
-	dst.ViceIpReadOpen = src.ViceIpReadOpen
+	dst.MainIpReadOpen = src.MainIpReadOpen
 	dst.ApnWriteOpen = src.ApnWriteOpen
 	dst.ViceIpWriteOpen = src.ViceIpWriteOpen
 	dst.PowerMin = src.PowerMin
+}
+
+func CopyStruct(src interface{}, dest interface{}) {
+	valSrc := reflect.ValueOf(src)
+	valDest := reflect.ValueOf(dest)
+
+	if valSrc.Kind() != reflect.Ptr || valDest.Kind() != reflect.Ptr {
+		fmt.Println("Both src and dest must be pointers to structs.")
+		return
+	}
+
+	valSrc = valSrc.Elem() // 取得指针指向的结构体
+	valDest = valDest.Elem()
+
+	for i := 0; i < valSrc.NumField(); i++ {
+		fieldSrc := valSrc.Field(i)
+		fieldDest := valDest.FieldByName(valSrc.Type().Field(i).Name)
+
+		if fieldDest.IsValid() && fieldDest.CanSet() {
+			fieldDest.Set(fieldSrc)
+		}
+	}
 }
 
 func RunCheckPwdDialog(owner walk.Form, selectedCb *walk.ComboBox) (int, error) {
@@ -158,7 +181,8 @@ func RunDialogAddType(owner walk.Form, selectedCb *walk.ComboBox) (int, error) {
 									//strType := selected.Model().([]string)[selected.CurrentIndex()]
 									//selectedTypeInfo := GetDeviceTypes()[strType]
 									selectedTypeInfo := selected.Model().([]DeviceTypeInfo)[selected.CurrentIndex()]
-									StupidCopy(selectedTypeInfo, deviceType)
+									//StupidCopy(selectedTypeInfo, deviceType)
+									CopyStruct(&selectedTypeInfo, deviceType)
 									db.Reset()
 								},
 							},
@@ -492,6 +516,19 @@ func RunDialogAddType(owner walk.Form, selectedCb *walk.ComboBox) (int, error) {
 								Children: []Widget{
 									LineEdit{
 										Text:    Bind("PowerMin"),
+										MinSize: Size{Width: 100, Height: 30},
+										MaxSize: Size{Width: 120, Height: 30},
+									},
+								},
+							},
+							GroupBox{
+								MinSize: Size{Width: 160, Height: 50},
+								MaxSize: Size{Width: 160, Height: 50},
+								Title:   "协议",
+								Layout:  HBox{},
+								Children: []Widget{
+									LineEdit{
+										Text:    Bind("ProtocolValue"),
 										MinSize: Size{Width: 100, Height: 30},
 										MaxSize: Size{Width: 120, Height: 30},
 									},
@@ -948,6 +985,48 @@ func RunDialogAddType(owner walk.Form, selectedCb *walk.ComboBox) (int, error) {
 										Title:      "副IP写入",
 										Layout:     HBox{},
 										DataMember: "ViceIpWriteOpen",
+										Buttons: []RadioButton{
+											{
+												Value:   1,
+												Text:    "开启",
+												MinSize: Size{Width: 60, Height: 30},
+												MaxSize: Size{Width: 70, Height: 30},
+											},
+											{
+												Value:   0,
+												Text:    "关闭",
+												MinSize: Size{Width: 60, Height: 30},
+												MaxSize: Size{Width: 70, Height: 30},
+											},
+										},
+									},
+									RadioButtonGroupBox{
+										MinSize:    Size{Width: 160, Height: 50},
+										MaxSize:    Size{Width: 160, Height: 50},
+										Title:      "读取协议",
+										Layout:     HBox{},
+										DataMember: "ProtocolOpen",
+										Buttons: []RadioButton{
+											{
+												Value:   1,
+												Text:    "开启",
+												MinSize: Size{Width: 60, Height: 30},
+												MaxSize: Size{Width: 70, Height: 30},
+											},
+											{
+												Value:   0,
+												Text:    "关闭",
+												MinSize: Size{Width: 60, Height: 30},
+												MaxSize: Size{Width: 70, Height: 30},
+											},
+										},
+									},
+									RadioButtonGroupBox{
+										MinSize:    Size{Width: 160, Height: 50},
+										MaxSize:    Size{Width: 160, Height: 50},
+										Title:      "写入协议",
+										Layout:     HBox{},
+										DataMember: "ProtocolWriteOpen",
 										Buttons: []RadioButton{
 											{
 												Value:   1,

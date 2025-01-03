@@ -55,6 +55,7 @@ var compareViceIp *walk.TextEdit
 // 待修改值
 var modifyIp *walk.TextEdit
 var modifyPort *walk.TextEdit
+var modifyProtocol *walk.TextEdit
 
 // 通过数量
 var passedCnt *walk.LineEdit
@@ -85,7 +86,6 @@ func initLog() {
 
 func initConf() {
 	conf.LoadConf()
-
 }
 
 func initSingleFunctionButtons() {
@@ -216,6 +216,11 @@ func refreshType() {
 	selectedType := selectedCb.Model().([]model.DeviceTypeInfo)[selectedCb.CurrentIndex()]
 	modifyIp.SetText(selectedType.MainIp)
 	modifyPort.SetText(selectedType.MainPort)
+	if selectedType.ProtocolValue == "0" {
+		modifyProtocol.SetText("GT06")
+	} else {
+		modifyProtocol.SetText("JT808")
+	}
 	checkSignalMax.SetText(selectedType.SignalMax)
 	checkSignalMin.SetText(selectedType.SignalMin)
 	checkGpsValue.SetText(selectedType.GpsMin)
@@ -230,61 +235,7 @@ func refreshType() {
 	for i := 0; i < tv.Columns().Len(); i++ {
 		tv.Columns().At(i).SetVisible(true)
 	}
-
-	//stupid method for the moment
-	if selectedType.SignalOpen <= 0 {
-		tv.Columns().ByName("Signal").SetVisible(false)
-	}
-	if selectedType.GpsOpen <= 0 {
-		tv.Columns().ByName("Gps").SetVisible(false)
-	}
-	if selectedType.WifiOpen <= 0 {
-		tv.Columns().ByName("Wifi").SetVisible(false)
-	}
-	if selectedType.SnOpen <= 0 {
-		tv.Columns().ByName("Sn").SetVisible(false)
-	}
-	if selectedType.SimOpen <= 0 {
-		tv.Columns().ByName("Sim").SetVisible(false)
-	}
-	if selectedType.ImeiOpen <= 0 {
-		tv.Columns().ByName("Imei").SetVisible(false)
-	}
-	if selectedType.LightOpen <= 0 {
-		tv.Columns().ByName("Light").SetVisible(false)
-	}
-	if selectedType.GsensorOpen <= 0 {
-		tv.Columns().ByName("Gsensor").SetVisible(false)
-	}
-	if selectedType.SetTypeOpen <= 0 {
-		tv.Columns().ByName("SetType").SetVisible(false)
-	}
-	if selectedType.MainIpReadOpen <= 0 {
-		tv.Columns().ByName("MainIp").SetVisible(false)
-	}
-	if selectedType.ViceIpReadOpen <= 0 {
-		tv.Columns().ByName("ViceIp").SetVisible(false)
-	}
-	if selectedType.ViceIpWriteOpen <= 0 {
-		tv.Columns().ByName("ViceIpWrite").SetVisible(false)
-	}
-	if selectedType.PowerOpen <= 0 {
-		tv.Columns().ByName("Power").SetVisible(false)
-	}
-	/*
-		if selectedType.DialOpen <= 0 {
-			tv.Columns().ByName("Dial").SetVisible(false)
-		}
-		if selectedType.EndDialOpen <= 0 {
-			tv.Columns().ByName("EndDial").SetVisible(false)
-		}
-		if selectedType.TamperOpen <= 0 {
-			tv.Columns().ByName("Tamper").SetVisible(false)
-		}
-		if selectedType.ApnWriteOpen <= 0 {
-			tv.Columns().ByName("Apn").SetVisible(false)
-		}
-	*/
+	util.FilterTableColumn(tv, selectedType)
 
 	conf.SelectedType = selectedType.DeviceType
 	conf.SyncConf()
@@ -714,6 +665,20 @@ func runMainWindow() {
 							TextEdit{
 								Text:     Bind("MainPort"),
 								AssignTo: &modifyPort,
+								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
+								MinSize:  Size{Width: 30, Height: 25},
+								MaxSize:  Size{Width: 150, Height: 25},
+								ReadOnly: true,
+							},
+							Label{
+								Text:    "协议:",
+								Font:    Font{PointSize: viceFontSize, Family: fontFamily},
+								MinSize: Size{Width: 30, Height: 25},
+								MaxSize: Size{Width: 50, Height: 25},
+							},
+							TextEdit{
+								Text:     Bind("ProtocolValue"),
+								AssignTo: &modifyProtocol,
 								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
 								MinSize:  Size{Width: 30, Height: 25},
 								MaxSize:  Size{Width: 150, Height: 25},

@@ -74,6 +74,8 @@ func init() {
 		{"设置型号", "SetType", "AT+SET=\r\n", []string{"OK", "ERROR"}, "\n\rat+set=", 2000, true},
 		{"设置副IP", "ViceIpWrite", "AT+IP2=%v\r\n", []string{"OK", "ERROR"}, "IP2=", 1000, true},
 		{"电量", "Power", "AT+STATUS\r\n", []string{"ADC"}, "AT+STATUS", 1000, true},
+		{"设置协议", "ProtocolWrite", "AT+JT808=%v\r\n", []string{"success"}, "AT+JT808=", 1000, true}, //写放到读前面
+		{"协议", "Protocol", "AT+JT808?\r\n", []string{"OK"}, "+JT808:", 1000, true},
 	}
 
 	allModifyDeviceItems = []TestItem{
@@ -81,6 +83,7 @@ func init() {
 		{"SN", "Sn", "AT+SN=%v\r\n", []string{"OK", "ERROR"}, "SN:", 1000, true},
 		{"设置型号", "SetType", "AT+SET=%v\r\n", []string{"OK", "ERROR"}, "\n\rat+set=", 1000, true},
 		{"设置副IP", "ViceIpWrite", "AT+IP2=%v\r\n", []string{"OK", "ERROR"}, "IP2=", 1000, false},
+		{"设置协议", "ProtocolWrite", "AT+JT808=%v\r\n", []string{"OK", "ERROR"}, "AT+JT808=", 1000, true},
 	}
 
 	compareSnTestItems = []TestItem{
@@ -275,6 +278,14 @@ func SyncTestItems() {
 			}
 		case "Power":
 			if SelectedDeviceType.PowerOpen > 0 {
+				CurrTestItems = append(CurrTestItems, item)
+			}
+		case "Protocol":
+			if SelectedDeviceType.ProtocolOpen > 0 {
+				CurrTestItems = append(CurrTestItems, item)
+			}
+		case "ProtocolWrite":
+			if SelectedDeviceType.ProtocolWriteOpen > 0 {
 				CurrTestItems = append(CurrTestItems, item)
 			}
 		}

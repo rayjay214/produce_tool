@@ -46,7 +46,6 @@ func SyncDeviceTypes(types map[string]DeviceTypeInfo) {
 	}
 	defer file.Close()
 	jsonData, _ := json.Marshal(types)
-	fmt.Println(string(jsonData))
 	file.Truncate(0)
 	_, err = file.Write(jsonData)
 	if err != nil {
