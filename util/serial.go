@@ -185,6 +185,12 @@ func writeItems(myport *MyPort, items []TestItem, pass *PassParam) {
 		if item.ModelColName == "Protocol" {
 			time.Sleep(time.Millisecond * 500)
 		}
+
+		//查询ip通常有设置型号ip，先sleep一下， 等待协议写完
+		if item.ModelColName == "MainIp" {
+			time.Sleep(time.Millisecond * 300)
+		}
+
 		b := writeComm(myport, item, pass)
 		if pass.stopWriter {
 			bForceStop = true
