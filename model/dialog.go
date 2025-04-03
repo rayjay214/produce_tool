@@ -2,9 +2,10 @@ package model
 
 import (
 	"fmt"
+	"reflect"
+
 	"github.com/lxn/walk"
 	. "github.com/lxn/walk/declarative"
-	"reflect"
 )
 
 func KnownTypesString() []string {
@@ -67,6 +68,7 @@ func StupidCopy(src DeviceTypeInfo, dst *DeviceTypeInfo) {
 	dst.MainIpReadOpen = src.MainIpReadOpen
 	dst.MainIpReadOpen = src.MainIpReadOpen
 	dst.ApnWriteOpen = src.ApnWriteOpen
+	dst.MainIpWriteOpen = src.MainIpWriteOpen
 	dst.ViceIpWriteOpen = src.ViceIpWriteOpen
 	dst.PowerMin = src.PowerMin
 }
@@ -1027,6 +1029,27 @@ func RunDialogAddType(owner walk.Form, selectedCb *walk.ComboBox) (int, error) {
 										Title:      "写入协议",
 										Layout:     HBox{},
 										DataMember: "ProtocolWriteOpen",
+										Buttons: []RadioButton{
+											{
+												Value:   1,
+												Text:    "开启",
+												MinSize: Size{Width: 60, Height: 30},
+												MaxSize: Size{Width: 70, Height: 30},
+											},
+											{
+												Value:   0,
+												Text:    "关闭",
+												MinSize: Size{Width: 60, Height: 30},
+												MaxSize: Size{Width: 70, Height: 30},
+											},
+										},
+									},
+									RadioButtonGroupBox{
+										MinSize:    Size{Width: 160, Height: 50},
+										MaxSize:    Size{Width: 160, Height: 50},
+										Title:      "单独写入主IP",
+										Layout:     HBox{},
+										DataMember: "MainIpWriteOpen",
 										Buttons: []RadioButton{
 											{
 												Value:   1,

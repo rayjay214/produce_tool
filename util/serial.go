@@ -153,6 +153,12 @@ func setViceIp(myport *MyPort, pass *PassParam) {
 	modifyDevice(myport, pass, "ViceIpWrite", value, false)
 }
 
+func setMainIp(myport *MyPort, pass *PassParam) {
+	time.Sleep(1 * time.Second)
+	value := fmt.Sprintf("%v %v", SelectedDeviceType.MainIp, SelectedDeviceType.MainPort)
+	modifyDevice(myport, pass, "MainIpWrite", value, false)
+}
+
 func setProtocol(myport *MyPort, pass *PassParam) {
 	value := fmt.Sprintf("%v", SelectedDeviceType.ProtocolValue)
 	modifyDevice(myport, pass, "ProtocolWrite", value, false)
@@ -166,6 +172,8 @@ func setDevice(myport *MyPort, pass *PassParam, colName string) {
 		setViceIp(myport, pass)
 	case "ProtocolWrite":
 		setProtocol(myport, pass)
+	case "MainIpWrite":
+		setMainIp(myport, pass)
 	}
 }
 
@@ -176,7 +184,7 @@ func writeItems(myport *MyPort, items []TestItem, pass *PassParam) {
 	bForceStop := false
 	for _, item := range items {
 		//设置操作此处处理，下面的是读取值
-		if ContainsOne(item.ModelColName, "SetType", "ViceIpWrite", "ProtocolWrite") {
+		if ContainsOne(item.ModelColName, "SetType", "ViceIpWrite", "ProtocolWrite", "MainIpWrite") {
 			setDevice(myport, pass, item.ModelColName)
 			continue
 		}
@@ -336,6 +344,13 @@ func modifyDevice(myport *MyPort, pass *PassParam, colDesc string, writeValue st
 		timeout := time.Duration(modifyDeviceItem.Timeout) * time.Millisecond
 		startTime := time.Now()
 		for {
+			//特殊处理，GF系列写IP不会返回结果，默认当成成功
+			if colDesc == "MainIpWrite" {
+				writeSuccess = true
+				rstSuccess = true
+				break
+			}
+
 			if time.Since(startTime) >= timeout {
 				writeSuccess = false
 				break

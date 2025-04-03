@@ -43,6 +43,7 @@ type DeviceTypeInfo struct {
 	MainIpReadOpen    int    //是否开启读取主IP
 	ViceIpReadOpen    int    //是否开启读取副IP
 	ApnWriteOpen      int    //是否开启写入APN
+	MainIpWriteOpen   int    //是否开启写入主IP
 	ViceIpWriteOpen   int    //是否开启写入副IP
 	PowerMin          string //电量测试通过的最小值
 	ProtocolOpen      int    //是否开启读取协议

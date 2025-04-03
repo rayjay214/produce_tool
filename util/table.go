@@ -24,6 +24,7 @@ type MyTableRow struct {
 	Power         string
 	Protocol      string
 	ProtocolWrite string
+	MainIpWrite   string
 }
 
 type MyTableModel struct {
