@@ -43,6 +43,7 @@ func runSnCompareWindow() {
 	var imeiPrefix *walk.LineEdit
 	//var resultButton *walk.PushButton
 	var resultEdit *walk.LineEdit
+	var onlyCompareSn *walk.CheckBox
 
 	MainWindow{
 		AssignTo: &mw,
@@ -85,7 +86,7 @@ func runSnCompareWindow() {
 								MaxSize:  Size{Width: 200},
 								OnKeyPress: func(key walk.Key) {
 									if key == walk.KeyReturn {
-										util.DoTestOnePortCompareSn(selectedCom.Text(), scanSn, imeiPrefix.Text(), readSn, readImei, resultEdit)
+										util.DoTestOnePortCompareSn(selectedCom.Text(), scanSn, imeiPrefix.Text(), readSn, readImei, resultEdit, onlyCompareSn.Checked())
 									}
 								},
 								OnMouseDown: func(x, y int, button walk.MouseButton) {
@@ -129,6 +130,15 @@ func runSnCompareWindow() {
 								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
 								MinSize:  Size{Width: 35},
 								MaxSize:  Size{Width: 200},
+							},
+							CheckBox{
+								Text:       "只比对SN",
+								Font:       Font{PointSize: viceFontSize, Family: fontFamily},
+								AssignTo:   &onlyCompareSn,
+								MinSize:    Size{Width: 60, Height: 25},
+								MaxSize:    Size{Width: 200, Height: 25},
+								Enabled:    true,
+								ColumnSpan: 2,
 							},
 						},
 					},
