@@ -6,17 +6,20 @@ package main
 
 import (
 	"fmt"
-	"github.com/lxn/walk"
-	. "github.com/lxn/walk/declarative"
-	log "github.com/sirupsen/logrus"
+	"github.com/lxn/win"
 	"os"
 	"produce_tool/conf"
 	"produce_tool/db"
+	"produce_tool/dialog"
 	"produce_tool/model"
 	"produce_tool/util"
 	"reflect"
 	"strings"
 	"time"
+
+	"github.com/lxn/walk"
+	. "github.com/lxn/walk/declarative"
+	log "github.com/sirupsen/logrus"
 )
 
 var tv *walk.TableView
@@ -258,8 +261,16 @@ func runMainWindow() {
 		Font:     Font{PointSize: viceFontSize, Family: fontFamily},
 		Size:     Size{Width: 900, Height: 650},
 		Layout:   VBox{Alignment: AlignHNearVNear},
+		//设置居中
 		OnSizeChanged: func() {
+			screenWidth := int(win.GetSystemMetrics(win.SM_CXSCREEN))
+			screenHeight := int(win.GetSystemMetrics(win.SM_CYSCREEN))
+			bounds := mw.Bounds()
 
+			// 计算居中位置
+			x := (screenWidth - bounds.Width) / 2
+			y := (screenHeight - bounds.Height) / 2
+			mw.SetBounds(walk.Rectangle{X: x, Y: y, Width: bounds.Width, Height: bounds.Height})
 		},
 		Children: []Widget{
 			Composite{
@@ -309,7 +320,7 @@ func runMainWindow() {
 						MinSize:   Size{Width: 60, Height: 100},
 						MaxSize:   Size{Width: 100, Height: 100},
 						OnClicked: func() {
-							model.RunCheckPwdDialog(mw, selectedCb)
+							dialog.RunCheckPwdDialog(mw, selectedCb)
 						},
 					},
 					GroupBox{
@@ -788,6 +799,19 @@ func main() {
 		walk.InteractionEffect, _ = walk.NewDropShadowEffect(walk.RGB(63, 63, 63))
 		walk.ValidationErrorEffect, _ = walk.NewBorderGlowEffect(walk.RGB(255, 0, 0))
 	})
+
+	// 显示登录对话框
+	loginResult := dialog.ShowLoginDialog()
+
+	// 检查登录结果
+	if !loginResult.Success {
+		fmt.Println("登录失败:", loginResult.Message)
+		os.Exit(1)
+	}
+
+	// 登录成功，获取到token
+	token := loginResult.Token
+	fmt.Println("登录成功，token:", token)
 
 	runMainWindow()
 }

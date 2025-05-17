@@ -6,7 +6,6 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/tarm/serial"
 	bs "go.bug.st/serial"
-	"produce_tool/mes"
 	//"log"
 	"reflect"
 	"sort"
@@ -661,8 +660,4 @@ func doubleCheck(wg *sync.WaitGroup, myPort *MyPort, lastValue string, item Test
 	}
 	v.FieldByName(item.ModelColName).SetString(showValue)
 	model.PublishRowChanged(PortNameRowidx[myPort.Name])
-}
-
-func checkMesSn(sn string) bool {
-	return mes.CheckMesReq(sn, "DIGNWEIQICESHI")
 }

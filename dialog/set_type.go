@@ -1,7 +1,8 @@
-package model
+package dialog
 
 import (
 	"fmt"
+	"produce_tool/model"
 	"reflect"
 
 	"github.com/lxn/walk"
@@ -9,7 +10,7 @@ import (
 )
 
 func KnownTypesString() []string {
-	mptypes := GetDeviceTypes()
+	mptypes := model.GetDeviceTypes()
 	types := make([]string, 0)
 	for key, _ := range mptypes {
 		types = append(types, key)
@@ -17,60 +18,13 @@ func KnownTypesString() []string {
 	return types
 }
 
-func KnownTypes() []DeviceTypeInfo {
-	mptypes := GetDeviceTypes()
-	types := make([]DeviceTypeInfo, 0)
+func KnownTypes() []model.DeviceTypeInfo {
+	mptypes := model.GetDeviceTypes()
+	types := make([]model.DeviceTypeInfo, 0)
 	for _, value := range mptypes {
 		types = append(types, value)
 	}
 	return types
-}
-
-// todo 改成反射实现
-func StupidCopy(src DeviceTypeInfo, dst *DeviceTypeInfo) {
-	dst.OverSpeedAlarm = src.OverSpeedAlarm
-	dst.Listen = src.Listen
-	dst.LightControl = src.LightControl
-	dst.Sms = src.Sms
-	dst.TamperAlarm = src.TamperAlarm
-	dst.ShakeAlarm = src.ShakeAlarm
-	dst.Recording = src.Recording
-	dst.LowpowerAlarm = src.LowpowerAlarm
-	dst.RapidAccleAlarm = src.RapidAccleAlarm
-	dst.RapidDecleAlarm = src.RapidDecleAlarm
-	dst.SharpTurnAlarm = src.SharpTurnAlarm
-	dst.MainIp = src.MainIp
-	dst.MainPort = src.MainPort
-	dst.ViceIp = src.ViceIp
-	dst.VicePort = src.VicePort
-	dst.APN = src.APN
-	dst.SnLength = src.SnLength
-	dst.DeviceType = src.DeviceType
-	dst.SignalOpen = src.SignalOpen
-	dst.SignalDelay = src.SignalDelay
-	dst.SignalMin = src.SignalMin
-	dst.SignalMax = src.SignalMax
-	dst.GpsOpen = src.GpsOpen
-	dst.GpsDelay = src.GpsDelay
-	dst.GpsMin = src.GpsMin
-	dst.WifiOpen = src.WifiOpen
-	dst.WifiMin = src.WifiMin
-	dst.SnOpen = src.SnOpen
-	dst.DialOpen = src.DialOpen
-	dst.SimOpen = src.SimOpen
-	dst.ImeiOpen = src.ImeiOpen
-	dst.LightOpen = src.LightOpen
-	dst.GsensorOpen = src.GsensorOpen
-	dst.PowerOpen = src.PowerOpen
-	dst.EndDialOpen = src.EndDialOpen
-	dst.TamperOpen = src.TamperOpen
-	dst.SetTypeOpen = src.SetTypeOpen
-	dst.MainIpReadOpen = src.MainIpReadOpen
-	dst.MainIpReadOpen = src.MainIpReadOpen
-	dst.ApnWriteOpen = src.ApnWriteOpen
-	dst.MainIpWriteOpen = src.MainIpWriteOpen
-	dst.ViceIpWriteOpen = src.ViceIpWriteOpen
-	dst.PowerMin = src.PowerMin
 }
 
 func CopyStruct(src interface{}, dest interface{}) {
@@ -126,13 +80,13 @@ func RunCheckPwdDialog(owner walk.Form, selectedCb *walk.ComboBox) (int, error) 
 
 func RunDialogAddType(owner walk.Form, selectedCb *walk.ComboBox) (int, error) {
 
-	deviceType := new(DeviceTypeInfo)
+	deviceType := new(model.DeviceTypeInfo)
 	var dlg *walk.Dialog
 	var db *walk.DataBinder
 	var acceptPB, cancelPB *walk.PushButton
 	var selected *walk.ComboBox
 
-	types := GetDeviceTypes()
+	types := model.GetDeviceTypes()
 
 	return Dialog{
 		AssignTo:      &dlg,
@@ -174,7 +128,7 @@ func RunDialogAddType(owner walk.Form, selectedCb *walk.ComboBox) (int, error) {
 							ComboBox{
 								AssignTo: &selected,
 								//Model:         KnownTypes(),
-								Model:         AllTypes,
+								Model:         model.AllTypes,
 								BindingMember: "DeviceType",
 								DisplayMember: "DeviceType",
 								MinSize:       Size{Width: 90, Height: 40},
@@ -182,7 +136,7 @@ func RunDialogAddType(owner walk.Form, selectedCb *walk.ComboBox) (int, error) {
 								OnCurrentIndexChanged: func() {
 									//strType := selected.Model().([]string)[selected.CurrentIndex()]
 									//selectedTypeInfo := GetDeviceTypes()[strType]
-									selectedTypeInfo := selected.Model().([]DeviceTypeInfo)[selected.CurrentIndex()]
+									selectedTypeInfo := selected.Model().([]model.DeviceTypeInfo)[selected.CurrentIndex()]
 									//StupidCopy(selectedTypeInfo, deviceType)
 									CopyStruct(&selectedTypeInfo, deviceType)
 									db.Reset()
@@ -1094,14 +1048,14 @@ func RunDialogAddType(owner walk.Form, selectedCb *walk.ComboBox) (int, error) {
 							} else {
 								if deviceType.DeviceType != "" {
 									types[deviceType.DeviceType] = *deviceType
-									SyncDeviceTypes(types)
-									types := GetDeviceTypes()
-									AllTypes = make([]DeviceTypeInfo, 0)
+									model.SyncDeviceTypes(types)
+									types := model.GetDeviceTypes()
+									model.AllTypes = make([]model.DeviceTypeInfo, 0)
 									for _, value := range types {
-										AllTypes = append(AllTypes, value)
+										model.AllTypes = append(model.AllTypes, value)
 									}
-									selectedCb.SetModel(AllTypes)
-									for idx, t := range AllTypes {
+									selectedCb.SetModel(model.AllTypes)
+									for idx, t := range model.AllTypes {
 										if t.DeviceType == deviceType.DeviceType {
 											selectedCb.SetCurrentIndex(idx)
 											selectedCb.SetCurrentIndex(idx)
