@@ -71,7 +71,8 @@ func init() {
 	initSyncConfTimer()
 	initConf()
 	db.InitMysql()
-	model.LoadDeviceType()
+	//model.LoadDeviceType()
+	//model.LoadDeviceTypeNetwork()
 	db.LoadTestRstCsv()
 }
 
@@ -233,8 +234,6 @@ func refreshType() {
 	util.SyncTestItems()
 	util.RefreshTableModel()
 
-	a := tv.Columns().Len()
-	_ = a
 	for i := 0; i < tv.Columns().Len(); i++ {
 		tv.Columns().At(i).SetVisible(true)
 	}
@@ -259,7 +258,7 @@ func runMainWindow() {
 		AssignTo: &mw,
 		Title:    "生产测试工具",
 		Font:     Font{PointSize: viceFontSize, Family: fontFamily},
-		Size:     Size{Width: 900, Height: 650},
+		Size:     Size{Width: 1200, Height: 650},
 		Layout:   VBox{Alignment: AlignHNearVNear},
 		//设置居中
 		OnSizeChanged: func() {
@@ -331,12 +330,13 @@ func runMainWindow() {
 						Layout:  HBox{},
 						Children: []Widget{
 							ComboBox{
-								AssignTo:              &selectedCb,
-								Font:                  Font{PointSize: viceFontSize, Family: fontFamily},
-								Model:                 model.AllTypes,
-								BindingMember:         "DeviceType",
-								DisplayMember:         "DeviceType",
-								MaxSize:               Size{Width: 100, Height: btnHeight},
+								AssignTo:      &selectedCb,
+								Font:          Font{PointSize: viceFontSize, Family: fontFamily},
+								Model:         model.AllTypes,
+								BindingMember: "DeviceType",
+								DisplayMember: "DeviceType",
+								MaxSize:       Size{Width: 100, Height: btnHeight},
+
 								OnCurrentIndexChanged: refreshType,
 							},
 						},

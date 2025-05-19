@@ -1,5 +1,10 @@
 package model
 
+import (
+	"produce_tool/network"
+	"strings"
+)
+
 var AllTypes []DeviceTypeInfo
 
 type DeviceTypeInfo struct {
@@ -58,6 +63,102 @@ func LoadDeviceType() {
 	types := GetDeviceTypes()
 	AllTypes = make([]DeviceTypeInfo, 0)
 	for _, value := range types {
+		AllTypes = append(AllTypes, value)
+	}
+}
+
+func LoadDeviceTypeNetwork() {
+	DeviceTypeInfoMap = make(map[string]DeviceTypeInfo, 0)
+	netTypes, _ := network.DoGetDeviceTypes()
+	deviceTypes := make(map[string]DeviceTypeInfo)
+	for _, item := range netTypes {
+		signalOpen := 0
+		if item.SignalOpen == "1" {
+			signalOpen = 1
+		}
+
+		gpsOpen := 0
+		if item.GpsOpen == "1" {
+			gpsOpen = 1
+		}
+
+		wifiOpen := 0
+		if item.WifiOpen == "1" {
+			wifiOpen = 1
+		}
+
+		snOpen := 0
+		if item.SnOpen == "1" {
+			snOpen = 1
+		}
+
+		simOpen := 0
+		if item.SimOpen == "1" {
+			simOpen = 1
+		}
+
+		imeiOpen := 0
+		if item.ImeiOpen == "1" {
+			imeiOpen = 1
+		}
+
+		lightOpen := 0
+		if item.LightOpen == "1" {
+			lightOpen = 1
+		}
+
+		gsensorOpen := 0
+		if item.GsensorOpen == "1" {
+			gsensorOpen = 1
+		}
+
+		powerOpen := 0
+		if item.PowerOpen == "1" {
+			powerOpen = 1
+		}
+
+		setTypeOpen := 0
+		if item.SetTypeOpen == "1" {
+			setTypeOpen = 1
+		}
+
+		listMainIp := strings.Split(item.MainIp, ":")
+		mainIp := listMainIp[0]
+		mainPort := listMainIp[1]
+
+		listViceIp := strings.Split(item.ViceIp, ":")
+		viceIp := listViceIp[0]
+		vicePort := listViceIp[1]
+
+		// 创建DeviceTypeInfo对象
+		deviceInfo := DeviceTypeInfo{
+			DeviceType:    item.DeviceType,
+			MainIp:        mainIp,
+			MainPort:      mainPort,
+			ViceIp:        viceIp,
+			VicePort:      vicePort,
+			SignalOpen:    signalOpen,
+			GpsOpen:       gpsOpen,
+			WifiOpen:      wifiOpen,
+			SnOpen:        snOpen,
+			SimOpen:       simOpen,
+			ImeiOpen:      imeiOpen,
+			LightOpen:     lightOpen,
+			GsensorOpen:   gsensorOpen,
+			PowerOpen:     powerOpen,
+			SetTypeOpen:   setTypeOpen,
+			SignalMin:     item.SignalMin,
+			SignalMax:     item.SignalMax,
+			GpsMin:        item.GpsMin,
+			WifiMin:       item.WifiMin,
+			PowerMin:      item.PowerMin,
+			ProtocolValue: item.ProtocolValue,
+		}
+
+		deviceTypes[item.DeviceType] = deviceInfo
+	}
+	AllTypes = make([]DeviceTypeInfo, 0)
+	for _, value := range deviceTypes {
 		AllTypes = append(AllTypes, value)
 	}
 }

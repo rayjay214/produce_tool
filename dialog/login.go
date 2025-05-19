@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"produce_tool/model"
 	"produce_tool/network"
 
 	"github.com/lxn/walk"
@@ -206,6 +207,7 @@ func ShowLoginDialog() (result LoginResult) {
 										result.Token = token
 										result.Message = "登录成功"
 										dlg.Synchronize(func() {
+											model.LoadDeviceTypeNetwork()
 											dlg.Accept()
 										})
 									} else {
