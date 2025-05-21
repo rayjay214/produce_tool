@@ -12,6 +12,7 @@ import (
 	"produce_tool/db"
 	"produce_tool/dialog"
 	"produce_tool/model"
+	"produce_tool/network"
 	"produce_tool/util"
 	"reflect"
 	"strings"
@@ -29,6 +30,7 @@ var singleFunctionButtons []*walk.PushButton
 var singleFunctionMapping map[int]string
 var selectedCb *walk.ComboBox
 var onnKeyTestBtn *walk.PushButton
+var planCb *walk.ComboBox
 
 // 写号相关
 var controlBtn *walk.PushButton
@@ -243,6 +245,14 @@ func refreshType() {
 	conf.SyncConf()
 }
 
+func refreshPlan() {
+	if planCb.CurrentIndex() == -1 {
+		return
+	}
+	plan := planCb.Model().([]model.PlanInfo)[planCb.CurrentIndex()]
+	network.DoGetPlan(plan.Id)
+}
+
 func runMainWindow() {
 	mw, _ := walk.NewMainWindow()
 
@@ -312,14 +322,36 @@ func runMainWindow() {
 							},
 						},
 					},
-					PushButton{
-						Text:      "管理型号",
-						Font:      Font{PointSize: 14, Family: fontFamily},
-						Alignment: AlignHNearVCenter,
-						MinSize:   Size{Width: 60, Height: 100},
-						MaxSize:   Size{Width: 100, Height: 100},
-						OnClicked: func() {
-							dialog.RunCheckPwdDialog(mw, selectedCb)
+					/*
+						PushButton{
+							Text:      "管理型号",
+							Font:      Font{PointSize: 14, Family: fontFamily},
+							Alignment: AlignHNearVCenter,
+							MinSize:   Size{Width: 60, Height: 100},
+							MaxSize:   Size{Width: 100, Height: 100},
+							OnClicked: func() {
+								dialog.RunCheckPwdDialog(mw, selectedCb)
+							},
+						},
+
+					*/
+					GroupBox{
+						MinSize: Size{Width: 80, Height: 100},
+						MaxSize: Size{Width: 250, Height: 100},
+						Title:   "请选择生产计划:",
+						Font:    Font{PointSize: 12, Family: fontFamily},
+						Layout:  HBox{},
+						Children: []Widget{
+							ComboBox{
+								AssignTo:      &planCb,
+								Font:          Font{PointSize: viceFontSize, Family: fontFamily},
+								Model:         model.AllPlans,
+								BindingMember: "Id",
+								DisplayMember: "DisplayName",
+								MaxSize:       Size{Width: 200, Height: btnHeight},
+
+								OnCurrentIndexChanged: refreshPlan,
+							},
 						},
 					},
 					GroupBox{

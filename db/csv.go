@@ -58,7 +58,6 @@ func InsertRecordCsv(record TestRecord) {
 	strSim := fmt.Sprintf("S:%v", record.Sim)
 	data := []string{}
 	data = append(data, record.Pass)
-	data = append(data, record.Mes)
 	data = append(data, record.Version)
 	data = append(data, strSim)
 	data = append(data, record.Imei)

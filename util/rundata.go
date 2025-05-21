@@ -6,6 +6,7 @@ import (
 	"produce_tool/conf"
 	"produce_tool/db"
 	"produce_tool/model"
+	"produce_tool/network"
 	"reflect"
 	"strings"
 	"time"
@@ -351,8 +352,8 @@ func DoFinish(myport *MyPort, item *MyTableRow) {
 		conf.PassedCnt += 1
 		conf.CntMutex.Unlock()
 
-		go SaveResultToMysql(*item, "通过", "")
-		go SaveResultToCsv(*item, "通过", "")
+		go SaveResultToMysql(*item, "通过")
+		go SaveResultToCsv(*item, "通过")
 	}
 
 	if bPass && item.Sn != "13100018888" && CompareVersion != "" && PoweroffAfterTest {
@@ -363,10 +364,10 @@ func DoFinish(myport *MyPort, item *MyTableRow) {
 }
 
 // todo use reflect
-func makeRecord(item MyTableRow, result string, mes string) db.TestRecord {
+func makeRecord(item MyTableRow, result string) db.TestRecord {
 	record := db.TestRecord{}
 	record.Pass = result
-	record.Mes = mes
+	record.CreateTime = time.Now()
 	record.Version = item.Version
 	record.Sim = item.Sim
 	record.Sn = strings.Trim(strings.Trim(item.Sn, "写入成功("), ")")
@@ -378,21 +379,27 @@ func makeRecord(item MyTableRow, result string, mes string) db.TestRecord {
 	record.MainIp = item.MainIp
 	record.ViceIp = item.ViceIp
 	record.SetType = item.SetType
-	record.CreateTime = time.Now()
+	record.Power = item.Power
+	record.Protocol = item.Protocol
+	record.SetMainIp = item.MainIpWrite
+	record.SetViceIp = item.ViceIpWrite
+	record.Operator = network.Username
+	record.UploadWay = "0"
+	record.PlanId = 9999
 	return record
 }
 
-func SaveResultToMysql(item MyTableRow, result string, mes string) {
-	record := makeRecord(item, result, mes)
+func SaveResultToMysql(item MyTableRow, result string) {
+	record := makeRecord(item, result)
 	db.InsertRecordMysql(record)
 }
 
-func SaveResultToExcel(item MyTableRow, result string, mes string) {
-	record := makeRecord(item, result, mes)
+func SaveResultToExcel(item MyTableRow, result string) {
+	record := makeRecord(item, result)
 	db.InsertRecordExcel(record)
 }
 
-func SaveResultToCsv(item MyTableRow, result string, mes string) {
-	record := makeRecord(item, result, mes)
+func SaveResultToCsv(item MyTableRow, result string) {
+	record := makeRecord(item, result)
 	db.InsertRecordCsv(record)
 }

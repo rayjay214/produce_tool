@@ -208,6 +208,8 @@ func ShowLoginDialog() (result LoginResult) {
 										result.Message = "登录成功"
 										dlg.Synchronize(func() {
 											model.LoadDeviceTypeNetwork()
+											model.LoadPlanNetwork()
+											network.DoGetUserInfo()
 											dlg.Accept()
 										})
 									} else {

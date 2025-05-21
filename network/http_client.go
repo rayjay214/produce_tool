@@ -1,14 +1,13 @@
 package network
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 )
 
 var (
-	Token string
+	Token       string
+	Username    string
+	CurrentPlan ProductionPlan
 )
 
 func DoLogin(username, password string) (bool, string, string) {
@@ -32,40 +31,60 @@ func DoLogin(username, password string) (bool, string, string) {
 }
 
 func DoGetDeviceTypes() ([]DeviceTypeDetail, error) {
-	// 创建请求
-	req, err := http.NewRequest("GET", "http://factory.gps555.net/api/v1/function", nil)
-	if err != nil {
-		return nil, fmt.Errorf("创建请求失败: %v", err)
+	var getPageResp DeviceTypeGetPageResponse
+	success, errMsg := DoFormRequest("GET", "http://factory.gps555.net/api/v1/function", nil, &getPageResp)
+	if !success {
+		return nil, fmt.Errorf(errMsg)
 	}
 
-	// 设置请求头，添加token
-	req.Header.Set("Authorization", "Bearer "+Token)
-
-	// 发送请求
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("网络请求失败: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// 读取响应
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("读取响应失败: %v", err)
-	}
-
-	// 解析响应
-	var getPageResp GetPageResponse
-	err = json.Unmarshal(body, &getPageResp)
-	if err != nil {
-		return nil, fmt.Errorf("解析响应失败: %v", err)
-	}
-
-	// 检查响应状态
 	if getPageResp.Code != 200 {
 		return nil, fmt.Errorf("请求失败，错误代码: %d, 错误信息: %s", getPageResp.Code, getPageResp.Msg)
 	}
 
 	return getPageResp.Data.List, nil
+}
+
+func DoGetUserInfo() error {
+	var getInfoResponse GetInfoResponse
+	success, errMsg := DoFormRequest("GET", "http://factory.gps555.net/api/v1/getinfo", nil, &getInfoResponse)
+	if !success {
+		return fmt.Errorf(errMsg)
+	}
+
+	if getInfoResponse.Code != 200 {
+		return fmt.Errorf("请求失败，错误代码: %d", getInfoResponse.Code)
+	}
+
+	Username = getInfoResponse.Username
+
+	return nil
+}
+
+func DoGetPlanList() ([]ProductionPlan, error) {
+	var getPageResp PlanGetPageResponse
+	success, errMsg := DoFormRequest("GET", "http://factory.gps555.net/api/v1/production-plan", nil, &getPageResp)
+	if !success {
+		return nil, fmt.Errorf(errMsg)
+	}
+
+	if getPageResp.Code != 200 {
+		return nil, fmt.Errorf("请求失败，错误代码: %d, 错误信息: %s", getPageResp.Code, getPageResp.Msg)
+	}
+
+	return getPageResp.Data.List, nil
+}
+
+func DoGetPlan(planId int64) {
+	var getResp PlanGetResponse
+	url := fmt.Sprintf("http://factory.gps555.net/api/v1/production-plan/%v", planId)
+	success, _ := DoFormRequest("GET", url, nil, &getResp)
+	if !success {
+		return
+	}
+
+	if getResp.Code != 200 {
+		return
+	}
+
+	CurrentPlan = getResp.Data
 }

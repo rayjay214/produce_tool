@@ -67,6 +67,14 @@ func LoadDeviceType() {
 	}
 }
 
+func getBit(num, pos int) int {
+	mask := 1 << uint(pos)
+	if (num & mask) != 0 {
+		return 1
+	}
+	return 0
+}
+
 func LoadDeviceTypeNetwork() {
 	DeviceTypeInfoMap = make(map[string]DeviceTypeInfo, 0)
 	netTypes, _ := network.DoGetDeviceTypes()
@@ -76,83 +84,113 @@ func LoadDeviceTypeNetwork() {
 		if item.SignalOpen == "1" {
 			signalOpen = 1
 		}
-
 		gpsOpen := 0
 		if item.GpsOpen == "1" {
 			gpsOpen = 1
 		}
-
 		wifiOpen := 0
 		if item.WifiOpen == "1" {
 			wifiOpen = 1
 		}
-
 		snOpen := 0
 		if item.SnOpen == "1" {
 			snOpen = 1
 		}
-
 		simOpen := 0
 		if item.SimOpen == "1" {
 			simOpen = 1
 		}
-
 		imeiOpen := 0
 		if item.ImeiOpen == "1" {
 			imeiOpen = 1
 		}
-
 		lightOpen := 0
 		if item.LightOpen == "1" {
 			lightOpen = 1
 		}
-
 		gsensorOpen := 0
 		if item.GsensorOpen == "1" {
 			gsensorOpen = 1
 		}
-
 		powerOpen := 0
 		if item.PowerOpen == "1" {
 			powerOpen = 1
 		}
-
 		setTypeOpen := 0
 		if item.SetTypeOpen == "1" {
 			setTypeOpen = 1
 		}
+		var mainIp, mainPort string
+		if item.MainIp != "" {
+			listMainIp := strings.Split(item.MainIp, ":")
+			mainIp = listMainIp[0]
+			mainPort = listMainIp[1]
+		}
+		var viceIp, vicePort string
+		if item.ViceIp != "" {
+			listViceIp := strings.Split(item.ViceIp, ":")
+			viceIp = listViceIp[0]
+			vicePort = listViceIp[1]
+		}
 
-		listMainIp := strings.Split(item.MainIp, ":")
-		mainIp := listMainIp[0]
-		mainPort := listMainIp[1]
+		overSpeedAlarm := 0
+		if getBit(item.FuncBit, 6) == 1 {
+			overSpeedAlarm = 1
+		}
+		tamperAlarm := 0
+		if getBit(item.FuncBit, 3) == 1 {
+			tamperAlarm = 1
+		}
+		shakeAlarm := 0
+		if getBit(item.FuncBit, 4) == 1 {
+			shakeAlarm = 1
+		}
+		lowpowerAlarm := 0
+		if getBit(item.FuncBit, 5) == 1 {
+			lowpowerAlarm = 1
+		}
+		sharpTurnAlarm := 0
+		if getBit(item.FuncBit, 14) == 1 {
+			sharpTurnAlarm = 1
+		}
+		rapidAccleAlarm := 0
+		if getBit(item.FuncBit, 12) == 1 {
+			rapidAccleAlarm = 1
+		}
+		rapidDecleAlarm := 0
+		if getBit(item.FuncBit, 13) == 1 {
+			rapidDecleAlarm = 1
+		}
 
-		listViceIp := strings.Split(item.ViceIp, ":")
-		viceIp := listViceIp[0]
-		vicePort := listViceIp[1]
-
-		// 创建DeviceTypeInfo对象
 		deviceInfo := DeviceTypeInfo{
-			DeviceType:    item.DeviceType,
-			MainIp:        mainIp,
-			MainPort:      mainPort,
-			ViceIp:        viceIp,
-			VicePort:      vicePort,
-			SignalOpen:    signalOpen,
-			GpsOpen:       gpsOpen,
-			WifiOpen:      wifiOpen,
-			SnOpen:        snOpen,
-			SimOpen:       simOpen,
-			ImeiOpen:      imeiOpen,
-			LightOpen:     lightOpen,
-			GsensorOpen:   gsensorOpen,
-			PowerOpen:     powerOpen,
-			SetTypeOpen:   setTypeOpen,
-			SignalMin:     item.SignalMin,
-			SignalMax:     item.SignalMax,
-			GpsMin:        item.GpsMin,
-			WifiMin:       item.WifiMin,
-			PowerMin:      item.PowerMin,
-			ProtocolValue: item.ProtocolValue,
+			DeviceType:      item.DeviceType,
+			MainIp:          mainIp,
+			MainPort:        mainPort,
+			ViceIp:          viceIp,
+			VicePort:        vicePort,
+			SignalOpen:      signalOpen,
+			GpsOpen:         gpsOpen,
+			WifiOpen:        wifiOpen,
+			SnOpen:          snOpen,
+			SimOpen:         simOpen,
+			ImeiOpen:        imeiOpen,
+			LightOpen:       lightOpen,
+			GsensorOpen:     gsensorOpen,
+			PowerOpen:       powerOpen,
+			SetTypeOpen:     setTypeOpen,
+			SignalMin:       item.SignalMin,
+			SignalMax:       item.SignalMax,
+			GpsMin:          item.GpsMin,
+			WifiMin:         item.WifiMin,
+			PowerMin:        item.PowerMin,
+			ProtocolValue:   item.ProtocolValue,
+			OverSpeedAlarm:  overSpeedAlarm,
+			TamperAlarm:     tamperAlarm,
+			ShakeAlarm:      shakeAlarm,
+			LowpowerAlarm:   lowpowerAlarm,
+			SharpTurnAlarm:  sharpTurnAlarm,
+			RapidDecleAlarm: rapidDecleAlarm,
+			RapidAccleAlarm: rapidAccleAlarm,
 		}
 
 		deviceTypes[item.DeviceType] = deviceInfo

@@ -27,6 +27,10 @@ func DoJSONRequest(method, url string, requestBody interface{}, responseObj inte
 		return false, "创建请求失败: " + err.Error()
 	}
 
+	if Token != "" {
+		req.Header.Set("Authorization", "Bearer "+Token)
+	}
+
 	// 设置请求头
 	if requestBody != nil {
 		req.Header.Set("Content-Type", "application/json")
@@ -85,6 +89,10 @@ func DoFormRequest(method, urlStr string, formData map[string]string, responseOb
 
 	if err != nil {
 		return false, "创建请求失败: " + err.Error()
+	}
+
+	if Token != "" {
+		req.Header.Set("Authorization", "Bearer "+Token)
 	}
 
 	// 发送请求
