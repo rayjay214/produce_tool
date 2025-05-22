@@ -120,6 +120,32 @@ func LoadDeviceTypeNetwork() {
 		if item.SetTypeOpen == "1" {
 			setTypeOpen = 1
 		}
+		mainIpReadOpen := 0
+		if item.MainIpReadOpen == "1" {
+			mainIpReadOpen = 1
+		}
+		viceIpReadOpen := 0
+		if item.ViceIpReadOpen == "1" {
+			viceIpReadOpen = 1
+		}
+		viceIpWriteOpen := 0
+		if item.ViceIpWriteOpen == "1" {
+			viceIpWriteOpen = 1
+		}
+
+		mainIpWriteOpen := 0
+		if item.MainIpWriteOpen == "1" {
+			mainIpWriteOpen = 1
+		}
+		protocolOpen := 0
+		if item.ProtocolOpen == "1" {
+			protocolOpen = 1
+		}
+		protocolWriteOpen := 0
+		if item.ProtocolWriteOpen == "1" {
+			protocolWriteOpen = 1
+		}
+
 		var mainIp, mainPort string
 		if item.MainIp != "" {
 			listMainIp := strings.Split(item.MainIp, ":")
@@ -163,34 +189,40 @@ func LoadDeviceTypeNetwork() {
 		}
 
 		deviceInfo := DeviceTypeInfo{
-			DeviceType:      item.DeviceType,
-			MainIp:          mainIp,
-			MainPort:        mainPort,
-			ViceIp:          viceIp,
-			VicePort:        vicePort,
-			SignalOpen:      signalOpen,
-			GpsOpen:         gpsOpen,
-			WifiOpen:        wifiOpen,
-			SnOpen:          snOpen,
-			SimOpen:         simOpen,
-			ImeiOpen:        imeiOpen,
-			LightOpen:       lightOpen,
-			GsensorOpen:     gsensorOpen,
-			PowerOpen:       powerOpen,
-			SetTypeOpen:     setTypeOpen,
-			SignalMin:       item.SignalMin,
-			SignalMax:       item.SignalMax,
-			GpsMin:          item.GpsMin,
-			WifiMin:         item.WifiMin,
-			PowerMin:        item.PowerMin,
-			ProtocolValue:   item.ProtocolValue,
-			OverSpeedAlarm:  overSpeedAlarm,
-			TamperAlarm:     tamperAlarm,
-			ShakeAlarm:      shakeAlarm,
-			LowpowerAlarm:   lowpowerAlarm,
-			SharpTurnAlarm:  sharpTurnAlarm,
-			RapidDecleAlarm: rapidDecleAlarm,
-			RapidAccleAlarm: rapidAccleAlarm,
+			DeviceType:        item.DeviceType,
+			MainIp:            mainIp,
+			MainPort:          mainPort,
+			ViceIp:            viceIp,
+			VicePort:          vicePort,
+			SignalOpen:        signalOpen,
+			GpsOpen:           gpsOpen,
+			WifiOpen:          wifiOpen,
+			SnOpen:            snOpen,
+			SimOpen:           simOpen,
+			ImeiOpen:          imeiOpen,
+			LightOpen:         lightOpen,
+			GsensorOpen:       gsensorOpen,
+			PowerOpen:         powerOpen,
+			SetTypeOpen:       setTypeOpen,
+			MainIpReadOpen:    mainIpReadOpen,
+			MainIpWriteOpen:   mainIpWriteOpen,
+			ViceIpReadOpen:    viceIpReadOpen,
+			ViceIpWriteOpen:   viceIpWriteOpen,
+			ProtocolOpen:      protocolOpen,
+			ProtocolWriteOpen: protocolWriteOpen,
+			SignalMin:         item.SignalMin,
+			SignalMax:         item.SignalMax,
+			GpsMin:            item.GpsMin,
+			WifiMin:           item.WifiMin,
+			PowerMin:          item.PowerMin,
+			ProtocolValue:     item.ProtocolValue,
+			OverSpeedAlarm:    overSpeedAlarm,
+			TamperAlarm:       tamperAlarm,
+			ShakeAlarm:        shakeAlarm,
+			LowpowerAlarm:     lowpowerAlarm,
+			SharpTurnAlarm:    sharpTurnAlarm,
+			RapidDecleAlarm:   rapidDecleAlarm,
+			RapidAccleAlarm:   rapidAccleAlarm,
 		}
 
 		deviceTypes[item.DeviceType] = deviceInfo
