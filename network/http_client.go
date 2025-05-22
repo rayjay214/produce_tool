@@ -8,6 +8,7 @@ var (
 	Token       string
 	Username    string
 	CurrentPlan ProductionPlan
+	CurrentType DeviceTypeDetail
 )
 
 func DoLogin(username, password string) (bool, string, string) {
@@ -87,4 +88,19 @@ func DoGetPlan(planId int64) {
 	}
 
 	CurrentPlan = getResp.Data
+}
+
+func DoGetDeviceType(deviceType string) {
+	var getResp DeviceTypeGetResponse
+	url := fmt.Sprintf("http://factory.gps555.net/api/v1/function/%v", deviceType)
+	success, _ := DoFormRequest("GET", url, nil, &getResp)
+	if !success {
+		return
+	}
+
+	if getResp.Code != 200 {
+		return
+	}
+
+	CurrentType = getResp.Data
 }

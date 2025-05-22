@@ -48,6 +48,8 @@ type DeviceTypeDetail struct {
 	PowerMin          string      `json:"powerMin"`
 	ProtocolValue     string      `json:"protocolValue"`
 	Prefix            string      `json:"prefix"`
+	SnType            string      `json:"snType"`
+	ImeiPrefix        string      `json:"imeiPrefix"`
 	CreatedAt         string      `json:"createdAt"`
 	UpdatedAt         string      `json:"updatedAt"`
 	DeletedAt         interface{} `json:"deletedAt"`
@@ -98,6 +100,13 @@ type PlanGetResponse struct {
 	Code      int            `json:"code"`
 	Msg       string         `json:"msg"`
 	Data      ProductionPlan `json:"data"`
+}
+
+type DeviceTypeGetResponse struct {
+	RequestId string           `json:"requestId"`
+	Code      int              `json:"code"`
+	Msg       string           `json:"msg"`
+	Data      DeviceTypeDetail `json:"data"`
 }
 
 type GetInfoResponse struct {

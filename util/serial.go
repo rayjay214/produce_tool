@@ -6,6 +6,9 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/tarm/serial"
 	bs "go.bug.st/serial"
+	"produce_tool/db"
+	"produce_tool/network"
+
 	//"log"
 	"reflect"
 	"sort"
@@ -370,6 +373,11 @@ func modifyDevice(myport *MyPort, pass *PassParam, colDesc string, writeValue st
 	var showValue string
 	if writeSuccess && rstSuccess {
 		showValue = fmt.Sprintf("写入成功(%s)", writeValue)
+		if network.CurrentPlan.SnType == "0" && colDesc == "Sn" {
+			db.WriteStatus(writeValue)
+		} else if network.CurrentPlan.SnType == "1" && colDesc == "Imei" {
+			db.WriteStatus(writeValue)
+		}
 	} else if writeSuccess && !rstSuccess {
 		showValue = "写入失败"
 	} else {
@@ -546,9 +554,14 @@ func DoTestOnePortAllItems(portName string, idx int) {
 
 func DoOnePortWriteSn(portName string, sn string) {
 	myPort := GetPort(portName)
-	//bSuccess := checkMesSn(sn)
-	bSuccess := true
-	if bSuccess {
+	nSn, err := strconv.ParseInt(sn, 10, 64)
+	if err != nil {
+		log.Errorf("sn invalid %v", sn)
+		return
+	}
+	err = db.CheckSn(nSn, network.CurrentPlan.Id)
+
+	if err == nil {
 		if myPort.Name == portName {
 			pass := new(PassParam)
 			go readPort(myPort, pass)
@@ -557,17 +570,30 @@ func DoOnePortWriteSn(portName string, sn string) {
 	} else {
 		model := GetTableModel()
 		tableItem := model.items[PortNameRowidx[portName]]
-		tableItem.Sn = "已过站"
+		tableItem.Sn = err.Error()
 		model.PublishRowChanged(PortNameRowidx[portName])
 	}
 }
 
 func DoOnePortWriteImei(portName string, imei string) {
 	myPort := GetPort(portName)
-	if myPort.Name == portName {
-		pass := new(PassParam)
-		go readPort(myPort, pass)
-		go modifyDevice(myPort, pass, "Imei", imei, true)
+	nImei, err := strconv.ParseInt(imei, 10, 64)
+	if err != nil {
+		log.Errorf("nImei invalid %v", nImei)
+		return
+	}
+	err = db.CheckSn(nImei, network.CurrentPlan.Id)
+	if err == nil {
+		if myPort.Name == portName {
+			pass := new(PassParam)
+			go readPort(myPort, pass)
+			go modifyDevice(myPort, pass, "Imei", imei, true)
+		}
+	} else {
+		model := GetTableModel()
+		tableItem := model.items[PortNameRowidx[portName]]
+		tableItem.Imei = err.Error()
+		model.PublishRowChanged(PortNameRowidx[portName])
 	}
 }
 

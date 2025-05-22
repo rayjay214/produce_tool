@@ -169,7 +169,7 @@ func styleFunc(style *walk.CellStyle) {
 	}
 	rt := rv.Type()
 	propertyName := util.ColumnIdxNames[style.Col()]
-	if util.ContainsOne(rv.FieldByName(propertyName).String(), "失败", "超时", "已过站") {
+	if util.ContainsOne(rv.FieldByName(propertyName).String(), "失败", "超时", "已被使用", "不存在", "不属于") {
 		style.BackgroundColor = walk.RGB(255, 0, 0)
 	}
 	if util.ContainsOne(rv.FieldByName(propertyName).String(), "写入") {
@@ -222,6 +222,11 @@ func refreshType() {
 	selectedType := selectedCb.Model().([]model.DeviceTypeInfo)[selectedCb.CurrentIndex()]
 	modifyIp.SetText(selectedType.MainIp)
 	modifyPort.SetText(selectedType.MainPort)
+	network.DoGetDeviceType(selectedType.DeviceType)
+	if network.CurrentType.SnType == "1" {
+		textHeader.SetText(network.CurrentType.ImeiPrefix)
+	}
+
 	if selectedType.ProtocolValue == "0" {
 		modifyProtocol.SetText("GT06")
 	} else {
@@ -503,6 +508,10 @@ func runMainWindow() {
 													log.Infof("row %v invalid", tv.CurrentIndex())
 													tv.SetCurrentIndex(0)
 												}
+												if planCb.CurrentIndex() < 0 {
+													walk.MsgBox(nil, "Error", "请选择生产计划", walk.MsgBoxIconError)
+													return
+												}
 												go func(idx int, sn string, imei string) {
 													if checkSn.Checked() {
 														util.DoOnePortWriteSn(util.RowidxPortName[idx], sn)
@@ -537,6 +546,10 @@ func runMainWindow() {
 								OnClicked: func() {
 									if selectedCb.CurrentIndex() < 0 {
 										walk.MsgBox(nil, "Error", "请选择型号", walk.MsgBoxIconError)
+										return
+									}
+									if planCb.CurrentIndex() < 0 {
+										walk.MsgBox(nil, "Error", "请选择生产计划", walk.MsgBoxIconError)
 										return
 									}
 									//util.CheckPorts() //USB的需要重新打开端口，串口的不需要，可以不调用此函数

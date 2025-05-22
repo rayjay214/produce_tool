@@ -1,9 +1,11 @@
 package db
 
 import (
+	"fmt"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"strconv"
 	"time"
 )
 
@@ -61,4 +63,60 @@ func InsertRecordMysql(record TestRecord) {
 	} else {
 		log.Info("insert success")
 	}
+}
+
+func CheckSn(sn, planId int64) error {
+	if MysqlConn == nil {
+		return fmt.Errorf("数据库连接失败")
+	}
+
+	// 直接查询SN的详细信息
+	var device struct {
+		Devno       int64  `gorm:"column:devno"`
+		PlanId      int64  `gorm:"column:plan_id"`
+		WriteStatus string `gorm:"column:write_status"`
+	}
+
+	result := MysqlConn.Table("device").Select("devno, plan_id, write_status").Where("devno = ?", sn).First(&device)
+
+	if result.Error != nil {
+		if result.Error == gorm.ErrRecordNotFound {
+			return fmt.Errorf("SN不存在")
+		}
+		return fmt.Errorf("查询SN失败: %v", result.Error)
+	}
+
+	if device.PlanId != planId {
+		return fmt.Errorf("SN不属于当前计划")
+	}
+
+	if device.WriteStatus != "0" {
+		return fmt.Errorf("SN已被使用")
+	}
+
+	// SN存在且状态正常，可以使用
+	return nil
+}
+
+func WriteStatus(sn string) error {
+	if MysqlConn == nil {
+		return fmt.Errorf("数据库连接失败")
+	}
+
+	nSn, _ := strconv.ParseInt(sn, 10, 64)
+
+	result := MysqlConn.Table("device").Where("devno = ?", nSn).
+		Update("write_status", "1")
+
+	if result.Error != nil {
+		return fmt.Errorf("更新SN状态失败: %v", result.Error)
+	}
+
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("未找到SN为 %s 的记录", sn)
+	}
+
+	return nil
+
+	return nil
 }

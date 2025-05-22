@@ -363,7 +363,6 @@ func DoFinish(myport *MyPort, item *MyTableRow) {
 
 }
 
-// todo use reflect
 func makeRecord(item MyTableRow, result string) db.TestRecord {
 	record := db.TestRecord{}
 	record.Pass = result
@@ -385,7 +384,7 @@ func makeRecord(item MyTableRow, result string) db.TestRecord {
 	record.SetViceIp = item.ViceIpWrite
 	record.Operator = network.Username
 	record.UploadWay = "0"
-	record.PlanId = 9999
+	record.PlanId = uint(network.CurrentPlan.Id)
 	return record
 }
 
