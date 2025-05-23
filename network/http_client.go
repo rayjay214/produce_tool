@@ -56,7 +56,7 @@ func DoGetUserInfo() error {
 		return fmt.Errorf("请求失败，错误代码: %d", getInfoResponse.Code)
 	}
 
-	Username = getInfoResponse.Username
+	Username = getInfoResponse.Data.Username
 
 	return nil
 }

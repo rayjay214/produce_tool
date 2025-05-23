@@ -63,6 +63,14 @@ func InsertRecordMysql(record TestRecord) {
 	} else {
 		log.Info("insert success")
 	}
+
+	//修改设备测试状态
+	nSn, _ := strconv.ParseInt(record.Sn, 10, 64)
+	result = MysqlConn.Table("device").Where("devno = ?", nSn).
+		Update("test_status", "1")
+	if result.Error != nil {
+		log.Errorf("%v change status failed:%v", nSn, result.Error)
+	}
 }
 
 func CheckSn(sn, planId int64) error {
@@ -117,6 +125,25 @@ func WriteStatus(sn string) error {
 	}
 
 	return nil
+}
+
+func CompareStatus(sn string) error {
+	if MysqlConn == nil {
+		return fmt.Errorf("数据库连接失败")
+	}
+
+	nSn, _ := strconv.ParseInt(sn, 10, 64)
+
+	result := MysqlConn.Table("device").Where("devno = ?", nSn).
+		Update("compare_status", "1")
+
+	if result.Error != nil {
+		return fmt.Errorf("更新SN状态失败: %v", result.Error)
+	}
+
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("未找到SN为 %s 的记录", sn)
+	}
 
 	return nil
 }

@@ -76,6 +76,7 @@ func DoTestOnePortCompareSn(portName string, scanSnEdit *walk.LineEdit, prefix s
 			resultEdit.SetText("PASS")
 			scanSnEdit.SetText("")
 			db.WriteCheckSnLog(record)
+			db.CompareStatus(sn)
 		} else if sn != scanSn {
 			brush, _ := walk.NewSolidColorBrush(walk.RGB(255, 0, 0))
 			resultEdit.SetBackground(brush)
@@ -92,6 +93,7 @@ func DoTestOnePortCompareSn(portName string, scanSnEdit *walk.LineEdit, prefix s
 			resultEdit.SetText("PASS")
 			scanSnEdit.SetText("")
 			db.WriteCheckSnLog(record)
+			db.CompareStatus(imei)
 		} else if sn != scanSn {
 			brush, _ := walk.NewSolidColorBrush(walk.RGB(255, 0, 0))
 			resultEdit.SetBackground(brush)

@@ -149,14 +149,18 @@ func LoadDeviceTypeNetwork() {
 		var mainIp, mainPort string
 		if item.MainIp != "" {
 			listMainIp := strings.Split(item.MainIp, ":")
-			mainIp = listMainIp[0]
-			mainPort = listMainIp[1]
+			if len(listMainIp) == 2 {
+				mainIp = listMainIp[0]
+				mainPort = listMainIp[1]
+			}
 		}
 		var viceIp, vicePort string
 		if item.ViceIp != "" {
 			listViceIp := strings.Split(item.ViceIp, ":")
-			viceIp = listViceIp[0]
-			vicePort = listViceIp[1]
+			if len(listViceIp) == 2 {
+				viceIp = listViceIp[0]
+				vicePort = listViceIp[1]
+			}
 		}
 
 		overSpeedAlarm := 0

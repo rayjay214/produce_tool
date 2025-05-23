@@ -110,10 +110,14 @@ type DeviceTypeGetResponse struct {
 }
 
 type GetInfoResponse struct {
-	Username string `json:"username"`
-	UserId   int64  `json:"userId"`
-	Nickname string `json:"nickname"`
-	RoleId   int64  `json:"roleId"`
-	FamilyId int64  `json:"familyId"`
-	Code     int64  `json:"code"`
+	RequestId string `json:"requestId"`
+	Code      int    `json:"code"`
+	Msg       string `json:"msg"`
+	Data      struct {
+		Username string `json:"username"`
+		UserId   int64  `json:"userId"`
+		Nickname string `json:"nickname"`
+		RoleId   int64  `json:"roleId"`
+		FamilyId int64  `json:"familyId"`
+	}
 }

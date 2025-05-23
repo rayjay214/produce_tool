@@ -854,9 +854,5 @@ func main() {
 		os.Exit(1)
 	}
 
-	// 登录成功，获取到token
-	token := loginResult.Token
-	fmt.Println("登录成功，token:", token)
-
 	runMainWindow()
 }

@@ -5,17 +5,23 @@
 package main
 
 import (
+	"fmt"
 	"github.com/lxn/walk"
 	. "github.com/lxn/walk/declarative"
+	"github.com/lxn/win"
 	log "github.com/sirupsen/logrus"
 	"os"
 	"produce_tool/db"
+	"produce_tool/dialog"
+	"produce_tool/model"
+	"produce_tool/network"
 	"produce_tool/util"
 )
 
 func init() {
 	db.LoadCheckSnCsv()
 	initLog()
+	db.InitMysql()
 }
 
 func initLog() {
@@ -30,20 +36,33 @@ func initLog() {
 	}
 }
 
+var selectedPlan *walk.ComboBox
+var selectedCom *walk.ComboBox
+var scanSn *walk.LineEdit
+var readSn *walk.LineEdit
+var readImei *walk.LineEdit
+var imeiPrefix *walk.LineEdit
+
+// var resultButton *walk.PushButton
+var resultEdit *walk.LineEdit
+var onlyCompareSn *walk.CheckBox
+
+func refreshPlan() {
+	if selectedPlan.CurrentIndex() == -1 {
+		return
+	}
+	plan := selectedPlan.Model().([]model.PlanInfo)[selectedPlan.CurrentIndex()]
+	network.DoGetPlan(plan.Id)
+	if network.CurrentPlan.SnType == "0" {
+		onlyCompareSn.SetChecked(true)
+	}
+}
+
 func runSnCompareWindow() {
 	mw, _ := walk.NewMainWindow()
 
 	fontFamily := "Microsoft YaHei"
 	viceFontSize := 12
-
-	var selectedCom *walk.ComboBox
-	var scanSn *walk.LineEdit
-	var readSn *walk.LineEdit
-	var readImei *walk.LineEdit
-	var imeiPrefix *walk.LineEdit
-	//var resultButton *walk.PushButton
-	var resultEdit *walk.LineEdit
-	var onlyCompareSn *walk.CheckBox
 
 	MainWindow{
 		AssignTo: &mw,
@@ -51,6 +70,16 @@ func runSnCompareWindow() {
 		Font:     Font{PointSize: viceFontSize, Family: fontFamily},
 		Size:     Size{Width: 600, Height: 350},
 		Layout:   VBox{Alignment: AlignHNearVNear},
+		OnSizeChanged: func() {
+			screenWidth := int(win.GetSystemMetrics(win.SM_CXSCREEN))
+			screenHeight := int(win.GetSystemMetrics(win.SM_CYSCREEN))
+			bounds := mw.Bounds()
+
+			// 计算居中位置
+			x := (screenWidth - bounds.Width) / 2
+			y := (screenHeight - bounds.Height) / 2
+			mw.SetBounds(walk.Rectangle{X: x, Y: y, Width: bounds.Width, Height: bounds.Height})
+		},
 		Children: []Widget{
 			HSplitter{
 				Children: []Widget{
@@ -61,10 +90,24 @@ func runSnCompareWindow() {
 						},
 						Children: []Widget{
 							Label{
+								Text:    "选择生产计划:",
+								Font:    Font{PointSize: viceFontSize, Family: fontFamily},
+								MinSize: Size{Width: 35},
+								MaxSize: Size{Width: 90},
+							},
+							ComboBox{
+								AssignTo:              &selectedPlan,
+								Font:                  Font{PointSize: viceFontSize, Family: fontFamily},
+								Model:                 model.AllPlans,
+								BindingMember:         "Id",
+								DisplayMember:         "DisplayName",
+								OnCurrentIndexChanged: refreshPlan,
+							},
+							Label{
 								Text:    "选择端口:",
 								Font:    Font{PointSize: viceFontSize, Family: fontFamily},
 								MinSize: Size{Width: 35},
-								MaxSize: Size{Width: 80},
+								MaxSize: Size{Width: 90},
 							},
 							ComboBox{
 								AssignTo:      &selectedCom,
@@ -168,5 +211,12 @@ func runSnCompareWindow() {
 }
 
 func main() {
+	loginResult := dialog.ShowLoginDialog()
+
+	if !loginResult.Success {
+		fmt.Println("登录失败:", loginResult.Message)
+		os.Exit(1)
+	}
+
 	runSnCompareWindow()
 }
