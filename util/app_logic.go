@@ -81,6 +81,7 @@ func DoTestOnePortCompareSn(portName string, scanSnEdit *walk.LineEdit, prefix s
 			brush, _ := walk.NewSolidColorBrush(walk.RGB(255, 0, 0))
 			resultEdit.SetBackground(brush)
 			resultEdit.SetText("比对失败")
+			db.InsertCompareFailedRecord(sn, scanSn, "0", "0")
 		} else {
 			brush, _ := walk.NewSolidColorBrush(walk.RGB(255, 0, 0))
 			resultEdit.SetBackground(brush)
@@ -98,10 +99,12 @@ func DoTestOnePortCompareSn(portName string, scanSnEdit *walk.LineEdit, prefix s
 			brush, _ := walk.NewSolidColorBrush(walk.RGB(255, 0, 0))
 			resultEdit.SetBackground(brush)
 			resultEdit.SetText("比对失败")
+			db.InsertCompareFailedRecord(sn, scanSn, imei, prefix+scanSn)
 		} else if imei != (prefix + scanSn) {
 			brush, _ := walk.NewSolidColorBrush(walk.RGB(255, 0, 0))
 			resultEdit.SetBackground(brush)
 			resultEdit.SetText("IMEI前缀错误")
+			db.InsertCompareFailedRecord(sn, scanSn, imei, prefix+scanSn)
 		} else {
 			brush, _ := walk.NewSolidColorBrush(walk.RGB(255, 0, 0))
 			resultEdit.SetBackground(brush)

@@ -63,6 +63,7 @@ var modifyPort *walk.TextEdit
 var modifyProtocol *walk.TextEdit
 
 // 通过数量
+var totalCnt *walk.LineEdit
 var passedCnt *walk.LineEdit
 
 func init() {
@@ -71,6 +72,7 @@ func init() {
 	initSingleFunctionButtons()
 	initRefreshTimer()
 	initSyncConfTimer()
+	initRefreshCountTimer()
 	initConf()
 	db.InitMysql()
 	//model.LoadDeviceType()
@@ -150,9 +152,19 @@ func initRefreshTimer() {
 				for i := 0; i < util.GetTableModel().RowCount(); i++ {
 					util.GetTableModel().PublishRowChanged(i)
 				}
-				if passedCnt != nil {
-					passedCnt.SetText(fmt.Sprintf("当前测试通过数量:%v", conf.PassedCnt))
-				}
+			}
+		}
+	}()
+}
+
+func initRefreshCountTimer() {
+	go func() {
+		ticker := time.NewTicker(10 * time.Second)
+		for {
+			select {
+			case <-ticker.C:
+				network.DoGetPassedNum()
+				passedCnt.SetText(fmt.Sprintf("通过数量：%v", network.PassedCount))
 			}
 		}
 	}()
@@ -256,6 +268,8 @@ func refreshPlan() {
 	}
 	plan := planCb.Model().([]model.PlanInfo)[planCb.CurrentIndex()]
 	network.DoGetPlan(plan.Id)
+	network.DoGetTotalNum()
+	totalCnt.SetText(fmt.Sprintf("总体数量：%v", network.TotalCount))
 }
 
 func runMainWindow() {
@@ -304,8 +318,8 @@ func runMainWindow() {
 						},
 						Children: []Widget{
 							LineEdit{
-								AssignTo:  &passedCnt,
-								Text:      fmt.Sprintf("当前测试通过数量:%v", conf.PassedCnt),
+								AssignTo:  &totalCnt,
+								Text:      fmt.Sprintf("总体数量：%v", 0),
 								Font:      Font{PointSize: viceFontSize, Family: fontFamily},
 								MinSize:   Size{Width: 100, Height: 25},
 								MaxSize:   Size{Width: 150, Height: 25},
@@ -313,17 +327,15 @@ func runMainWindow() {
 								TextColor: walk.RGB(255, 0, 0),
 								ReadOnly:  true,
 							},
-							PushButton{
-								Text:    "清零",
-								Font:    Font{PointSize: viceFontSize, Family: fontFamily},
-								MinSize: Size{Width: 20, Height: 25},
-								MaxSize: Size{Width: 80, Height: 25},
-								OnClicked: func() {
-									conf.CntMutex.Lock()
-									conf.PassedCnt = 0
-									conf.CntMutex.Unlock()
-									passedCnt.SetText(fmt.Sprintf("当前测试通过数量:%v", conf.PassedCnt))
-								},
+							LineEdit{
+								AssignTo:  &passedCnt,
+								Text:      fmt.Sprintf("通过数量：%v", 0),
+								Font:      Font{PointSize: viceFontSize, Family: fontFamily},
+								MinSize:   Size{Width: 100, Height: 25},
+								MaxSize:   Size{Width: 150, Height: 25},
+								Alignment: AlignHNearVCenter,
+								TextColor: walk.RGB(255, 0, 0),
+								ReadOnly:  true,
 							},
 						},
 					},

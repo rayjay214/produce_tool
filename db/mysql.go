@@ -5,6 +5,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"produce_tool/network"
 	"strconv"
 	"time"
 )
@@ -39,6 +40,22 @@ type TestRecord struct {
 
 func (TestRecord) TableName() string {
 	return "test_record"
+}
+
+type CompareSnRecord struct {
+	RecordID   uint      `gorm:"column:record_id;primaryKey;autoIncrement"`
+	Sn         uint      `gorm:"column:sn"`
+	Imei       uint      `gorm:"column:imei"`
+	ScanSn     uint      `gorm:"column:scan_sn"`
+	ScanImei   uint      `gorm:"column:scan_imei"`
+	Operator   string    `gorm:"column:operator"`
+	PlanId     uint      `gorm:"column:plan_id"`
+	ReadStatus string    `gorm:"column:read_status"`
+	CreateTime time.Time `gorm:"column:create_time;primaryKey"`
+}
+
+func (CompareSnRecord) TableName() string {
+	return "compare_sn_record"
 }
 
 func InitMysql() {
@@ -143,6 +160,36 @@ func CompareStatus(sn string) error {
 
 	if result.RowsAffected == 0 {
 		return fmt.Errorf("未找到SN为 %s 的记录", sn)
+	}
+
+	return nil
+}
+
+func InsertCompareFailedRecord(sn, scanSn, imei, scanImei string) error {
+	if MysqlConn == nil {
+		return fmt.Errorf("数据库连接失败")
+	}
+
+	nSn, _ := strconv.ParseInt(sn, 10, 64)
+	nScanSn, _ := strconv.ParseInt(scanSn, 10, 64)
+	nImei, _ := strconv.ParseInt(imei, 10, 64)
+	nScanImei, _ := strconv.ParseInt(scanImei, 10, 64)
+
+	var record CompareSnRecord
+	record.Imei = uint(nImei)
+	record.Sn = uint(nSn)
+	record.ScanSn = uint(nScanSn)
+	record.ScanImei = uint(nScanImei)
+	record.PlanId = uint(network.CurrentPlan.Id)
+	record.ReadStatus = "0"
+	record.Operator = network.Username
+	record.CreateTime = time.Now()
+
+	result := MysqlConn.Create(&record)
+	if result.Error != nil {
+		log.Errorf("insert failed:%v", result.Error)
+	} else {
+		log.Info("insert success")
 	}
 
 	return nil

@@ -59,11 +59,11 @@ type DeviceTypeDetail struct {
 
 type ProductionPlan struct {
 	Id         int64       `json:"id" gorm:"primaryKey;autoIncrement;comment:主键编码"`
-	Name       string      `json:"name" gorm:"type:varchar(64);comment:计划名称"`              // 计划名称
-	DeviceType string      `json:"deviceType" gorm:"type:varchar(32);comment:设备型号"`        // 设备型号
-	Count      int64       `json:"count" gorm:"type:bigint unsigned;comment:生产设备数量"`       // 生产设备数量
+	Name       string      `json:"name" gorm:"type:varchar(64);comment:计划名称"`                 // 计划名称
+	DeviceType string      `json:"deviceType" gorm:"type:varchar(32);comment:设备型号"`           // 设备型号
+	Count      int64       `json:"count" gorm:"type:bigint unsigned;comment:生产设备数量"`        // 生产设备数量
 	SnType     string      `json:"snType" gorm:"type:varchar(4);comment:设备号类型，字典：sn_type"` // 设备号类型，字典：sn_type
-	Remark     string      `json:"remark" gorm:"type:varchar(1024);comment:备注"`            // 备注
+	Remark     string      `json:"remark" gorm:"type:varchar(1024);comment:备注"`                 // 备注
 	CreatedAt  string      `json:"createdAt"`
 	UpdatedAt  string      `json:"updatedAt"`
 	DeletedAt  interface{} `json:"deletedAt"`
@@ -120,4 +120,24 @@ type GetInfoResponse struct {
 		RoleId   int64  `json:"roleId"`
 		FamilyId int64  `json:"familyId"`
 	}
+}
+
+type Device struct {
+	Devno         int64  `json:"devno"`
+	PlanId        int64  `json:"planId"`
+	WriteStatus   string `json:"writeStatus"`
+	CompareStatus string `json:"compareStatus"`
+	TestStatus    string `json:"testStatus"`
+}
+
+type DeviceGetPageResponse struct {
+	RequestId string `json:"requestId"`
+	Code      int    `json:"code"`
+	Msg       string `json:"msg"`
+	Data      struct {
+		Count     int                `json:"count"`
+		PageIndex int                `json:"pageIndex"`
+		PageSize  int                `json:"pageSize"`
+		List      []DeviceTypeDetail `json:"list"`
+	} `json:"data"`
 }

@@ -9,6 +9,8 @@ var (
 	Username    string
 	CurrentPlan ProductionPlan
 	CurrentType DeviceTypeDetail
+	TotalCount  int
+	PassedCount int
 )
 
 func DoLogin(username, password string) (bool, string, string) {
@@ -103,4 +105,42 @@ func DoGetDeviceType(deviceType string) {
 	}
 
 	CurrentType = getResp.Data
+}
+
+func DoGetTotalNum() {
+	var getResp DeviceGetPageResponse
+	url := fmt.Sprintf("http://factory.gps555.net/api/v1/device")
+	form := map[string]string{
+		"planId": fmt.Sprintf("%v", CurrentPlan.Id),
+	}
+	success, _ := DoFormRequest("GET", url, form, &getResp)
+	if !success {
+		return
+	}
+
+	if getResp.Code != 200 {
+		return
+	}
+
+	TotalCount = getResp.Data.Count
+}
+
+func DoGetPassedNum() {
+	var getResp DeviceGetPageResponse
+	url := fmt.Sprintf("http://factory.gps555.net/api/v1/device")
+	form := map[string]string{
+		"planId":      fmt.Sprintf("%v", CurrentPlan.Id),
+		"writeStatus": "1",
+		"testStatus":  "1",
+	}
+	success, _ := DoFormRequest("GET", url, form, &getResp)
+	if !success {
+		return
+	}
+
+	if getResp.Code != 200 {
+		return
+	}
+
+	PassedCount = getResp.Data.Count
 }
