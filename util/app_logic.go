@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/exec"
 	"produce_tool/db"
+	"produce_tool/network"
 	"strconv"
 	"strings"
 	"sync"
@@ -71,12 +72,19 @@ func DoTestOnePortCompareSn(portName string, scanSnEdit *walk.LineEdit, prefix s
 
 	if onlyCompareSn {
 		if sn == scanSn {
-			brush, _ := walk.NewSolidColorBrush(walk.RGB(0, 255, 0))
-			resultEdit.SetBackground(brush)
-			resultEdit.SetText("PASS")
-			scanSnEdit.SetText("")
-			db.WriteCheckSnLog(record)
-			db.CompareStatus(sn)
+			err := db.CheckCompareSn(sn, network.CurrentPlan.Id)
+			if err != nil {
+				brush, _ := walk.NewSolidColorBrush(walk.RGB(255, 0, 0))
+				resultEdit.SetBackground(brush)
+				resultEdit.SetText(err.Error())
+			} else {
+				brush, _ := walk.NewSolidColorBrush(walk.RGB(0, 255, 0))
+				resultEdit.SetBackground(brush)
+				resultEdit.SetText("PASS")
+				scanSnEdit.SetText("")
+				db.WriteCheckSnLog(record)
+				db.CompareStatus(sn)
+			}
 		} else if sn != scanSn {
 			brush, _ := walk.NewSolidColorBrush(walk.RGB(255, 0, 0))
 			resultEdit.SetBackground(brush)
@@ -89,12 +97,19 @@ func DoTestOnePortCompareSn(portName string, scanSnEdit *walk.LineEdit, prefix s
 		}
 	} else {
 		if sn == scanSn && imei == (prefix+scanSn) {
-			brush, _ := walk.NewSolidColorBrush(walk.RGB(0, 255, 0))
-			resultEdit.SetBackground(brush)
-			resultEdit.SetText("PASS")
-			scanSnEdit.SetText("")
-			db.WriteCheckSnLog(record)
-			db.CompareStatus(imei)
+			err := db.CheckCompareSn(imei, network.CurrentPlan.Id)
+			if err != nil {
+				brush, _ := walk.NewSolidColorBrush(walk.RGB(255, 0, 0))
+				resultEdit.SetBackground(brush)
+				resultEdit.SetText(err.Error())
+			} else {
+				brush, _ := walk.NewSolidColorBrush(walk.RGB(0, 255, 0))
+				resultEdit.SetBackground(brush)
+				resultEdit.SetText("PASS")
+				scanSnEdit.SetText("")
+				db.WriteCheckSnLog(record)
+				db.CompareStatus(imei)
+			}
 		} else if sn != scanSn {
 			brush, _ := walk.NewSolidColorBrush(walk.RGB(255, 0, 0))
 			resultEdit.SetBackground(brush)

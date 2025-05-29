@@ -123,6 +123,36 @@ func CheckSn(sn, planId int64) error {
 	return nil
 }
 
+func CheckCompareSn(sn string, planId int64) error {
+	nSn, _ := strconv.ParseInt(sn, 10, 64)
+	if MysqlConn == nil {
+		return fmt.Errorf("数据库连接失败")
+	}
+
+	// 直接查询SN的详细信息
+	var device struct {
+		Devno       int64  `gorm:"column:devno"`
+		PlanId      int64  `gorm:"column:plan_id"`
+		WriteStatus string `gorm:"column:write_status"`
+	}
+
+	result := MysqlConn.Table("device").Select("devno, plan_id, write_status").Where("devno = ?", nSn).First(&device)
+
+	if result.Error != nil {
+		if result.Error == gorm.ErrRecordNotFound {
+			return fmt.Errorf("SN不存在")
+		}
+		return fmt.Errorf("查询SN失败: %v", result.Error)
+	}
+
+	if device.PlanId != planId {
+		return fmt.Errorf("SN不属于当前计划")
+	}
+
+	// SN存在且状态正常，可以使用
+	return nil
+}
+
 func WriteStatus(sn string) error {
 	if MysqlConn == nil {
 		return fmt.Errorf("数据库连接失败")
