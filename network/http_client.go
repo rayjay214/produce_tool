@@ -65,7 +65,10 @@ func DoGetUserInfo() error {
 
 func DoGetPlanList() ([]ProductionPlan, error) {
 	var getPageResp PlanGetPageResponse
-	success, errMsg := DoFormRequest("GET", "http://factory.gps555.net/api/v1/production-plan", nil, &getPageResp)
+	form := map[string]string{
+		"status": "0",
+	}
+	success, errMsg := DoFormRequest("GET", "http://factory.gps555.net/api/v1/production-plan", form, &getPageResp)
 	if !success {
 		return nil, fmt.Errorf(errMsg)
 	}

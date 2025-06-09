@@ -55,6 +55,7 @@ func GetFromStatus(data string) map[string]string {
 		}
 		key := strings.TrimSpace(keyValue[0])
 		value := strings.TrimSpace(keyValue[1])
+		key = strings.ToLower(key)
 		result[key] = value
 	}
 	return result

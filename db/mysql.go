@@ -82,7 +82,12 @@ func InsertRecordMysql(record TestRecord) {
 	}
 
 	//修改设备测试状态
-	nSn, _ := strconv.ParseInt(record.Sn, 10, 64)
+	var nSn int64
+	if network.CurrentPlan.SnType == "1" {
+		nSn, _ = strconv.ParseInt(record.Imei, 10, 64)
+	} else {
+		nSn, _ = strconv.ParseInt(record.Sn, 10, 64)
+	}
 	result = MysqlConn.Table("device").Where("devno = ?", nSn).
 		Update("test_status", "1")
 	if result.Error != nil {

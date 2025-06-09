@@ -50,6 +50,8 @@ type DeviceTypeDetail struct {
 	Prefix            string      `json:"prefix"`
 	SnType            string      `json:"snType"`
 	ImeiPrefix        string      `json:"imeiPrefix"`
+	WriteSn           string      `json:"writeSn"`
+	WriteImei         string      `json:"writeImei"`
 	CreatedAt         string      `json:"createdAt"`
 	UpdatedAt         string      `json:"updatedAt"`
 	DeletedAt         interface{} `json:"deletedAt"`
@@ -59,11 +61,11 @@ type DeviceTypeDetail struct {
 
 type ProductionPlan struct {
 	Id         int64       `json:"id" gorm:"primaryKey;autoIncrement;comment:主键编码"`
-	Name       string      `json:"name" gorm:"type:varchar(64);comment:计划名称"`                 // 计划名称
-	DeviceType string      `json:"deviceType" gorm:"type:varchar(32);comment:设备型号"`           // 设备型号
-	Count      int64       `json:"count" gorm:"type:bigint unsigned;comment:生产设备数量"`        // 生产设备数量
+	Name       string      `json:"name" gorm:"type:varchar(64);comment:计划名称"`              // 计划名称
+	DeviceType string      `json:"deviceType" gorm:"type:varchar(32);comment:设备型号"`        // 设备型号
+	Count      int64       `json:"count" gorm:"type:bigint unsigned;comment:生产设备数量"`       // 生产设备数量
 	SnType     string      `json:"snType" gorm:"type:varchar(4);comment:设备号类型，字典：sn_type"` // 设备号类型，字典：sn_type
-	Remark     string      `json:"remark" gorm:"type:varchar(1024);comment:备注"`                 // 备注
+	Remark     string      `json:"remark" gorm:"type:varchar(1024);comment:备注"`            // 备注
 	CreatedAt  string      `json:"createdAt"`
 	UpdatedAt  string      `json:"updatedAt"`
 	DeletedAt  interface{} `json:"deletedAt"`

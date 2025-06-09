@@ -71,11 +71,11 @@ func init() {
 		{"WIFI", "Wifi", "AT+WF\r\n", []string{"OK", "ERROR"}, "wifi test:", 6000, true},
 		{"光感", "Light", "AT+PX\r\n", []string{"put on", "fall off"}, "AT+PX", 1000, true},
 		{"副IP地址", "ViceIp", "AT+IP2?\r\n", []string{"OK", "ERROR"}, "IP2:", 1000, true},
+		{"电量", "Power", "AT+STATUS\r\n", []string{"ADC"}, "AT+STATUS", 1000, true},
 		{"设置型号", "SetType", "AT+SET=\r\n", []string{"OK", "ERROR"}, "\n\rat+set=", 2000, true},
 		{"设置主IP", "MainIpWrite", "AT^MSG=server#%v#\r\n", []string{"OK", "ERROR"}, "IP=", 2000, true},
 		{"IP地址", "MainIp", "AT+IP?\r\n", []string{"OK", "ERROR"}, "IP:", 1000, true}, //放到设置型号后面
 		{"设置副IP", "ViceIpWrite", "AT+IP2=%v\r\n", []string{"OK", "ERROR"}, "IP2=", 1000, true},
-		{"电量", "Power", "AT+STATUS\r\n", []string{"ADC"}, "AT+STATUS", 1000, true},
 		{"设置协议", "ProtocolWrite", "AT+JT808=%v\r\n", []string{"success"}, "AT+JT808=", 1000, true}, //写放到读前面
 		{"协议", "Protocol", "AT+JT808?\r\n", []string{"OK"}, "+JT808:", 1000, true},
 	}

@@ -238,6 +238,12 @@ func refreshType() {
 	if network.CurrentType.SnType == "1" {
 		textHeader.SetText(network.CurrentType.ImeiPrefix)
 	}
+	if network.CurrentType.WriteSn == "1" {
+		checkSn.SetChecked(true)
+	}
+	if network.CurrentType.WriteImei == "1" {
+		checkImei.SetChecked(true)
+	}
 
 	if selectedType.ProtocolValue == "0" {
 		modifyProtocol.SetText("GT06")
@@ -470,9 +476,9 @@ func runMainWindow() {
 										MinSize:  Size{Width: 50, Height: 25},
 										MaxSize:  Size{Width: 80, Height: 25},
 										OnClicked: func() {
-											enabled := checkSn.Enabled()
-											checkSn.SetEnabled(!enabled)
-											checkImei.SetEnabled(!enabled)
+											enabled := textHeader.Enabled()
+											//checkSn.SetEnabled(!enabled)
+											//checkImei.SetEnabled(!enabled)
 											textHeader.SetEnabled(!enabled)
 											textSn.SetEnabled(!enabled)
 											if enabled {

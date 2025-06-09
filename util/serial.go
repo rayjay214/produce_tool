@@ -8,6 +8,7 @@ import (
 	bs "go.bug.st/serial"
 	"produce_tool/db"
 	"produce_tool/network"
+	"regexp"
 
 	//"log"
 	"reflect"
@@ -258,8 +259,10 @@ func writeItems(myport *MyPort, items []TestItem, pass *PassParam) {
 			mpResult := GetFromStatus(respValue)
 			nPowerMin, err := strconv.Atoi(SelectedDeviceType.PowerMin)
 			log.Infof("rayjay value %v, result %v", showValue, mpResult)
-			if value, ok := mpResult["ADC"]; ok && err == nil && nPowerMin != 0 {
-				nValue, _ := strconv.Atoi(value)
+			if value, ok := mpResult["voltage"]; ok && err == nil && nPowerMin != 0 {
+				re := regexp.MustCompile(`\d+`)
+				noValue := re.FindString(value)
+				nValue, _ := strconv.Atoi(noValue)
 				if nValue >= nPowerMin {
 					showValue = fmt.Sprintf("通过(%vmV)", nValue)
 				} else {
@@ -559,7 +562,9 @@ func DoOnePortWriteSn(portName string, sn string) {
 		log.Errorf("sn invalid %v", sn)
 		return
 	}
-	err = db.CheckSn(nSn, network.CurrentPlan.Id)
+	if network.CurrentPlan.SnType == "0" {
+		err = db.CheckSn(nSn, network.CurrentPlan.Id)
+	}
 
 	if err == nil {
 		if myPort.Name == portName {
@@ -582,7 +587,9 @@ func DoOnePortWriteImei(portName string, imei string) {
 		log.Errorf("nImei invalid %v", nImei)
 		return
 	}
-	err = db.CheckSn(nImei, network.CurrentPlan.Id)
+	if network.CurrentPlan.SnType == "1" {
+		err = db.CheckSn(nImei, network.CurrentPlan.Id)
+	}
 	if err == nil {
 		if myPort.Name == portName {
 			pass := new(PassParam)
