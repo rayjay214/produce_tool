@@ -88,6 +88,12 @@ func CheckPorts() {
 }
 
 func OpenAllPorts() {
+	for _, port := range WholePortList {
+		port.Port.Close()
+	}
+	WholePortList = nil
+	PortList = nil
+
 	ports, err := bs.GetPortsList()
 	if err != nil {
 		fmt.Println("Error getting serial ports:", err)

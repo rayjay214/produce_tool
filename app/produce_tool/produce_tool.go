@@ -626,6 +626,16 @@ func runMainWindow() {
 									conf.SyncConf()
 								},
 							},
+							PushButton{
+								Text:    "刷新端口",
+								Font:    Font{PointSize: 9, Family: fontFamily},
+								MinSize: Size{Width: 80, Height: 25},
+								MaxSize: Size{Width: 300, Height: 25},
+								OnClicked: func() {
+									util.OpenAllPorts()
+									util.RefreshTableModel()
+								},
+							},
 						},
 					},
 					GroupBox{
