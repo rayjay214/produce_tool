@@ -276,6 +276,13 @@ func refreshPlan() {
 	network.DoGetPlan(plan.Id)
 	network.DoGetTotalNum()
 	totalCnt.SetText(fmt.Sprintf("总体数量：%v", network.TotalCount))
+	listModel, _ := selectedCb.Model().([]model.DeviceTypeInfo)
+	for i := 0; i < len(listModel); i++ {
+		item := listModel[i]
+		if item.DeviceType == plan.DeviceType {
+			selectedCb.SetCurrentIndex(i)
+		}
+	}
 }
 
 func runMainWindow() {
@@ -385,14 +392,14 @@ func runMainWindow() {
 						Layout:  HBox{},
 						Children: []Widget{
 							ComboBox{
-								AssignTo:      &selectedCb,
-								Font:          Font{PointSize: viceFontSize, Family: fontFamily},
-								Model:         model.AllTypes,
-								BindingMember: "DeviceType",
-								DisplayMember: "DeviceType",
-								MaxSize:       Size{Width: 100, Height: btnHeight},
-
+								AssignTo:              &selectedCb,
+								Font:                  Font{PointSize: viceFontSize, Family: fontFamily},
+								Model:                 model.AllTypes,
+								BindingMember:         "DeviceType",
+								DisplayMember:         "DeviceType",
+								MaxSize:               Size{Width: 100, Height: btnHeight},
 								OnCurrentIndexChanged: refreshType,
+								Enabled:               false,
 							},
 						},
 					},
