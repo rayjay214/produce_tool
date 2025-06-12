@@ -66,6 +66,7 @@ type ProductionPlan struct {
 	Count      int64       `json:"count" gorm:"type:bigint unsigned;comment:生产设备数量"`       // 生产设备数量
 	SnType     string      `json:"snType" gorm:"type:varchar(4);comment:设备号类型，字典：sn_type"` // 设备号类型，字典：sn_type
 	Remark     string      `json:"remark" gorm:"type:varchar(1024);comment:备注"`            // 备注
+	OrderNo    string      `json:"orderNo" gorm:"type:varchar(64);comment:订单号"`            // 订单号
 	CreatedAt  string      `json:"createdAt"`
 	UpdatedAt  string      `json:"updatedAt"`
 	DeletedAt  interface{} `json:"deletedAt"`
@@ -130,6 +131,9 @@ type Device struct {
 	WriteStatus   string `json:"writeStatus"`
 	CompareStatus string `json:"compareStatus"`
 	TestStatus    string `json:"testStatus"`
+	BoxStatus     string `json:"boxStatus"`
+	PackingStatus string `json:"packingStatus"`
+	BoxNo         string `json:"boxNo"`
 }
 
 type DeviceGetPageResponse struct {
@@ -137,9 +141,30 @@ type DeviceGetPageResponse struct {
 	Code      int    `json:"code"`
 	Msg       string `json:"msg"`
 	Data      struct {
-		Count     int                `json:"count"`
-		PageIndex int                `json:"pageIndex"`
-		PageSize  int                `json:"pageSize"`
-		List      []DeviceTypeDetail `json:"list"`
+		Count     int      `json:"count"`
+		PageIndex int      `json:"pageIndex"`
+		PageSize  int      `json:"pageSize"`
+		List      []Device `json:"list"`
+	} `json:"data"`
+}
+
+type Box struct {
+	BoxNo    string `json:"boxNo"`
+	PlanId   int64  `json:"planId"`
+	Count    int64  `json:"count"`
+	ItemDesc string `json:"itemDesc"`
+	ItemCode string `json:"itemCode"`
+	Remark   string `json:"remark"`
+}
+
+type BoxGetPageResponse struct {
+	RequestId string `json:"requestId"`
+	Code      int    `json:"code"`
+	Msg       string `json:"msg"`
+	Data      struct {
+		Count     int   `json:"count"`
+		PageIndex int   `json:"pageIndex"`
+		PageSize  int   `json:"pageSize"`
+		List      []Box `json:"list"`
 	} `json:"data"`
 }

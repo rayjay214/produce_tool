@@ -15,11 +15,9 @@ import (
 	"produce_tool/dialog"
 	"produce_tool/model"
 	"produce_tool/network"
-	"produce_tool/util"
 )
 
 func init() {
-	db.LoadCheckSnCsv()
 	initLog()
 	db.InitMysql()
 }
@@ -37,15 +35,10 @@ func initLog() {
 }
 
 var selectedPlan *walk.ComboBox
-var selectedCom *walk.ComboBox
-var scanSn *walk.LineEdit
-var readSn *walk.LineEdit
-var readImei *walk.LineEdit
-var imeiPrefix *walk.LineEdit
+var boxSn *walk.LineEdit
+var deviceSn *walk.LineEdit
 
-// var resultButton *walk.PushButton
 var resultEdit *walk.LineEdit
-var onlyCompareSn *walk.CheckBox
 
 func refreshPlan() {
 	if selectedPlan.CurrentIndex() == -1 {
@@ -53,8 +46,31 @@ func refreshPlan() {
 	}
 	plan := selectedPlan.Model().([]model.PlanInfo)[selectedPlan.CurrentIndex()]
 	network.DoGetPlan(plan.Id)
-	if network.CurrentPlan.SnType == "0" {
-		onlyCompareSn.SetChecked(true)
+}
+
+func compareBoxSn() bool {
+	strBoxSn := boxSn.Text()
+	strDeviceSn := deviceSn.Text()
+
+	if strBoxSn == strDeviceSn {
+		err := db.CheckBoxSn(strBoxSn, network.CurrentPlan.Id)
+		if err != nil {
+			brush, _ := walk.NewSolidColorBrush(walk.RGB(255, 0, 0))
+			resultEdit.SetBackground(brush)
+			resultEdit.SetText(err.Error())
+			return false
+		} else {
+			brush, _ := walk.NewSolidColorBrush(walk.RGB(0, 255, 0))
+			resultEdit.SetBackground(brush)
+			resultEdit.SetText("PASS")
+			db.BoxStatus(strBoxSn)
+			return true
+		}
+	} else {
+		brush, _ := walk.NewSolidColorBrush(walk.RGB(255, 0, 0))
+		resultEdit.SetBackground(brush)
+		resultEdit.SetText("FAIL")
+		return false
 	}
 }
 
@@ -66,7 +82,7 @@ func runSnCompareWindow() {
 
 	MainWindow{
 		AssignTo: &mw,
-		Title:    "SN比对工具",
+		Title:    "彩盒标机身标比对工具",
 		Font:     Font{PointSize: viceFontSize, Family: fontFamily},
 		Size:     Size{Width: 600, Height: 350},
 		Layout:   VBox{Alignment: AlignHNearVNear},
@@ -90,7 +106,7 @@ func runSnCompareWindow() {
 						},
 						Children: []Widget{
 							Label{
-								Text:    "选择生产计划:",
+								Text:    "选择计划:",
 								Font:    Font{PointSize: viceFontSize, Family: fontFamily},
 								MinSize: Size{Width: 35},
 								MaxSize: Size{Width: 90},
@@ -105,88 +121,58 @@ func runSnCompareWindow() {
 								MaxSize:               Size{Width: 45},
 							},
 							Label{
-								Text:    "选择端口:",
-								Font:    Font{PointSize: viceFontSize, Family: fontFamily},
-								MinSize: Size{Width: 35},
-								MaxSize: Size{Width: 90},
-							},
-							ComboBox{
-								AssignTo:      &selectedCom,
-								Font:          Font{PointSize: viceFontSize, Family: fontFamily},
-								Model:         util.WholePortList,
-								BindingMember: "Name",
-								DisplayMember: "Name",
-							},
-							Label{
-								Text:    "扫描SN:",
+								Text:    "彩盒SN:",
 								Font:    Font{PointSize: viceFontSize, Family: fontFamily},
 								MinSize: Size{Width: 35},
 								MaxSize: Size{Width: 60},
 							},
 							LineEdit{
-								AssignTo: &scanSn,
+								AssignTo: &boxSn,
 								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
 								MinSize:  Size{Width: 50},
 								MaxSize:  Size{Width: 200},
+								OnMouseDown: func(x, y int, button walk.MouseButton) {
+									boxSn.SetText("")
+								},
 								OnKeyPress: func(key walk.Key) {
 									if key == walk.KeyReturn {
-										util.DoTestOnePortCompareSn(selectedCom.Text(), scanSn, imeiPrefix.Text(), readSn, readImei, resultEdit, onlyCompareSn.Checked())
+										deviceSn.SetFocus()
 									}
-								},
-								OnMouseDown: func(x, y int, button walk.MouseButton) {
-									scanSn.SetText("")
 								},
 							},
 							Label{
-								Text:    "读取SN:",
+								Text:    "机身SN:",
 								Font:    Font{PointSize: viceFontSize, Family: fontFamily},
 								MinSize: Size{Width: 35},
 								MaxSize: Size{Width: 60},
 							},
 							LineEdit{
-								AssignTo: &readSn,
+								AssignTo: &deviceSn,
 								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
 								MinSize:  Size{Width: 35},
 								MaxSize:  Size{Width: 200},
-								ReadOnly: true,
-							},
-							Label{
-								Text:    "读取IMEI:",
-								Font:    Font{PointSize: viceFontSize, Family: fontFamily},
-								MinSize: Size{Width: 35},
-								MaxSize: Size{Width: 80},
-							},
-							LineEdit{
-								AssignTo: &readImei,
-								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
-								MinSize:  Size{Width: 35},
-								MaxSize:  Size{Width: 200},
-								ReadOnly: true,
-							},
-							Label{
-								Text:    "IMEI前缀:",
-								Font:    Font{PointSize: viceFontSize, Family: fontFamily},
-								MinSize: Size{Width: 35},
-								MaxSize: Size{Width: 80},
-							},
-							LineEdit{
-								AssignTo: &imeiPrefix,
-								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
-								MinSize:  Size{Width: 35},
-								MaxSize:  Size{Width: 200},
-							},
-							CheckBox{
-								Text:       "只比对SN",
-								Font:       Font{PointSize: viceFontSize, Family: fontFamily},
-								AssignTo:   &onlyCompareSn,
-								MinSize:    Size{Width: 60, Height: 25},
-								MaxSize:    Size{Width: 200, Height: 25},
-								Enabled:    true,
-								ColumnSpan: 2,
+								OnMouseDown: func(x, y int, button walk.MouseButton) {
+									deviceSn.SetText("")
+								},
+								OnKeyPress: func(key walk.Key) {
+									if key == walk.KeyReturn {
+										if network.CurrentPlan.Id == 0 {
+											walk.MsgBox(nil, "Error", "请选择生产计划", walk.MsgBoxIconError)
+											return
+										}
+										bSuccess := compareBoxSn()
+										if bSuccess {
+											boxSn.SetText("")
+											deviceSn.SetText("")
+											boxSn.SetFocus()
+										} else {
+											boxSn.SetFocus()
+										}
+									}
+								},
 							},
 						},
 					},
-
 					LineEdit{
 						AssignTo:      &resultEdit,
 						TextAlignment: AlignCenter,
@@ -194,17 +180,6 @@ func runSnCompareWindow() {
 							PointSize: 30,
 						},
 					},
-
-					/*
-						PushButton{
-							AssignTo: &resultButton,
-							Font: Font{
-								PointSize: 20,
-								Family:    fontFamily,
-							},
-							Enabled: false,
-						},
-					*/
 				},
 			},
 		},

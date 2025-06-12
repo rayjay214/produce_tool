@@ -14,7 +14,7 @@ var BlockedCom string
 var SelectedType string
 var PassedCnt int
 
-var MesUrl string
+var BartendPath string
 
 func LoadConf() {
 	cfg, err := ini.Load("config.ini")
@@ -40,8 +40,8 @@ func LoadConf() {
 	SelectedType = section.Key("SelectedType").String()
 	PassedCnt, _ = section.Key("PassedCnt").Int()
 
-	section = cfg.Section("mes")
-	MesUrl = section.Key("Url").String()
+	section = cfg.Section("packing")
+	BartendPath = section.Key("BartendPath").String()
 }
 
 func SyncConf() {

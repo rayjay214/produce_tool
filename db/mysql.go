@@ -12,54 +12,8 @@ import (
 
 var MysqlConn *gorm.DB
 
-type TestRecord struct {
-	RecordID    uint      `gorm:"column:record_id;primaryKey;autoIncrement"`
-	Pass        string    `gorm:"column:pass"`
-	Version     string    `gorm:"column:version"`
-	Sim         string    `gorm:"column:sim"`
-	Imei        string    `gorm:"column:imei"`
-	Sn          string    `gorm:"column:sn"`
-	Signal      string    `gorm:"column:signal"`
-	Gps         string    `gorm:"column:gps"`
-	Gsensor     string    `gorm:"column:gsensor"`
-	Wifi        string    `gorm:"column:wifi"`
-	Light       string    `gorm:"column:light"`
-	MainIp      string    `gorm:"column:main_ip"`
-	ViceIp      string    `gorm:"column:vice_ip"`
-	SetType     string    `gorm:"column:set_type"`
-	Power       string    `gorm:"column:power"`
-	Protocol    string    `gorm:"column:protocol"`
-	SetMainIp   string    `gorm:"column:set_main_ip"`
-	SetViceIp   string    `gorm:"column:set_vice_ip"`
-	SetProtocol string    `gorm:"column:set_protocol"`
-	Operator    string    `gorm:"column:operator"`
-	UploadWay   string    `gorm:"column:upload_way"`
-	PlanId      uint      `gorm:"column:plan_id"`
-	CreateTime  time.Time `gorm:"column:create_time;primaryKey"`
-}
-
-func (TestRecord) TableName() string {
-	return "test_record"
-}
-
-type CompareSnRecord struct {
-	RecordID   uint      `gorm:"column:record_id;primaryKey;autoIncrement"`
-	Sn         uint      `gorm:"column:sn"`
-	Imei       uint      `gorm:"column:imei"`
-	ScanSn     uint      `gorm:"column:scan_sn"`
-	ScanImei   uint      `gorm:"column:scan_imei"`
-	Operator   string    `gorm:"column:operator"`
-	PlanId     uint      `gorm:"column:plan_id"`
-	ReadStatus string    `gorm:"column:read_status"`
-	CreateTime time.Time `gorm:"column:create_time;primaryKey"`
-}
-
-func (CompareSnRecord) TableName() string {
-	return "compare_sn_record"
-}
-
 func InitMysql() {
-	dsn := "admin:qxyc@tcp(8.130.23.234:8000)/factory?charset=utf8mb4&parseTime=True&loc=Local&timeout=3s"
+	dsn := "admin:qxyc@tcp(8.130.23.234:8000)/factory?charset=utf8mb4&parseTime=True&loc=Local&timeout=10s"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Errorf("create mysql conn failed %v\n", err)
@@ -95,19 +49,13 @@ func InsertRecordMysql(record TestRecord) {
 	}
 }
 
-func CheckSn(sn, planId int64) error {
+func baseCheck(sn int64, planId int64, device *Device) error {
 	if MysqlConn == nil {
+		log.Error("mysql conn invalid")
 		return fmt.Errorf("数据库连接失败")
 	}
 
-	// 直接查询SN的详细信息
-	var device struct {
-		Devno       int64  `gorm:"column:devno"`
-		PlanId      int64  `gorm:"column:plan_id"`
-		WriteStatus string `gorm:"column:write_status"`
-	}
-
-	result := MysqlConn.Table("device").Select("devno, plan_id, write_status").Where("devno = ?", sn).First(&device)
+	result := MysqlConn.Table("device").Select("*").Where("devno = ?", sn).First(device)
 
 	if result.Error != nil {
 		if result.Error == gorm.ErrRecordNotFound {
@@ -118,48 +66,68 @@ func CheckSn(sn, planId int64) error {
 
 	if device.PlanId != planId {
 		return fmt.Errorf("SN不属于当前计划")
+	}
+	return nil
+}
+
+func CheckSn(sn, planId int64) error {
+	var device Device
+	err := baseCheck(sn, planId, &device)
+	if err != nil {
+		return err
 	}
 
 	if device.WriteStatus != "0" {
 		return fmt.Errorf("SN已被使用")
 	}
 
-	// SN存在且状态正常，可以使用
 	return nil
 }
 
 func CheckCompareSn(sn string, planId int64) error {
 	nSn, _ := strconv.ParseInt(sn, 10, 64)
-	if MysqlConn == nil {
-		return fmt.Errorf("数据库连接失败")
+	var device Device
+	err := baseCheck(nSn, planId, &device)
+	if err != nil {
+		return err
 	}
 
-	// 直接查询SN的详细信息
-	var device struct {
-		Devno       int64  `gorm:"column:devno"`
-		PlanId      int64  `gorm:"column:plan_id"`
-		WriteStatus string `gorm:"column:write_status"`
+	//todo 上个流程通过才可以
+
+	return nil
+}
+
+func CheckBoxSn(sn string, planId int64) error {
+	nSn, _ := strconv.ParseInt(sn, 10, 64)
+	var device Device
+	err := baseCheck(nSn, planId, &device)
+	if err != nil {
+		return err
 	}
 
-	result := MysqlConn.Table("device").Select("devno, plan_id, write_status").Where("devno = ?", nSn).First(&device)
+	//todo 上个流程通过才可以
 
-	if result.Error != nil {
-		if result.Error == gorm.ErrRecordNotFound {
-			return fmt.Errorf("SN不存在")
-		}
-		return fmt.Errorf("查询SN失败: %v", result.Error)
+	return nil
+}
+
+func CheckPackingSn(sn string, planId int64) error {
+	nSn, _ := strconv.ParseInt(sn, 10, 64)
+	var device Device
+	err := baseCheck(nSn, planId, &device)
+	if err != nil {
+		return err
 	}
 
-	if device.PlanId != planId {
-		return fmt.Errorf("SN不属于当前计划")
+	if device.BoxStatus == "1" {
+		return fmt.Errorf("该SN已装箱")
 	}
-
-	// SN存在且状态正常，可以使用
+	
 	return nil
 }
 
 func WriteStatus(sn string) error {
 	if MysqlConn == nil {
+		log.Error("mysql conn invalid")
 		return fmt.Errorf("数据库连接失败")
 	}
 
@@ -169,10 +137,12 @@ func WriteStatus(sn string) error {
 		Update("write_status", "1")
 
 	if result.Error != nil {
+		log.Errorf("更新SN状态失败: %v", result.Error)
 		return fmt.Errorf("更新SN状态失败: %v", result.Error)
 	}
 
 	if result.RowsAffected == 0 {
+		log.Errorf("未找到SN为 %s 的记录", sn)
 		return fmt.Errorf("未找到SN为 %s 的记录", sn)
 	}
 
@@ -181,6 +151,7 @@ func WriteStatus(sn string) error {
 
 func CompareStatus(sn string) error {
 	if MysqlConn == nil {
+		log.Error("mysql conn invalid")
 		return fmt.Errorf("数据库连接失败")
 	}
 
@@ -190,10 +161,36 @@ func CompareStatus(sn string) error {
 		Update("compare_status", "1")
 
 	if result.Error != nil {
+		log.Errorf("更新SN状态失败: %v", result.Error)
 		return fmt.Errorf("更新SN状态失败: %v", result.Error)
 	}
 
 	if result.RowsAffected == 0 {
+		log.Errorf("未找到SN为 %s 的记录", sn)
+		return fmt.Errorf("未找到SN为 %s 的记录", sn)
+	}
+
+	return nil
+}
+
+func BoxStatus(sn string) error {
+	if MysqlConn == nil {
+		log.Error("mysql conn invalid")
+		return fmt.Errorf("数据库连接失败")
+	}
+
+	nSn, _ := strconv.ParseInt(sn, 10, 64)
+
+	result := MysqlConn.Table("device").Where("devno = ?", nSn).
+		Update("box_status", "1")
+
+	if result.Error != nil {
+		log.Errorf("更新SN状态失败: %v", result.Error)
+		return fmt.Errorf("更新SN状态失败: %v", result.Error)
+	}
+
+	if result.RowsAffected == 0 {
+		log.Errorf("未找到SN为 %s 的记录", sn)
 		return fmt.Errorf("未找到SN为 %s 的记录", sn)
 	}
 
@@ -202,6 +199,7 @@ func CompareStatus(sn string) error {
 
 func InsertCompareFailedRecord(sn, scanSn, imei, scanImei string) error {
 	if MysqlConn == nil {
+		log.Error("mysql conn invalid")
 		return fmt.Errorf("数据库连接失败")
 	}
 
@@ -228,4 +226,27 @@ func InsertCompareFailedRecord(sn, scanSn, imei, scanImei string) error {
 	}
 
 	return nil
+}
+
+func InsertBoxRecord(box Box, snList []string) {
+	if MysqlConn == nil {
+		log.Error("mysql conn invalid")
+		return
+	}
+	result := MysqlConn.Create(&box)
+	if result.Error != nil {
+		log.Errorf("insert failed:%v", result.Error)
+	} else {
+		log.Info("insert success")
+	}
+
+	result = MysqlConn.Table("device").Where("devno in ?", snList).UpdateColumns(map[string]interface{}{
+		"box_no":         box.BoxNo,
+		"packing_status": "1",
+	})
+	if result.Error != nil {
+		log.Errorf("update failed:%v", result.Error)
+	} else {
+		log.Info("update success")
+	}
 }

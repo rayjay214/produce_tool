@@ -2,6 +2,8 @@ package network
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
 )
 
 var (
@@ -146,4 +148,34 @@ func DoGetPassedNum() {
 	}
 
 	PassedCount = getResp.Data.Count
+}
+
+// 获取装箱最新的箱号
+func DoGetBoxNo() string {
+	var getResp BoxGetPageResponse
+	url := fmt.Sprintf("http://factory.gps555.net/api/v1/box")
+	form := map[string]string{
+		"planId":     fmt.Sprintf("%v", CurrentPlan.Id),
+		"boxNoOrder": "desc",
+	}
+	success, _ := DoFormRequest("GET", url, form, &getResp)
+	if !success {
+		return ""
+	}
+
+	if getResp.Code != 200 {
+		return ""
+	}
+
+	//第一箱
+	if getResp.Data.Count == 0 {
+		return fmt.Sprintf("%v0001", CurrentPlan.OrderNo)
+	}
+
+	currNo := getResp.Data.List[0].BoxNo
+	lastFour := strings.TrimPrefix(currNo, currNo[:len(currNo)-4])
+	num, _ := strconv.Atoi(lastFour)
+	num = num + 1
+	boxNo := fmt.Sprintf("%v%04d", CurrentPlan.OrderNo, num)
+	return boxNo
 }
