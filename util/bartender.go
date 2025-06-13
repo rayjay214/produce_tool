@@ -23,11 +23,13 @@ type BtwParam struct {
 func GenBtwFile(sourceFilename, dstFilename string, param BtwParam) error {
 	ole.CoInitialize(0)
 	defer ole.CoUninitialize()
+	//fmt.Println("init", time.Now())
 
 	btApp, err := oleutil.CreateObject("BarTender.Application")
 	if err != nil {
 		return fmt.Errorf("BarTender 启动失败: %v", err)
 	}
+	//fmt.Println("create ", time.Now())
 	btAppDispatch, err := btApp.QueryInterface(ole.IID_IDispatch)
 	if err != nil {
 		return fmt.Errorf("接口失败: %v", err)
@@ -40,6 +42,7 @@ func GenBtwFile(sourceFilename, dstFilename string, param BtwParam) error {
 	cwd, _ := os.Getwd()
 	templatePath := filepath.Join(cwd, sourceFilename)
 	format := oleutil.MustCallMethod(formats, "Open", templatePath, false, "").ToIDispatch()
+	//fmt.Println("open ", time.Now())
 
 	oleutil.MustCallMethod(format, "SetNamedSubStringValue", "KTXSN", param.KTXSN)
 	oleutil.MustCallMethod(format, "SetNamedSubStringValue", "PO", param.PO)
@@ -52,12 +55,16 @@ func GenBtwFile(sourceFilename, dstFilename string, param BtwParam) error {
 		key := fmt.Sprintf("S/N%v", i)
 		oleutil.MustCallMethod(format, "SetNamedSubStringValue", key, sn)
 	}
+	//fmt.Println("replace ", time.Now())
 
 	newPath := filepath.Join(cwd, dstFilename)
 	oleutil.MustCallMethod(format, "SaveAs", newPath, true)
+	//fmt.Println("save ", time.Now())
 
 	oleutil.MustCallMethod(format, "Close", 2)
+	//fmt.Println("close ", time.Now())
 	oleutil.MustCallMethod(btAppDispatch, "Quit", 1)
+	//fmt.Println("quit ", time.Now())
 
 	return nil
 }

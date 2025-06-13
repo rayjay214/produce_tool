@@ -36,6 +36,7 @@ func initLog() {
 	}
 }
 
+var version = "2.0"
 var selectedPlan *walk.ComboBox
 var selectedCom *walk.ComboBox
 var scanSn *walk.LineEdit
@@ -66,7 +67,7 @@ func runSnCompareWindow() {
 
 	MainWindow{
 		AssignTo: &mw,
-		Title:    "SN比对工具",
+		Title:    fmt.Sprintf("SN比对工具%v", version),
 		Font:     Font{PointSize: viceFontSize, Family: fontFamily},
 		Size:     Size{Width: 600, Height: 350},
 		Layout:   VBox{Alignment: AlignHNearVNear},
@@ -130,6 +131,10 @@ func runSnCompareWindow() {
 								MaxSize:  Size{Width: 200},
 								OnKeyPress: func(key walk.Key) {
 									if key == walk.KeyReturn {
+										if network.CurrentPlan.Id == 0 {
+											walk.MsgBox(nil, "Error", "请选择生产计划", walk.MsgBoxIconError)
+											return
+										}
 										util.DoTestOnePortCompareSn(selectedCom.Text(), scanSn, imeiPrefix.Text(), readSn, readImei, resultEdit, onlyCompareSn.Checked())
 									}
 								},

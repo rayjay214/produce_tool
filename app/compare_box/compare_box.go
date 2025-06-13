@@ -34,6 +34,7 @@ func initLog() {
 	}
 }
 
+var version = "2.0"
 var selectedPlan *walk.ComboBox
 var boxSn *walk.LineEdit
 var deviceSn *walk.LineEdit
@@ -82,7 +83,7 @@ func runSnCompareWindow() {
 
 	MainWindow{
 		AssignTo: &mw,
-		Title:    "彩盒标机身标比对工具",
+		Title:    fmt.Sprintf("彩盒标机身标比对工具%v", version),
 		Font:     Font{PointSize: viceFontSize, Family: fontFamily},
 		Size:     Size{Width: 600, Height: 350},
 		Layout:   VBox{Alignment: AlignHNearVNear},

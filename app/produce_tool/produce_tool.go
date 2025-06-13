@@ -23,6 +23,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+var version = "2.0"
+
 var tv *walk.TableView
 var tableColumns []TableViewColumn
 var tableModel *util.MyTableModel
@@ -298,7 +300,7 @@ func runMainWindow() {
 
 	MainWindow{
 		AssignTo: &mw,
-		Title:    "生产测试工具",
+		Title:    fmt.Sprintf("生产测试工具%v", version),
 		Font:     Font{PointSize: viceFontSize, Family: fontFamily},
 		Size:     Size{Width: 1200, Height: 650},
 		Layout:   VBox{Alignment: AlignHNearVNear},

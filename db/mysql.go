@@ -92,7 +92,11 @@ func CheckCompareSn(sn string, planId int64) error {
 		return err
 	}
 
-	//todo 上个流程通过才可以
+	/*
+		if device.WriteStatus == "0" {
+			return fmt.Errorf("SN未写入")
+		}
+	*/
 
 	return nil
 }
@@ -105,7 +109,9 @@ func CheckBoxSn(sn string, planId int64) error {
 		return err
 	}
 
-	//todo 上个流程通过才可以
+	if device.CompareStatus == "0" {
+		return fmt.Errorf("SN未比对")
+	}
 
 	return nil
 }
@@ -118,10 +124,14 @@ func CheckPackingSn(sn string, planId int64) error {
 		return err
 	}
 
-	if device.BoxStatus == "1" {
+	if device.BoxStatus == "0" {
+		return fmt.Errorf("彩盒码未比对")
+	}
+
+	if device.PackingStatus == "1" {
 		return fmt.Errorf("该SN已装箱")
 	}
-	
+
 	return nil
 }
 
@@ -157,8 +167,11 @@ func CompareStatus(sn string) error {
 
 	nSn, _ := strconv.ParseInt(sn, 10, 64)
 
-	result := MysqlConn.Table("device").Where("devno = ?", nSn).
-		Update("compare_status", "1")
+	//实测中有设备号实际已经写进去，但是没有返回成功给工具，导致此时写号状态还是为0的状态，这里比对成功，将写号状态一并改了
+	result := MysqlConn.Table("device").Where("devno = ?", nSn).UpdateColumns(map[string]interface{}{
+		"compare_status": "1",
+		"write_status":   "1",
+	})
 
 	if result.Error != nil {
 		log.Errorf("更新SN状态失败: %v", result.Error)
