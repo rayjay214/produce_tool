@@ -84,6 +84,17 @@ func CheckSn(sn, planId int64) error {
 	return nil
 }
 
+func CheckPrintSn(sn string, planId int64) error {
+	nSn, _ := strconv.ParseInt(sn, 10, 64)
+	var device Device
+	err := baseCheck(nSn, planId, &device)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func CheckCompareSn(sn string, planId int64) error {
 	nSn, _ := strconv.ParseInt(sn, 10, 64)
 	var device Device

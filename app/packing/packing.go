@@ -219,6 +219,8 @@ func runSnCompareWindow() {
 											walk.MsgBox(mw, "装箱完成", "装箱完成，请生成打印标签模板", walk.MsgBoxIconInformation)
 											return
 										}
+										scanSn.SetText("")
+										scanSn.SetFocus()
 									}
 								},
 							},
@@ -347,7 +349,7 @@ func runSnCompareWindow() {
 								ColumnSpan: 2,
 								OnClicked: func() {
 									go func() {
-										err := util.Print(printTemplate.Text())
+										err := util.PrintFile(printTemplate.Text())
 										// 确保回到主线程更新 UI
 										mw.Synchronize(func() {
 											if err != nil {
