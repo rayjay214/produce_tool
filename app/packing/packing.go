@@ -40,6 +40,7 @@ func initLog() {
 	}
 }
 
+var version = "V2.1"
 var selectedPlan *walk.ComboBox
 var selectedCount *walk.ComboBox
 var itemCode *walk.LineEdit
@@ -79,7 +80,7 @@ func runSnCompareWindow() {
 
 	MainWindow{
 		AssignTo: &mw,
-		Title:    "装箱工具",
+		Title:    fmt.Sprintf("装箱工具%v", version),
 		Font:     Font{PointSize: viceFontSize, Family: fontFamily},
 		Size:     Size{Width: 800, Height: 350},
 		Layout:   VBox{Alignment: AlignHNearVNear},
@@ -250,6 +251,11 @@ func runSnCompareWindow() {
 										walk.MsgBox(mw, "装箱错误", fmt.Sprintf("已扫描数量(%v)与选择数量(%v)不一致，请检查", nScanCount, nSelectCnt), walk.MsgBoxIconInformation)
 										return
 									}
+									if itemCode.Text() == "" || itemDesc.Text() == "" || remark.Text() == "" {
+										walk.MsgBox(mw, "装箱错误", fmt.Sprintf("请先补全信息"), walk.MsgBoxIconInformation)
+										return
+									}
+
 									boxNo := network.DoGetBoxNo()
 									if boxNo == "" {
 										walk.MsgBox(mw, "网络异常", "获取箱号失败", walk.MsgBoxIconInformation)
@@ -272,27 +278,42 @@ func runSnCompareWindow() {
 										}
 									}
 									dstFilename := fmt.Sprintf("%v.btw", boxNo)
-									err := util.GenBtwFile("ktx50.btw", dstFilename, param)
-									if err == nil {
-										walk.MsgBox(mw, "成功", "箱码标签生成成功", walk.MsgBoxIconInformation)
-									}
-									box := db.Box{
-										BoxNo:    boxNo,
-										PlanId:   network.CurrentPlan.Id,
-										Count:    int64(len(param.SNLIST)),
-										ItemDesc: param.ITEMDESC,
-										ItemCode: param.ITEMCODE,
-										Remark:   param.ITEMNAME,
-									}
-									db.InsertBoxRecord(box, param.SNLIST)
-									mpSnList = make(map[string]struct{})
-									snList.SetText("")
-									nScanCount = 0
-									scanCount.SetText(fmt.Sprintf("已扫描数量:%v", nScanCount))
-									//设置打印模板
-									cwd, _ := os.Getwd()
-									templatePath := filepath.Join(cwd, dstFilename)
-									printTemplate.SetText(templatePath)
+									srcFilename := fmt.Sprintf("ktx%v.btw", selectedCount.Text())
+
+									go func() {
+										err := util.GenBtwFile(srcFilename, dstFilename, param)
+										if err != nil {
+											mw.Synchronize(func() {
+												walk.MsgBox(mw, "生成失败", "箱码标签生成失败："+err.Error(), walk.MsgBoxIconError)
+											})
+											return
+										}
+
+										// 成功后回主线程继续执行后续操作
+										mw.Synchronize(func() {
+											walk.MsgBox(mw, "成功", "箱码标签生成成功", walk.MsgBoxIconInformation)
+
+											box := db.Box{
+												BoxNo:    boxNo,
+												PlanId:   network.CurrentPlan.Id,
+												Count:    int64(len(param.SNLIST)),
+												ItemDesc: param.ITEMDESC,
+												ItemCode: param.ITEMCODE,
+												Remark:   param.ITEMNAME,
+											}
+
+											db.InsertBoxRecord(box, param.SNLIST)
+											mpSnList = make(map[string]struct{})
+											snList.SetText("")
+											nScanCount = 0
+											scanCount.SetText(fmt.Sprintf("已扫描数量:%v", nScanCount))
+
+											// 设置打印模板路径
+											cwd, _ := os.Getwd()
+											templatePath := filepath.Join(cwd, dstFilename)
+											printTemplate.SetText(templatePath)
+										})
+									}()
 								},
 								ColumnSpan: 2,
 							},
@@ -325,12 +346,17 @@ func runSnCompareWindow() {
 								MaxSize:    Size{Width: 300, Height: 30},
 								ColumnSpan: 2,
 								OnClicked: func() {
-									err := util.Print(printTemplate.Text())
-									if err != nil {
-										walk.MsgBox(mw, "打印失败", err.Error(), walk.MsgBoxIconInformation)
-										return
-									}
-									walk.MsgBox(mw, "打印成功", "箱码打印成功", walk.MsgBoxIconInformation)
+									go func() {
+										err := util.Print(printTemplate.Text())
+										// 确保回到主线程更新 UI
+										mw.Synchronize(func() {
+											if err != nil {
+												walk.MsgBox(mw, "打印失败", err.Error(), walk.MsgBoxIconError)
+											} else {
+												walk.MsgBox(mw, "打印成功", "箱码打印成功", walk.MsgBoxIconInformation)
+											}
+										})
+									}()
 								},
 							},
 						},
