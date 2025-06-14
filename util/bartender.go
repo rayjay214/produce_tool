@@ -57,7 +57,14 @@ func GenBtwFile(sourceFilename, dstFilename string, param BtwParam) error {
 	}
 	//fmt.Println("replace ", time.Now())
 
-	newPath := filepath.Join(cwd, dstFilename)
+	//先默认打印一次
+	_, err = oleutil.CallMethod(format, "PrintOut", false, false)
+	if err != nil {
+		return fmt.Errorf("打印失败: %v", err)
+	}
+
+	//同时保存模板文件
+	newPath := filepath.Join(cwd, "template", dstFilename)
 	oleutil.MustCallMethod(format, "SaveAs", newPath, true)
 	//fmt.Println("save ", time.Now())
 
@@ -114,6 +121,6 @@ func PrintInMemory(templateFilename string, sn string) error {
 	format.Release()
 
 	_, _ = oleutil.CallMethod(btAppDispatch, "Quit")
-	
+
 	return nil
 }
