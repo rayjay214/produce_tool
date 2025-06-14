@@ -92,6 +92,10 @@ func CheckPrintSn(sn string, planId int64) error {
 		return err
 	}
 
+	if device.PrintStatus == "1" {
+		return fmt.Errorf("SN已打印")
+	}
+
 	return nil
 }
 
@@ -207,6 +211,30 @@ func BoxStatus(sn string) error {
 
 	result := MysqlConn.Table("device").Where("devno = ?", nSn).
 		Update("box_status", "1")
+
+	if result.Error != nil {
+		log.Errorf("更新SN状态失败: %v", result.Error)
+		return fmt.Errorf("更新SN状态失败: %v", result.Error)
+	}
+
+	if result.RowsAffected == 0 {
+		log.Errorf("未找到SN为 %s 的记录", sn)
+		return fmt.Errorf("未找到SN为 %s 的记录", sn)
+	}
+
+	return nil
+}
+
+func PrintStatus(sn string) error {
+	if MysqlConn == nil {
+		log.Error("mysql conn invalid")
+		return fmt.Errorf("数据库连接失败")
+	}
+
+	nSn, _ := strconv.ParseInt(sn, 10, 64)
+
+	result := MysqlConn.Table("device").Where("devno = ?", nSn).
+		Update("print_status", "1")
 
 	if result.Error != nil {
 		log.Errorf("更新SN状态失败: %v", result.Error)

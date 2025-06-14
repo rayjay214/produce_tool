@@ -35,7 +35,7 @@ func initLog() {
 	}
 }
 
-var version = "V2.1"
+var version = "V2.2"
 var selectedPlan *walk.ComboBox
 var scanSn *walk.LineEdit
 var resultEdit *walk.LineEdit
@@ -127,6 +127,7 @@ func runPrintWindow() {
 										if err != nil {
 											resultEdit.SetText("打印失败")
 										}
+										db.PrintStatus(scanSn.Text())
 										resultEdit.SetText("打印完成")
 										scanSn.SetText("")
 									}

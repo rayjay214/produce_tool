@@ -62,14 +62,15 @@ func (Box) TableName() string {
 }
 
 type Device struct {
-	Devno         int64  `json:"devno"`
-	PlanId        int64  `json:"planId"`
-	WriteStatus   string `json:"writeStatus"`
-	CompareStatus string `json:"compareStatus"`
-	TestStatus    string `json:"testStatus"`
-	BoxStatus     string `json:"boxStatus"`
-	PackingStatus string `json:"packingStatus"`
-	BoxNo         string `json:"boxNo"`
+	Devno         int64  `gorm:"column:devno;primaryKey"`
+	PlanId        int64  `gorm:"column:plan_id"`
+	WriteStatus   string `gorm:"column:write_status"`
+	CompareStatus string `gorm:"column:compare_status"`
+	TestStatus    string `gorm:"column:test_status"`
+	BoxStatus     string `gorm:"column:box_status"`
+	PackingStatus string `gorm:"column:packing_status"`
+	PrintStatus   string `gorm:"column:print_status"`
+	BoxNo         string `gorm:"column:box_no"`
 }
 
 func (Device) TableName() string {
