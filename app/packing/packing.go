@@ -349,7 +349,7 @@ func runSnCompareWindow() {
 								ColumnSpan: 2,
 								OnClicked: func() {
 									go func() {
-										err := util.PrintFile(printTemplate.Text())
+										err := util.PrintFileOle(printTemplate.Text())
 										// 确保回到主线程更新 UI
 										mw.Synchronize(func() {
 											if err != nil {
