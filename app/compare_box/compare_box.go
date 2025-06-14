@@ -34,12 +34,12 @@ func initLog() {
 	}
 }
 
-var version = "2.0"
+var version = "V2.1"
 var selectedPlan *walk.ComboBox
 var boxSn *walk.LineEdit
 var deviceSn *walk.LineEdit
 
-var resultEdit *walk.LineEdit
+var resultEdit *walk.TextEdit
 
 func refreshPlan() {
 	if selectedPlan.CurrentIndex() == -1 {
@@ -58,7 +58,8 @@ func compareBoxSn() bool {
 		if err != nil {
 			brush, _ := walk.NewSolidColorBrush(walk.RGB(255, 0, 0))
 			resultEdit.SetBackground(brush)
-			resultEdit.SetText(err.Error())
+			errMsg := fmt.Sprintf("%s, 彩盒SN:%s, 机身SN:%s", err.Error(), strBoxSn, strDeviceSn)
+			resultEdit.SetText(errMsg)
 			return false
 		} else {
 			brush, _ := walk.NewSolidColorBrush(walk.RGB(0, 255, 0))
@@ -70,7 +71,8 @@ func compareBoxSn() bool {
 	} else {
 		brush, _ := walk.NewSolidColorBrush(walk.RGB(255, 0, 0))
 		resultEdit.SetBackground(brush)
-		resultEdit.SetText("FAIL")
+		errMsg := fmt.Sprintf("FAIL, 彩盒SN:%s, 机身SN:%s", strBoxSn, strDeviceSn)
+		resultEdit.SetText(errMsg)
 		return false
 	}
 }
@@ -167,6 +169,8 @@ func runSnCompareWindow() {
 											deviceSn.SetText("")
 											boxSn.SetFocus()
 										} else {
+											boxSn.SetText("")
+											deviceSn.SetText("")
 											boxSn.SetFocus()
 										}
 									}
@@ -174,11 +178,11 @@ func runSnCompareWindow() {
 							},
 						},
 					},
-					LineEdit{
+					TextEdit{
 						AssignTo:      &resultEdit,
-						TextAlignment: AlignCenter,
+						TextAlignment: AlignNear,
 						Font: Font{
-							PointSize: 30,
+							PointSize: 20,
 						},
 					},
 				},
