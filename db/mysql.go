@@ -96,6 +96,14 @@ func CheckPrintSn(sn string, planId int64) error {
 		return fmt.Errorf("SN已打印")
 	}
 
+	if device.CompareStatus == "0" {
+		return fmt.Errorf("SN未比对")
+	}
+
+	if device.TestStatus == "0" {
+		return fmt.Errorf("SN未测试通过")
+	}
+
 	return nil
 }
 

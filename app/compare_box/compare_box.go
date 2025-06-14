@@ -15,6 +15,7 @@ import (
 	"produce_tool/dialog"
 	"produce_tool/model"
 	"produce_tool/network"
+	"produce_tool/util"
 )
 
 func init() {
@@ -34,7 +35,7 @@ func initLog() {
 	}
 }
 
-var version = "V2.1"
+var version = "V2.2"
 var selectedPlan *walk.ComboBox
 var boxSn *walk.LineEdit
 var deviceSn *walk.LineEdit
@@ -66,6 +67,7 @@ func compareBoxSn() bool {
 			resultEdit.SetBackground(brush)
 			resultEdit.SetText("PASS")
 			db.BoxStatus(strBoxSn)
+			go util.PlayWav("scan_success.wav")
 			return true
 		}
 	} else {
