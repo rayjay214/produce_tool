@@ -115,11 +115,9 @@ func CheckCompareSn(sn string, planId int64) error {
 		return err
 	}
 
-	/*
-		if device.WriteStatus == "0" {
-			return fmt.Errorf("SN未写入")
-		}
-	*/
+	if device.TestStatus == "0" {
+		return fmt.Errorf("SN未测试通过")
+	}
 
 	return nil
 }
