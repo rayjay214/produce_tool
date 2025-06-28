@@ -23,7 +23,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var version = "2.0"
+var version = "V2.1"
 
 var tv *walk.TableView
 var tableColumns []TableViewColumn

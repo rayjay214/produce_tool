@@ -77,9 +77,11 @@ func CheckSn(sn, planId int64) error {
 		return err
 	}
 
+	/* 去掉这个条件，会有SN1写到机器2上面，SN2写到机器1上面，维修机不良机占用了SN的情况，放到后面的流程去卡控
 	if device.WriteStatus != "0" {
 		return fmt.Errorf("SN已被使用")
 	}
+	*/
 
 	return nil
 }
@@ -145,8 +147,14 @@ func CheckPackingSn(sn string, planId int64) error {
 		return err
 	}
 
-	if device.BoxStatus == "0" {
-		return fmt.Errorf("彩盒码未比对")
+	if network.CurrentPlan.ShipmentType == "1" {
+		if device.CompareStatus == "0" {
+			return fmt.Errorf("SN未比对")
+		}
+	} else {
+		if device.BoxStatus == "0" {
+			return fmt.Errorf("彩盒码未比对")
+		}
 	}
 
 	if device.PackingStatus == "1" {

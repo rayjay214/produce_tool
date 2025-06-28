@@ -40,7 +40,7 @@ func initLog() {
 	}
 }
 
-var version = "V2.3"
+var version = "V2.6"
 var selectedPlan *walk.ComboBox
 var selectedCount *walk.ComboBox
 var itemCode *walk.LineEdit
