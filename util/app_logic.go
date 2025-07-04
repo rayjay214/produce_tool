@@ -97,7 +97,7 @@ func DoTestOnePortCompareSn(portName string, scanSnEdit *walk.LineEdit, prefix s
 		}
 	} else {
 		if sn == scanSn && imei == (prefix+scanSn) {
-			err := db.CheckCompareSn(imei, network.CurrentPlan.Id)
+			err := db.CheckCompareSn(sn, network.CurrentPlan.Id)
 			if err != nil {
 				brush, _ := walk.NewSolidColorBrush(walk.RGB(255, 0, 0))
 				resultEdit.SetBackground(brush)

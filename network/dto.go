@@ -61,13 +61,15 @@ type DeviceTypeDetail struct {
 
 type ProductionPlan struct {
 	Id           int64       `json:"id" gorm:"primaryKey;autoIncrement;comment:主键编码"`
-	Name         string      `json:"name" gorm:"type:varchar(64);comment:计划名称"`                           // 计划名称
-	DeviceType   string      `json:"deviceType" gorm:"type:varchar(32);comment:设备型号"`                     // 设备型号
+	Name         string      `json:"name" gorm:"type:varchar(64);comment:计划名称"`                         // 计划名称
+	DeviceType   string      `json:"deviceType" gorm:"type:varchar(32);comment:设备型号"`                   // 设备型号
 	Count        int64       `json:"count" gorm:"type:bigint unsigned;comment:生产设备数量"`                  // 生产设备数量
-	SnType       string      `json:"snType" gorm:"type:varchar(4);comment:设备号类型，字典：sn_type"`           // 设备号类型，字典：sn_type
-	Remark       string      `json:"remark" gorm:"type:varchar(1024);comment:备注"`                           // 备注
-	OrderNo      string      `json:"orderNo" gorm:"type:varchar(64);comment:订单号"`                          // 订单号
+	SnType       string      `json:"snType" gorm:"type:varchar(4);comment:设备号类型，字典：sn_type"`            // 设备号类型，字典：sn_type
+	Remark       string      `json:"remark" gorm:"type:varchar(1024);comment:备注"`                       // 备注
+	OrderNo      string      `json:"orderNo" gorm:"type:varchar(64);comment:订单号"`                       // 订单号
 	ShipmentType string      `json:"shipmentType" gorm:"type:varchar(4);comment:发货方式，字典：shipment_type"` // 发货方式，字典：shipment_type
+	ItemCode     string      `json:"itemCode" gorm:"type:varchar(32);comment:产品编码"`                     // 产品编码
+	ItemDesc     string      `json:"itemDesc" gorm:"type:varchar(32);comment:品名规格"`                     // 品名规格
 	CreatedAt    string      `json:"createdAt"`
 	UpdatedAt    string      `json:"updatedAt"`
 	DeletedAt    interface{} `json:"deletedAt"`

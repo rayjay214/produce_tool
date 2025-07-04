@@ -49,12 +49,13 @@ func (CompareSnRecord) TableName() string {
 }
 
 type Box struct {
-	BoxNo    string `gorm:"column:box_no;primaryKey"`
-	PlanId   int64  `gorm:"column:plan_id"`
-	Count    int64  `gorm:"column:count"`
-	ItemDesc string `gorm:"column:item_desc"`
-	ItemCode string `gorm:"column:item_code"`
-	Remark   string `gorm:"column:remark"`
+	BoxNo     string    `gorm:"column:box_no;primaryKey"`
+	PlanId    int64     `gorm:"column:plan_id"`
+	Count     int64     `gorm:"column:count"`
+	ItemDesc  string    `gorm:"column:item_desc"`
+	ItemCode  string    `gorm:"column:item_code"`
+	Remark    string    `gorm:"column:remark"`
+	CreatedAt time.Time `gorm:"column:created_at"`
 }
 
 func (Box) TableName() string {
