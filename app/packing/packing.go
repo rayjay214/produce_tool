@@ -41,7 +41,7 @@ func initLog() {
 	}
 }
 
-var version = "V2.6"
+var version = "V2.7"
 var selectedPlan *walk.ComboBox
 var selectedCount *walk.ComboBox
 var itemCode *walk.LineEdit
@@ -221,7 +221,7 @@ func runSnCompareWindow() {
 							ComboBox{
 								AssignTo: &selectedCount,
 								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
-								Model:    []string{"50", "70", "100", "5"},
+								Model:    []string{"50", "70", "100", "10", "5"},
 								MaxSize:  Size{Width: 45},
 							},
 							Label{

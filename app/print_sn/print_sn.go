@@ -6,6 +6,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/go-ole/go-ole"
 	"github.com/lxn/walk"
 	. "github.com/lxn/walk/declarative"
 	"github.com/lxn/win"
@@ -16,6 +17,7 @@ import (
 	"produce_tool/model"
 	"produce_tool/network"
 	"produce_tool/util"
+	"strconv"
 )
 
 func init() {
@@ -35,10 +37,11 @@ func initLog() {
 	}
 }
 
-var version = "V2.3"
+var version = "V2.5"
 var selectedPlan *walk.ComboBox
 var scanSn *walk.LineEdit
 var resultEdit *walk.LineEdit
+var printCnt *walk.LineEdit
 
 func refreshPlan() {
 	if selectedPlan.CurrentIndex() == -1 {
@@ -50,6 +53,8 @@ func refreshPlan() {
 
 func runPrintWindow() {
 	mw, _ := walk.NewMainWindow()
+	ole.CoInitialize(0)
+	defer ole.CoUninitialize()
 
 	fontFamily := "Microsoft YaHei"
 	viceFontSize := 12
@@ -122,16 +127,33 @@ func runPrintWindow() {
 											resultEdit.SetText("打印中")
 										}
 										//开始打印
-										templateFilename := fmt.Sprintf("%v.btw", network.CurrentPlan.DeviceType)
-										err = util.PrintInMemory(templateFilename, scanSn.Text())
+										cnt := 1
+										if printCnt.Text() != "" {
+											cnt, _ = strconv.Atoi(printCnt.Text())
+										}
+										err = util.PrintInMemory(fmt.Sprintf("%v.btw", network.CurrentPlan.DeviceType), scanSn.Text(), cnt)
 										if err != nil {
 											resultEdit.SetText("打印失败")
+											return
 										}
 										db.PrintStatus(scanSn.Text())
 										resultEdit.SetText("打印完成")
 										scanSn.SetText("")
 									}
 								},
+							},
+							Label{
+								Text:    "打印次数:",
+								Font:    Font{PointSize: viceFontSize, Family: fontFamily},
+								MinSize: Size{Width: 35},
+								MaxSize: Size{Width: 90},
+							},
+							LineEdit{
+								AssignTo: &printCnt,
+								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
+								MinSize:  Size{Width: 35},
+								MaxSize:  Size{Width: 200},
+								Text:     "1",
 							},
 						},
 					},

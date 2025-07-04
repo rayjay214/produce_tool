@@ -23,13 +23,11 @@ type BtwParam struct {
 func GenBtwFile(sourceFilename, dstFilename string, param BtwParam) error {
 	ole.CoInitialize(0)
 	defer ole.CoUninitialize()
-	//fmt.Println("init", time.Now())
-
 	btApp, err := oleutil.CreateObject("BarTender.Application")
 	if err != nil {
 		return fmt.Errorf("BarTender 启动失败: %v", err)
 	}
-	//fmt.Println("create ", time.Now())
+
 	btAppDispatch, err := btApp.QueryInterface(ole.IID_IDispatch)
 	if err != nil {
 		return fmt.Errorf("接口失败: %v", err)
@@ -39,10 +37,11 @@ func GenBtwFile(sourceFilename, dstFilename string, param BtwParam) error {
 	oleutil.PutProperty(btAppDispatch, "Visible", false)
 
 	formats := oleutil.MustGetProperty(btAppDispatch, "Formats").ToIDispatch()
+	defer formats.Release()
 	cwd, _ := os.Getwd()
 	templatePath := filepath.Join(cwd, sourceFilename)
 	format := oleutil.MustCallMethod(formats, "Open", templatePath, false, "").ToIDispatch()
-	//fmt.Println("open ", time.Now())
+	defer format.Release()
 
 	oleutil.MustCallMethod(format, "SetNamedSubStringValue", "KTXSN", param.KTXSN)
 	oleutil.MustCallMethod(format, "SetNamedSubStringValue", "PO", param.PO)
@@ -55,7 +54,6 @@ func GenBtwFile(sourceFilename, dstFilename string, param BtwParam) error {
 		key := fmt.Sprintf("S/N%v", i)
 		oleutil.MustCallMethod(format, "SetNamedSubStringValue", key, sn)
 	}
-	//fmt.Println("replace ", time.Now())
 
 	//先默认打印一次
 	_, err = oleutil.CallMethod(format, "PrintOut", false, false)
@@ -66,12 +64,10 @@ func GenBtwFile(sourceFilename, dstFilename string, param BtwParam) error {
 	//同时保存模板文件
 	newPath := filepath.Join(cwd, "template", dstFilename)
 	oleutil.MustCallMethod(format, "SaveAs", newPath, true)
-	//fmt.Println("save ", time.Now())
 
 	oleutil.MustCallMethod(format, "Close", 2)
-	//fmt.Println("close ", time.Now())
+
 	oleutil.MustCallMethod(btAppDispatch, "Quit", 1)
-	//fmt.Println("quit ", time.Now())
 
 	return nil
 }
@@ -121,10 +117,7 @@ func PrintFileOle(templateFilePath string) error {
 	return nil
 }
 
-func PrintInMemory(templateFilename string, sn string) error {
-	ole.CoInitialize(0)
-	defer ole.CoUninitialize()
-
+func PrintInMemory(templateFilename string, sn string, cnt int) error {
 	btApp, err := oleutil.CreateObject("BarTender.Application")
 	if err != nil {
 		return fmt.Errorf("BarTender 启动失败: %v", err)
@@ -136,15 +129,19 @@ func PrintInMemory(templateFilename string, sn string) error {
 	defer btAppDispatch.Release()
 
 	formats := oleutil.MustGetProperty(btAppDispatch, "Formats").ToIDispatch()
+	defer formats.Release()
 	cwd, _ := os.Getwd()
 	templatePath := filepath.Join(cwd, "template", templateFilename)
 	format := oleutil.MustCallMethod(formats, "Open", templatePath, false, "").ToIDispatch()
+	defer format.Release()
 
 	oleutil.MustCallMethod(format, "SetNamedSubStringValue", "sn", sn)
 
-	_, err = oleutil.CallMethod(format, "PrintOut", false, false)
-	if err != nil {
-		return fmt.Errorf("打印失败: %v", err)
+	for i := 0; i < cnt; i++ {
+		_, err = oleutil.CallMethod(format, "PrintOut", false, false)
+		if err != nil {
+			return fmt.Errorf("打印失败: %v", err)
+		}
 	}
 
 	_, err = oleutil.CallMethod(format, "Close", 0) // 0 = don't save changes
