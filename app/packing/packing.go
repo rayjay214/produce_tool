@@ -41,9 +41,11 @@ func initLog() {
 	}
 }
 
-var version = "V2.7"
+var version = "V2.8"
 var selectedPlan *walk.ComboBox
 var selectedCount *walk.ComboBox
+var customCount *walk.LineEdit
+var customCheck *walk.CheckBox
 var itemCode *walk.LineEdit
 var itemDesc *walk.LineEdit
 var remark *walk.LineEdit
@@ -85,9 +87,17 @@ func runSnCompareWindow() {
 	}
 
 	FGenBtwFile := func() {
-		nSelectCnt, _ := strconv.Atoi(selectedCount.Text())
-		if nScanCount != nSelectCnt {
-			walk.MsgBox(mw, "装箱错误", fmt.Sprintf("已扫描数量(%v)与选择数量(%v)不一致，请检查", nScanCount, nSelectCnt), walk.MsgBoxIconInformation)
+		nCount := 0
+		if customCheck.Checked() {
+			strCount := customCount.Text()
+			nCount, _ = strconv.Atoi(strCount)
+		} else {
+			strCount := selectedCount.Text()
+			nCount, _ = strconv.Atoi(strCount)
+		}
+
+		if nScanCount != nCount {
+			walk.MsgBox(mw, "装箱错误", fmt.Sprintf("已扫描数量(%v)与选择数量(%v)不一致，请检查", nScanCount, nCount), walk.MsgBoxIconInformation)
 			return
 		}
 		if itemCode.Text() == "" || itemDesc.Text() == "" || remark.Text() == "" {
@@ -117,7 +127,12 @@ func runSnCompareWindow() {
 			}
 		}
 		dstFilename := fmt.Sprintf("%v.btw", boxNo)
-		srcFilename := fmt.Sprintf("ktx%v.btw", selectedCount.Text())
+		var srcFilename string
+		if customCheck.Checked() {
+			srcFilename = "ktx50.btw"
+		} else {
+			srcFilename = fmt.Sprintf("ktx%v.btw", selectedCount.Text())
+		}
 
 		go func() {
 			isGenBtw = 1
@@ -224,6 +239,29 @@ func runSnCompareWindow() {
 								Model:    []string{"50", "70", "100", "10", "5"},
 								MaxSize:  Size{Width: 45},
 							},
+							CheckBox{
+								AssignTo: &customCheck,
+								Text:     "自选数量:",
+								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
+								MinSize:  Size{Width: 35},
+								MaxSize:  Size{Width: 90},
+								Checked:  false,
+								OnCheckedChanged: func() {
+									if selectedCount.Enabled() {
+										selectedCount.SetEnabled(false)
+										customCount.SetEnabled(true)
+									} else {
+										selectedCount.SetEnabled(true)
+										customCount.SetEnabled(false)
+									}
+								},
+							},
+							LineEdit{
+								AssignTo: &customCount,
+								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
+								MaxSize:  Size{Width: 45},
+								Enabled:  false,
+							},
 							Label{
 								Text:    "品名规格:",
 								Font:    Font{PointSize: viceFontSize, Family: fontFamily},
@@ -276,8 +314,14 @@ func runSnCompareWindow() {
 								},
 								OnKeyPress: func(key walk.Key) {
 									if key == walk.KeyReturn {
-										strCount := selectedCount.Text()
-										nCount, _ := strconv.Atoi(strCount)
+										nCount := 0
+										if customCheck.Checked() {
+											strCount := customCount.Text()
+											nCount, _ = strconv.Atoi(strCount)
+										} else {
+											strCount := selectedCount.Text()
+											nCount, _ = strconv.Atoi(strCount)
+										}
 										if nScanCount >= nCount {
 											walk.MsgBox(mw, "装箱超限", "装箱超限，请生成打印标签后重新装箱", walk.MsgBoxIconInformation)
 											return
