@@ -117,17 +117,7 @@ func PrintFileOle(templateFilePath string) error {
 	return nil
 }
 
-func PrintInMemory(templateFilename string, sn string, cnt int) error {
-	btApp, err := oleutil.CreateObject("BarTender.Application")
-	if err != nil {
-		return fmt.Errorf("BarTender 启动失败: %v", err)
-	}
-	btAppDispatch, err := btApp.QueryInterface(ole.IID_IDispatch)
-	if err != nil {
-		return fmt.Errorf("接口失败: %v", err)
-	}
-	defer btAppDispatch.Release()
-
+func PrintInMemory(btAppDispatch *ole.IDispatch, templateFilename string, sn string, cnt int) error {
 	formats := oleutil.MustGetProperty(btAppDispatch, "Formats").ToIDispatch()
 	defer formats.Release()
 	cwd, _ := os.Getwd()
@@ -138,19 +128,17 @@ func PrintInMemory(templateFilename string, sn string, cnt int) error {
 	oleutil.MustCallMethod(format, "SetNamedSubStringValue", "sn", sn)
 
 	for i := 0; i < cnt; i++ {
-		_, err = oleutil.CallMethod(format, "PrintOut", false, false)
+		_, err := oleutil.CallMethod(format, "PrintOut", false, false)
 		if err != nil {
 			return fmt.Errorf("打印失败: %v", err)
 		}
 	}
 
-	_, err = oleutil.CallMethod(format, "Close", 0) // 0 = don't save changes
+	_, err := oleutil.CallMethod(format, "Close", 0) // 0 = don't save changes
 	if err != nil {
 		return fmt.Errorf("关闭出错: %v", err)
 	}
 	format.Release()
-
-	_, _ = oleutil.CallMethod(btAppDispatch, "Quit")
 
 	return nil
 }

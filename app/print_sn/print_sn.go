@@ -7,6 +7,7 @@ package main
 import (
 	"fmt"
 	"github.com/go-ole/go-ole"
+	"github.com/go-ole/go-ole/oleutil"
 	"github.com/lxn/walk"
 	. "github.com/lxn/walk/declarative"
 	"github.com/lxn/win"
@@ -37,7 +38,7 @@ func initLog() {
 	}
 }
 
-var version = "V2.5"
+var version = "V2.6"
 var selectedPlan *walk.ComboBox
 var scanSn *walk.LineEdit
 var resultEdit *walk.LineEdit
@@ -51,10 +52,8 @@ func refreshPlan() {
 	network.DoGetPlan(plan.Id)
 }
 
-func runPrintWindow() {
+func runPrintWindow(btAppDispatch *ole.IDispatch) {
 	mw, _ := walk.NewMainWindow()
-	ole.CoInitialize(0)
-	defer ole.CoUninitialize()
 
 	fontFamily := "Microsoft YaHei"
 	viceFontSize := 12
@@ -131,7 +130,7 @@ func runPrintWindow() {
 										if printCnt.Text() != "" {
 											cnt, _ = strconv.Atoi(printCnt.Text())
 										}
-										err = util.PrintInMemory(fmt.Sprintf("%v.btw", network.CurrentPlan.DeviceType), scanSn.Text(), cnt)
+										err = util.PrintInMemory(btAppDispatch, fmt.Sprintf("%v.btw", network.CurrentPlan.DeviceType), scanSn.Text(), cnt)
 										if err != nil {
 											resultEdit.SetText("打印失败")
 											return
@@ -178,5 +177,18 @@ func main() {
 		os.Exit(1)
 	}
 
-	runPrintWindow()
+	ole.CoInitialize(0)
+	defer ole.CoUninitialize()
+	btApp, err := oleutil.CreateObject("BarTender.Application")
+	if err != nil {
+		return
+	}
+	btAppDispatch, err := btApp.QueryInterface(ole.IID_IDispatch)
+	if err != nil {
+		return
+	}
+	defer btAppDispatch.Release()
+
+	runPrintWindow(btAppDispatch)
+	_, _ = oleutil.CallMethod(btAppDispatch, "Quit")
 }
