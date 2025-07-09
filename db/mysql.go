@@ -264,6 +264,9 @@ func PrintStatus(sn string) error {
 }
 
 func InsertCompareFailedRecord(sn, scanSn, imei, scanImei string) error {
+	if sn == "0" || scanSn == "0" {
+		return nil
+	}
 	if MysqlConn == nil {
 		log.Error("mysql conn invalid")
 		return fmt.Errorf("数据库连接失败")

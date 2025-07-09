@@ -150,6 +150,25 @@ func DoGetPassedNum() {
 	PassedCount = getResp.Data.Count
 }
 
+func DoGetComparePassedNum() int {
+	var getResp DeviceGetPageResponse
+	url := fmt.Sprintf("http://factory.gps555.net/api/v1/device")
+	form := map[string]string{
+		"planId":        fmt.Sprintf("%v", CurrentPlan.Id),
+		"compareStatus": "1",
+	}
+	success, _ := DoFormRequest("GET", url, form, &getResp)
+	if !success {
+		return 0
+	}
+
+	if getResp.Code != 200 {
+		return 0
+	}
+
+	return getResp.Data.Count
+}
+
 // 获取装箱最新的箱号
 func DoGetBoxNo() string {
 	var getResp BoxGetPageResponse

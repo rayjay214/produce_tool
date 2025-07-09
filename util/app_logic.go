@@ -108,7 +108,11 @@ func DoTestOnePortCompareSn(portName string, scanSnEdit *walk.LineEdit, prefix s
 				resultEdit.SetText("PASS")
 				scanSnEdit.SetText("")
 				db.WriteCheckSnLog(record)
-				db.CompareStatus(imei)
+				if network.CurrentPlan.SnType == "1" {
+					db.CompareStatus(imei)
+				} else {
+					db.CompareStatus(sn)
+				}
 			}
 		} else if sn != scanSn {
 			brush, _ := walk.NewSolidColorBrush(walk.RGB(255, 0, 0))

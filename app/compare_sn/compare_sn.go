@@ -16,6 +16,7 @@ import (
 	"produce_tool/model"
 	"produce_tool/network"
 	"produce_tool/util"
+	"time"
 )
 
 func init() {
@@ -36,7 +37,7 @@ func initLog() {
 	}
 }
 
-var version = "V2.2"
+var version = "V2.4"
 var selectedPlan *walk.ComboBox
 var selectedCom *walk.ComboBox
 var scanSn *walk.LineEdit
@@ -48,6 +49,9 @@ var imeiPrefix *walk.LineEdit
 var resultEdit *walk.LineEdit
 var onlyCompareSn *walk.CheckBox
 
+var totalCnt *walk.Label
+var passedCnt *walk.Label
+
 func refreshPlan() {
 	if selectedPlan.CurrentIndex() == -1 {
 		return
@@ -57,11 +61,26 @@ func refreshPlan() {
 	if network.CurrentPlan.SnType == "0" {
 		onlyCompareSn.SetChecked(true)
 	}
+	network.DoGetTotalNum()
+	totalCnt.SetText(fmt.Sprintf("总体(%v)", network.TotalCount))
+}
+
+func initTimer() {
+	go func() {
+		ticker := time.NewTicker(10 * time.Second)
+		for {
+			select {
+			case <-ticker.C:
+				cnt := network.DoGetComparePassedNum()
+				passedCnt.SetText(fmt.Sprintf("通过(%v)", cnt))
+			}
+		}
+	}()
 }
 
 func runSnCompareWindow() {
 	mw, _ := walk.NewMainWindow()
-
+	initTimer()
 	fontFamily := "Microsoft YaHei"
 	viceFontSize := 12
 
@@ -69,7 +88,7 @@ func runSnCompareWindow() {
 		AssignTo: &mw,
 		Title:    fmt.Sprintf("SN比对工具%v", version),
 		Font:     Font{PointSize: viceFontSize, Family: fontFamily},
-		Size:     Size{Width: 600, Height: 350},
+		Size:     Size{Width: 750, Height: 350},
 		Layout:   VBox{Alignment: AlignHNearVNear},
 		OnSizeChanged: func() {
 			screenWidth := int(win.GetSystemMetrics(win.SM_CXSCREEN))
@@ -188,6 +207,20 @@ func runSnCompareWindow() {
 								MaxSize:    Size{Width: 200, Height: 25},
 								Enabled:    true,
 								ColumnSpan: 2,
+							},
+							Label{
+								AssignTo: &totalCnt,
+								Text:     "总体(0)",
+								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
+								MinSize:  Size{Width: 45},
+								MaxSize:  Size{Width: 100},
+							},
+							Label{
+								AssignTo: &passedCnt,
+								Text:     "通过(0)",
+								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
+								MinSize:  Size{Width: 45},
+								MaxSize:  Size{Width: 100},
 							},
 						},
 					},
