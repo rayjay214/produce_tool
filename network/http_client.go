@@ -134,9 +134,9 @@ func DoGetPassedNum() {
 	var getResp DeviceGetPageResponse
 	url := fmt.Sprintf("http://factory.gps555.net/api/v1/device")
 	form := map[string]string{
-		"planId":      fmt.Sprintf("%v", CurrentPlan.Id),
-		"writeStatus": "1",
-		"testStatus":  "1",
+		"planId": fmt.Sprintf("%v", CurrentPlan.Id),
+		//"writeStatus": "1",
+		"testStatus": "1",
 	}
 	success, _ := DoFormRequest("GET", url, form, &getResp)
 	if !success {
