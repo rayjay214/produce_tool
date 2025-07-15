@@ -117,11 +117,20 @@ func PrintFileOle(templateFilePath string) error {
 	return nil
 }
 
+func FileExists(path string) bool {
+	_, err := os.Stat(path)
+	return err == nil || !os.IsNotExist(err)
+}
+
 func PrintInMemory(btAppDispatch *ole.IDispatch, templateFilename string, sn string, cnt int) error {
 	formats := oleutil.MustGetProperty(btAppDispatch, "Formats").ToIDispatch()
 	defer formats.Release()
 	cwd, _ := os.Getwd()
 	templatePath := filepath.Join(cwd, "template", templateFilename)
+	if !FileExists(templatePath) {
+		return fmt.Errorf("模板不存在: %s", templateFilename)
+	}
+
 	format := oleutil.MustCallMethod(formats, "Open", templatePath, false, "").ToIDispatch()
 	defer format.Release()
 

@@ -38,7 +38,7 @@ func initLog() {
 	}
 }
 
-var version = "V2.6"
+var version = "V2.7"
 var selectedPlan *walk.ComboBox
 var scanSn *walk.LineEdit
 var resultEdit *walk.LineEdit
@@ -132,7 +132,7 @@ func runPrintWindow(btAppDispatch *ole.IDispatch) {
 										}
 										err = util.PrintInMemory(btAppDispatch, fmt.Sprintf("%v.btw", network.CurrentPlan.DeviceType), scanSn.Text(), cnt)
 										if err != nil {
-											resultEdit.SetText("打印失败")
+											resultEdit.SetText(err.Error())
 											return
 										}
 										db.PrintStatus(scanSn.Text())
