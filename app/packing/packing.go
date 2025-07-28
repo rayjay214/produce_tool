@@ -41,7 +41,7 @@ func initLog() {
 	}
 }
 
-var version = "V2.8"
+var version = "V2.9"
 var selectedPlan *walk.ComboBox
 var selectedCount *walk.ComboBox
 var customCount *walk.LineEdit
@@ -129,9 +129,17 @@ func runSnCompareWindow() {
 		dstFilename := fmt.Sprintf("%v.btw", boxNo)
 		var srcFilename string
 		if customCheck.Checked() {
-			srcFilename = "ktx50.btw"
+			if network.CurrentPlan.Lang == "1" {
+				srcFilename = "ktx50_en.btw"
+			} else {
+				srcFilename = "ktx50.btw"
+			}
 		} else {
-			srcFilename = fmt.Sprintf("ktx%v.btw", selectedCount.Text())
+			if network.CurrentPlan.Lang == "1" {
+				srcFilename = fmt.Sprintf("ktx%v_en.btw", selectedCount.Text())
+			} else {
+				srcFilename = fmt.Sprintf("ktx%v.btw", selectedCount.Text())
+			}
 		}
 
 		go func() {
