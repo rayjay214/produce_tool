@@ -23,7 +23,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var version = "V2.2"
+var version = "V2.3"
 
 var tv *walk.TableView
 var tableColumns []TableViewColumn
@@ -165,8 +165,10 @@ func initRefreshCountTimer() {
 		for {
 			select {
 			case <-ticker.C:
-				network.DoGetPassedNum()
-				passedCnt.SetText(fmt.Sprintf("通过数量：%v", network.PassedCount))
+				if network.CurrentPlan.Id != 0 {
+					network.DoGetPassedNum()
+					passedCnt.SetText(fmt.Sprintf("通过数量：%v", network.PassedCount))
+				}
 			}
 		}
 	}()
