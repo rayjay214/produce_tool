@@ -41,7 +41,7 @@ func initLog() {
 	}
 }
 
-var version = "V2.9"
+var version = "V3.0"
 var selectedPlan *walk.ComboBox
 var selectedCount *walk.ComboBox
 var customCount *walk.LineEdit
@@ -144,17 +144,21 @@ func runSnCompareWindow() {
 
 		go func() {
 			isGenBtw = 1
-			err := util.GenBtwFile(srcFilename, dstFilename, param)
-			if err != nil {
-				mw.Synchronize(func() {
-					walk.MsgBox(mw, "生成失败", "箱码标签生成失败："+err.Error(), walk.MsgBoxIconError)
-				})
-				return
-			}
+
+			// 准备参数和数据
+			finalSrcFilename := srcFilename
+			finalDstFilename := dstFilename
+			finalParam := param
 
 			// 成功后回主线程继续执行后续操作
 			mw.Synchronize(func() {
-				walk.MsgBox(mw, "成功", "箱码标签生成成功", walk.MsgBoxIconInformation)
+				err := util.GenBtwFile(finalSrcFilename, finalDstFilename, finalParam)
+				if err != nil {
+					walk.MsgBox(mw, "生成失败", "箱码标签生成失败："+err.Error(), walk.MsgBoxIconError)
+					return
+				}
+				//walk.MsgBox(mw, "成功", "箱码标签生成成功", walk.MsgBoxIconInformation)
+				resultEdit.SetText("箱码标签生成成功")
 
 				box := db.Box{
 					BoxNo:     boxNo,
@@ -363,7 +367,8 @@ func runSnCompareWindow() {
 										scanCount.SetText(fmt.Sprintf("已扫描数量:%v", nScanCount))
 										if nScanCount >= nCount {
 											FGenBtwFile()
-											walk.MsgBox(mw, "装箱完成", "装箱完成，正在生成打印模板", walk.MsgBoxIconInformation)
+											//walk.MsgBox(mw, "装箱完成", "装箱完成，正在生成打印模板", walk.MsgBoxIconInformation)
+											resultEdit.SetText("装箱完成，正在生成打印模板")
 											//FPrintFile()
 											return
 										}
