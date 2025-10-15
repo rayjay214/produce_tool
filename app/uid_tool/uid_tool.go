@@ -112,13 +112,11 @@ func writeUid(myPort *util.MyPort, pass *util.PassParam, uid string, processEcho
 		}
 		//写入uid成功
 		if strings.Contains(util.GetPassParamStr(pass), "<ACK> 200 OK") && bTestSuccess {
-			fmt.Println("写入成功")
 			processEcho.SetText(fmt.Sprintf("%v:写入成功", uid))
 			break
 		}
 		//写入uid失败
 		if strings.Contains(util.GetPassParamStr(pass), "<ACK> 400 Unknown command") && bTestSuccess {
-			fmt.Println("写入uid失败")
 			processEcho.SetText(fmt.Sprintf("%v:写入失败", uid))
 			err = errors.New("写入uid失败")
 			break

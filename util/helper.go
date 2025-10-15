@@ -65,15 +65,27 @@ func StopReader(param *PassParam) {
 	param.stopReader = true
 }
 
+func StopReaderSafe(param *PassParam) {
+	select {
+	case <-param.stopCh: // 已关闭
+	default:
+		close(param.stopCh)
+	}
+}
+
 func StopWriter(param *PassParam) {
 	param.stopWriter = true
 }
 
 func GetPassParamStr(param *PassParam) string {
+	param.mu.Lock()
+	defer param.mu.Unlock()
 	return param.str
 }
 
 func SetPassParamStr(param *PassParam, value string) {
+	param.mu.Lock()
+	defer param.mu.Unlock()
 	param.str = value
 }
 

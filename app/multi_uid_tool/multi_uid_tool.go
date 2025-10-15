@@ -21,6 +21,8 @@ import (
 	. "github.com/lxn/walk/declarative"
 )
 
+var version = "V1.1"
+
 type SerialPortItem struct {
 	Name     string
 	Selected bool
@@ -101,8 +103,7 @@ func writeUid2(myPort *util.MyPort, pass *util.PassParam, uid string, processEch
 	startTime := time.Now()
 	for {
 		if time.Since(startTime) >= timeout {
-			fmt.Println("超时")
-			err = errors.New("超时")
+			err = errors.New("timeout")
 			processEcho.SetText(fmt.Sprintf("%v:超时", uid))
 			break
 		}
@@ -120,20 +121,20 @@ func writeUid2(myPort *util.MyPort, pass *util.PassParam, uid string, processEch
 		}
 		//写入uid成功
 		if strings.Contains(util.GetPassParamStr(pass), "<ACK> 200 OK") && bTestSuccess {
-			fmt.Println("写入成功")
+			log.Infof("%v write uid success", uid)
 			processEcho.SetText(fmt.Sprintf("%v:写入成功", uid))
 			break
 		}
 		//写入uid失败
 		if strings.Contains(util.GetPassParamStr(pass), "<ACK> 400 Unknown command") && bTestSuccess {
-			fmt.Println("写入uid失败")
+			log.Infof("%v write uid failed", uid)
 			processEcho.SetText(fmt.Sprintf("%v:写入失败", uid))
-			err = errors.New("写入uid失败")
+			err = errors.New("write uid failed")
 			break
 		}
 	}
 
-	util.StopReader(pass)
+	util.StopReaderSafe(pass)
 	util.StopWriter(pass)
 
 	return err
@@ -149,11 +150,10 @@ func process2(portName string, uid string, processEcho *walk.LineEdit, mw *walk.
 }
 
 func writeUidProcess(uid string, portName string, processEcho *walk.LineEdit) error {
-	fmt.Println("selected uid", uid)
 	myPort := util.GetPort(portName)
 
-	pass := new(util.PassParam)
-	go util.ReadPort(myPort, pass)
+	pass := util.NewPassParam()
+	go util.ReadPortSafe(myPort, pass)
 	return writeUid2(myPort, pass, uid, processEcho)
 }
 
@@ -200,10 +200,11 @@ func runSerialDisplayWindow() {
 
 	MainWindow{
 		AssignTo: &mw,
-		Title:    "多串口写UID工具",
-		Font:     Font{PointSize: viceFontSize, Family: fontFamily},
-		Size:     Size{Width: 600, Height: 400},
-		Layout:   VBox{Alignment: AlignHNearVNear},
+		Title:    fmt.Sprintf("多串口写UID工具%v", version),
+		//Title:  fmt.Sprintf("多串口写UID工具"),
+		Font:   Font{PointSize: viceFontSize, Family: fontFamily},
+		Size:   Size{Width: 600, Height: 400},
+		Layout: VBox{Alignment: AlignHNearVNear},
 		Children: []Widget{
 			// 串口列表区域
 			Composite{

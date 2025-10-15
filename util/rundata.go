@@ -9,6 +9,7 @@ import (
 	"produce_tool/network"
 	"reflect"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -26,6 +27,14 @@ type PassParam struct {
 	str        string
 	stopReader bool
 	stopWriter bool
+	stopCh     chan struct{}
+	mu         sync.Mutex
+}
+
+func NewPassParam() *PassParam {
+	return &PassParam{
+		stopCh: make(chan struct{}),
+	}
 }
 
 var SelectedDeviceType model.DeviceTypeInfo
