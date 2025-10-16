@@ -21,7 +21,8 @@ import (
 	. "github.com/lxn/walk/declarative"
 )
 
-var version = "V1.1"
+var version = "V1.2"
+var writeButton *walk.PushButton
 
 type SerialPortItem struct {
 	Name     string
@@ -56,7 +57,7 @@ func readCsvFile2(selectedFilePath string) (rows [][]string, err error) {
 	return records, nil
 }
 
-func changeFileProcess2(mw *walk.MainWindow, wrote, left *walk.TextLabel, selectedFilePath string, records [][]string) {
+func changeFileProcess2(mw *walk.MainWindow, wrote, left *walk.TextLabel, selectedFilePath string, records [][]string) error {
 	var nWrote, nLeft int
 	if len(records) > 0 {
 		nWrote, _ = strconv.Atoi(records[0][1])
@@ -70,22 +71,21 @@ func changeFileProcess2(mw *walk.MainWindow, wrote, left *walk.TextLabel, select
 	file, err := os.Create(selectedFilePath)
 	if err != nil {
 		walk.MsgBox(mw, "打开文件错误", "请先关闭其他打开该文件的程序", walk.MsgBoxIconInformation)
-		return
+		return err
 	}
 	defer file.Close()
-
-	fmt.Println("before", records)
 
 	writer := csv.NewWriter(file)
 	err = writer.WriteAll(records)
 	if err != nil {
-		fmt.Println("Error writing CSV:", err)
-		return
+		log.Errorf("Error writing CSV:%v", err)
+		return err
 	}
 	writer.Flush()
 	wrote.SetText(fmt.Sprintf("已写入：%v", nWrote))
 	left.SetText(fmt.Sprintf("剩余：%v", nLeft))
-	fmt.Println("write success")
+	log.Infof("change file success wrote:%v, left:%v", nWrote, nLeft)
+	return nil
 }
 
 func writeUid2(myPort *util.MyPort, pass *util.PassParam, uid string, processEcho *walk.LineEdit) error {
@@ -143,7 +143,10 @@ func writeUid2(myPort *util.MyPort, pass *util.PassParam, uid string, processEch
 func process2(portName string, uid string, processEcho *walk.LineEdit, mw *walk.MainWindow, wrote, left *walk.TextLabel, selectedFilePath string, rows [][]string) {
 	err := writeUidProcess(uid, portName, processEcho)
 	if err == nil {
-		changeFileProcess2(mw, wrote, left, selectedFilePath, rows)
+		err = changeFileProcess2(mw, wrote, left, selectedFilePath, rows)
+		if err != nil {
+			log.Errorf("change file error %v", err)
+		}
 	} else {
 		log.Errorf("write uid %v error %v", uid, err)
 	}
@@ -300,7 +303,6 @@ func runSerialDisplayWindow() {
 										listUid = append(listUid, row[0])
 									}
 								}
-								fmt.Println(listUid)
 							}
 						},
 					},
@@ -316,12 +318,15 @@ func runSerialDisplayWindow() {
 
 			// 写入按钮
 			PushButton{
-				Text:    "写入",
-				Font:    Font{PointSize: viceFontSize, Family: fontFamily},
-				MinSize: Size{Width: 80, Height: 40},
-				MaxSize: Size{Width: 120, Height: 40},
+				AssignTo: &writeButton,
+				Text:     "写入",
+				Font:     Font{PointSize: viceFontSize, Family: fontFamily},
+				MinSize:  Size{Width: 80, Height: 40},
+				MaxSize:  Size{Width: 120, Height: 40},
 				OnClicked: func() {
+					writeButton.SetEnabled(false)
 					go func() {
+						defer writeButton.SetEnabled(true)
 						for i, item := range serialItems {
 							if !item.Selected {
 								continue
