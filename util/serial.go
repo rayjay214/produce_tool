@@ -173,6 +173,11 @@ func setProtocol(myport *MyPort, pass *PassParam) {
 	modifyDevice(myport, pass, "ProtocolWrite", value, false)
 }
 
+func setApn(myport *MyPort, pass *PassParam) {
+	value := fmt.Sprintf("%v", SelectedDeviceType.APN)
+	modifyDevice(myport, pass, "ApnWrite", value, false)
+}
+
 func setDevice(myport *MyPort, pass *PassParam, colName string) {
 	switch colName {
 	case "SetType":
@@ -183,6 +188,8 @@ func setDevice(myport *MyPort, pass *PassParam, colName string) {
 		setProtocol(myport, pass)
 	case "MainIpWrite":
 		setMainIp(myport, pass)
+	case "ApnWrite":
+		setApn(myport, pass)
 	}
 }
 
@@ -193,7 +200,7 @@ func writeItems(myport *MyPort, items []TestItem, pass *PassParam) {
 	bForceStop := false
 	for _, item := range items {
 		//设置操作此处处理，下面的是读取值
-		if ContainsOne(item.ModelColName, "SetType", "ViceIpWrite", "ProtocolWrite", "MainIpWrite") {
+		if ContainsOne(item.ModelColName, "SetType", "ViceIpWrite", "ProtocolWrite", "MainIpWrite", "ApnWrite") {
 			setDevice(myport, pass, item.ModelColName)
 			continue
 		}

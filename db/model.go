@@ -25,6 +25,7 @@ type TestRecord struct {
 	Operator    string    `gorm:"column:operator"`
 	UploadWay   string    `gorm:"column:upload_way"`
 	PlanId      uint      `gorm:"column:plan_id"`
+	SetApn      string    `gorm:"column:set_apn"`
 	CreateTime  time.Time `gorm:"column:create_time;primaryKey"`
 }
 

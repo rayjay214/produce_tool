@@ -145,6 +145,10 @@ func LoadDeviceTypeNetwork() {
 		if item.ProtocolWriteOpen == "1" {
 			protocolWriteOpen = 1
 		}
+		apnWriteOpen := 0
+		if item.WriteApn == "1" {
+			apnWriteOpen = 1
+		}
 
 		var mainIp, mainPort string
 		if item.MainIp != "" {
@@ -227,6 +231,8 @@ func LoadDeviceTypeNetwork() {
 			SharpTurnAlarm:    sharpTurnAlarm,
 			RapidDecleAlarm:   rapidDecleAlarm,
 			RapidAccleAlarm:   rapidAccleAlarm,
+			ApnWriteOpen:      apnWriteOpen,
+			APN:               item.Apn,
 		}
 
 		deviceTypes[item.DeviceType] = deviceInfo

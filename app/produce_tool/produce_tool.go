@@ -23,7 +23,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var version = "V2.3"
+var version = "V2.4"
 
 var tv *walk.TableView
 var tableColumns []TableViewColumn
@@ -61,7 +61,7 @@ var compareViceIp *walk.TextEdit
 
 // 待修改值
 var modifyIp *walk.TextEdit
-var modifyPort *walk.TextEdit
+var modifyApn *walk.TextEdit
 var modifyProtocol *walk.TextEdit
 
 // 通过数量
@@ -236,8 +236,8 @@ func refreshType() {
 		return
 	}
 	selectedType := selectedCb.Model().([]model.DeviceTypeInfo)[selectedCb.CurrentIndex()]
-	modifyIp.SetText(selectedType.MainIp)
-	modifyPort.SetText(selectedType.MainPort)
+	modifyIp.SetText(fmt.Sprintf("%v:%v", selectedType.MainIp, selectedType.MainPort))
+	modifyApn.SetText(selectedType.APN)
 	network.DoGetDeviceType(selectedType.DeviceType)
 	if network.CurrentType.SnType == "1" {
 		textHeader.SetText(network.CurrentType.ImeiPrefix)
@@ -752,14 +752,14 @@ func runMainWindow() {
 								ReadOnly: true,
 							},
 							Label{
-								Text:    "端口:",
+								Text:    "APN:",
 								Font:    Font{PointSize: viceFontSize, Family: fontFamily},
 								MinSize: Size{Width: 30, Height: 25},
 								MaxSize: Size{Width: 50, Height: 25},
 							},
 							TextEdit{
-								Text:     Bind("MainPort"),
-								AssignTo: &modifyPort,
+								Text:     Bind("ApnValue"),
+								AssignTo: &modifyApn,
 								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
 								MinSize:  Size{Width: 30, Height: 25},
 								MaxSize:  Size{Width: 150, Height: 25},

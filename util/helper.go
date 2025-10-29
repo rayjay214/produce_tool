@@ -96,7 +96,7 @@ func FilterTableColumn(tv *walk.TableView, selectedType model.DeviceTypeInfo) {
 		field := t.Field(i)
 		fieldName := field.Name
 
-		if ContainsOne(fieldName, "DialOpen", "EndDialOpen", "TamperOpen", "ApnWriteOpen") {
+		if ContainsOne(fieldName, "DialOpen", "EndDialOpen", "TamperOpen") {
 			continue
 		}
 

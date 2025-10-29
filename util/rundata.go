@@ -87,6 +87,7 @@ func init() {
 		{"设置副IP", "ViceIpWrite", "AT+IP2=%v\r\n", []string{"OK", "ERROR"}, "IP2=", 1000, true},
 		{"设置协议", "ProtocolWrite", "AT+JT808=%v\r\n", []string{"success"}, "AT+JT808=", 1000, true}, //写放到读前面
 		{"协议", "Protocol", "AT+JT808?\r\n", []string{"OK"}, "+JT808:", 1000, true},
+		{"设置APN", "ApnWrite", "AT+APN=%v\r\n", []string{"OK"}, "APN=", 1000, true},
 	}
 
 	allModifyDeviceItems = []TestItem{
@@ -96,6 +97,7 @@ func init() {
 		{"设置副IP", "ViceIpWrite", "AT+IP2=%v\r\n", []string{"OK", "ERROR"}, "IP2=", 1000, false},
 		{"设置协议", "ProtocolWrite", "AT+JT808=%v\r\n", []string{"OK", "ERROR"}, "AT+JT808=", 1000, true},
 		{"设置主IP", "MainIpWrite", "AT^MSG=server#%v#\r\n", []string{"OK", "ERROR"}, "IP=", 2000, true},
+		{"设置APN", "ApnWrite", "AT+APN=%v\r\n", []string{"OK"}, "APN=", 1000, true},
 	}
 
 	compareSnTestItems = []TestItem{
@@ -304,6 +306,10 @@ func SyncTestItems() {
 			if SelectedDeviceType.MainIpWriteOpen > 0 {
 				CurrTestItems = append(CurrTestItems, item)
 			}
+		case "ApnWrite":
+			if SelectedDeviceType.ApnWriteOpen > 0 {
+				CurrTestItems = append(CurrTestItems, item)
+			}
 		}
 	}
 }
@@ -394,6 +400,7 @@ func makeRecord(item MyTableRow, result string) db.TestRecord {
 	record.Operator = network.Username
 	record.UploadWay = "0"
 	record.PlanId = uint(network.CurrentPlan.Id)
+	record.SetApn = item.ApnWrite
 	return record
 }
 
