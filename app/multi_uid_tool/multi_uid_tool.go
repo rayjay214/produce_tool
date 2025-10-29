@@ -21,7 +21,7 @@ import (
 	. "github.com/lxn/walk/declarative"
 )
 
-var version = "V1.2"
+var version = "V1.3"
 var writeButton *walk.PushButton
 
 type SerialPortItem struct {
@@ -326,7 +326,7 @@ func runSerialDisplayWindow() {
 				OnClicked: func() {
 					writeButton.SetEnabled(false)
 					go func() {
-						defer writeButton.SetEnabled(true)
+						//defer writeButton.SetEnabled(true)
 						for i, item := range serialItems {
 							if !item.Selected {
 								continue
@@ -344,6 +344,10 @@ func runSerialDisplayWindow() {
 
 							process2(item.Name, listUid[nWrote], statusLineEdits[i], mw, wrote, left, selectedFilePath, rows)
 						}
+						mw.Synchronize(func() {
+							writeButton.SetEnabled(true)
+							writeButton.SetFocus()
+						})
 					}()
 				},
 			},
