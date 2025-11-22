@@ -37,7 +37,7 @@ func initLog() {
 	}
 }
 
-var version = "V2.4"
+var version = "V2.5"
 var selectedPlan *walk.ComboBox
 var selectedCom *walk.ComboBox
 var scanSn *walk.LineEdit
@@ -61,6 +61,7 @@ func refreshPlan() {
 	if network.CurrentPlan.SnType == "0" {
 		onlyCompareSn.SetChecked(true)
 	}
+	network.DoGetDeviceType(plan.DeviceType)
 	network.DoGetTotalNum()
 	totalCnt.SetText(fmt.Sprintf("总体(%v)", network.TotalCount))
 }
