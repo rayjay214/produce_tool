@@ -23,7 +23,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var version = "V2.4"
+var version = "V2.5"
 
 var tv *walk.TableView
 var tableColumns []TableViewColumn
@@ -581,7 +581,7 @@ func runMainWindow() {
 										walk.MsgBox(nil, "Error", "请选择生产计划", walk.MsgBoxIconError)
 										return
 									}
-									//util.CheckPorts() //USB的需要重新打开端口，串口的不需要，可以不调用此函数
+									util.CheckPorts() //USB的需要重新打开端口，串口的不需要，可以不调用此函数
 									util.DoTestAllPortsAllItems()
 								},
 							},
