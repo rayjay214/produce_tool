@@ -40,6 +40,9 @@ var blockedCom *walk.TextEdit
 // 测完是否关机
 var checkPowerOff *walk.CheckBox
 
+// usb模式
+var usbMode *walk.CheckBox
+
 // 阈值校验
 var checkSignalMin *walk.TextEdit
 var checkSignalMax *walk.TextEdit
@@ -332,9 +335,9 @@ func runMainWindow() {
 					},
 					GroupBox{
 						MinSize: Size{Width: 80, Height: 100},
-						MaxSize: Size{Width: 150, Height: 100},
+						MaxSize: Size{Width: 200, Height: 100},
 						Font:    Font{PointSize: 12, Family: fontFamily},
-						Title:   "测完是否关机:",
+						Title:   "额外选项:",
 						Layout:  HBox{},
 						Children: []Widget{
 							CheckBox{
@@ -342,9 +345,19 @@ func runMainWindow() {
 								Text:     "关机",
 								Font:     Font{PointSize: 10, Family: fontFamily},
 								MinSize:  Size{Width: 30, Height: 25},
-								MaxSize:  Size{Width: 50, Height: 25},
+								MaxSize:  Size{Width: 80, Height: 25},
 								OnCheckedChanged: func() {
 									util.PoweroffAfterTest = checkPowerOff.Checked()
+								},
+							},
+							CheckBox{
+								AssignTo: &usbMode,
+								Text:     "usb模式",
+								Font:     Font{PointSize: 10, Family: fontFamily},
+								MinSize:  Size{Width: 30, Height: 25},
+								MaxSize:  Size{Width: 80, Height: 25},
+								OnCheckedChanged: func() {
+									util.IsUsbMode = usbMode.Checked()
 								},
 							},
 						},
@@ -456,6 +469,9 @@ func runMainWindow() {
 										Enabled:    false,
 										OnKeyPress: func(key walk.Key) {
 											if key == walk.KeyReturn {
+												if util.IsUsbMode {
+													util.CheckPorts() //USB的需要重新打开端口，串口的不需要，可以不调用此函数
+												}
 												if tv.CurrentIndex() < 0 || tv.CurrentIndex() > tv.Model().(*util.MyTableModel).RowCount() {
 													log.Infof("row %v invalid", tv.CurrentIndex())
 													tv.SetCurrentIndex(0)
@@ -496,7 +512,9 @@ func runMainWindow() {
 										walk.MsgBox(nil, "Error", "请选择型号", walk.MsgBoxIconError)
 										return
 									}
-									//util.CheckPorts() //USB的需要重新打开端口，串口的不需要，可以不调用此函数
+									if util.IsUsbMode {
+										util.CheckPorts() //USB的需要重新打开端口，串口的不需要，可以不调用此函数
+									}
 									util.DoTestAllPortsAllItems()
 								},
 							},
