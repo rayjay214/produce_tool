@@ -3,30 +3,31 @@ package db
 import "time"
 
 type TestRecord struct {
-	RecordID    uint      `gorm:"column:record_id;primaryKey;autoIncrement"`
-	Pass        string    `gorm:"column:pass"`
-	Version     string    `gorm:"column:version"`
-	Sim         string    `gorm:"column:sim"`
-	Imei        string    `gorm:"column:imei"`
-	Sn          string    `gorm:"column:sn"`
-	Signal      string    `gorm:"column:signal"`
-	Gps         string    `gorm:"column:gps"`
-	Gsensor     string    `gorm:"column:gsensor"`
-	Wifi        string    `gorm:"column:wifi"`
-	Light       string    `gorm:"column:light"`
-	MainIp      string    `gorm:"column:main_ip"`
-	ViceIp      string    `gorm:"column:vice_ip"`
-	SetType     string    `gorm:"column:set_type"`
-	Power       string    `gorm:"column:power"`
-	Protocol    string    `gorm:"column:protocol"`
-	SetMainIp   string    `gorm:"column:set_main_ip"`
-	SetViceIp   string    `gorm:"column:set_vice_ip"`
-	SetProtocol string    `gorm:"column:set_protocol"`
-	Operator    string    `gorm:"column:operator"`
-	UploadWay   string    `gorm:"column:upload_way"`
-	PlanId      uint      `gorm:"column:plan_id"`
-	SetApn      string    `gorm:"column:set_apn"`
-	CreateTime  time.Time `gorm:"column:create_time;primaryKey"`
+	RecordID     uint      `gorm:"column:record_id;primaryKey;autoIncrement"`
+	Pass         string    `gorm:"column:pass"`
+	Version      string    `gorm:"column:version"`
+	Sim          string    `gorm:"column:sim"`
+	Imei         string    `gorm:"column:imei"`
+	Sn           string    `gorm:"column:sn"`
+	Signal       string    `gorm:"column:signal"`
+	Gps          string    `gorm:"column:gps"`
+	Gsensor      string    `gorm:"column:gsensor"`
+	Wifi         string    `gorm:"column:wifi"`
+	Light        string    `gorm:"column:light"`
+	MainIp       string    `gorm:"column:main_ip"`
+	ViceIp       string    `gorm:"column:vice_ip"`
+	SetType      string    `gorm:"column:set_type"`
+	Power        string    `gorm:"column:power"`
+	Protocol     string    `gorm:"column:protocol"`
+	SetMainIp    string    `gorm:"column:set_main_ip"`
+	SetViceIp    string    `gorm:"column:set_vice_ip"`
+	SetProtocol  string    `gorm:"column:set_protocol"`
+	Operator     string    `gorm:"column:operator"`
+	UploadWay    string    `gorm:"column:upload_way"`
+	PlanId       uint      `gorm:"column:plan_id"`
+	SetApn       string    `gorm:"column:set_apn"`
+	SetWifiPrior string    `gorm:"column:set_wifi_prior"`
+	CreateTime   time.Time `gorm:"column:create_time;primaryKey"`
 }
 
 func (TestRecord) TableName() string {

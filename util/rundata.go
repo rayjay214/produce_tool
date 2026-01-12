@@ -89,6 +89,7 @@ func init() {
 		{"设置协议", "ProtocolWrite", "AT+JT808=%v\r\n", []string{"success"}, "AT+JT808=", 1000, true}, //写放到读前面
 		{"协议", "Protocol", "AT+JT808?\r\n", []string{"OK"}, "+JT808:", 1000, true},
 		{"设置APN", "ApnWrite", "AT+APN=%v\r\n", []string{"OK"}, "APN=", 1000, true},
+		{"设置WIFI优先", "WifiPriorWrite", "AT+DWYXJ=%v\r\n", []string{"OK"}, "AT+DWYXJ=", 1000, true},
 	}
 
 	allModifyDeviceItems = []TestItem{
@@ -99,6 +100,7 @@ func init() {
 		{"设置协议", "ProtocolWrite", "AT+JT808=%v\r\n", []string{"OK", "ERROR"}, "AT+JT808=", 1000, true},
 		{"设置主IP", "MainIpWrite", "AT^MSG=server#%v#\r\n", []string{"OK", "ERROR"}, "IP=", 2000, true},
 		{"设置APN", "ApnWrite", "AT+APN=%v\r\n", []string{"OK"}, "APN=", 1000, true},
+		{"设置WIFI优先", "WifiPriorWrite", "AT+DWYXJ=%v\r\n", []string{"OK"}, "AT+DWYXJ=", 1000, true},
 	}
 
 	compareSnTestItems = []TestItem{
@@ -309,6 +311,10 @@ func SyncTestItems() {
 			}
 		case "ApnWrite":
 			if SelectedDeviceType.ApnWriteOpen > 0 {
+				CurrTestItems = append(CurrTestItems, item)
+			}
+		case "WifiPriorWrite":
+			if SelectedDeviceType.WifiPriorWriteOpen > 0 {
 				CurrTestItems = append(CurrTestItems, item)
 			}
 		}

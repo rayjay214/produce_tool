@@ -54,6 +54,7 @@ type DeviceTypeDetail struct {
 	WriteImei         string      `json:"writeImei"`
 	WriteApn          string      `json:"writeApn"`
 	Apn               string      `json:"apn"`
+	WriteWifiPrior    string      `json:"writeWifiPrior"`
 	CreatedAt         string      `json:"createdAt"`
 	UpdatedAt         string      `json:"updatedAt"`
 	DeletedAt         interface{} `json:"deletedAt"`

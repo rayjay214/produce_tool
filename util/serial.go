@@ -178,6 +178,11 @@ func setApn(myport *MyPort, pass *PassParam) {
 	modifyDevice(myport, pass, "ApnWrite", value, false)
 }
 
+func setWifiPrior(myport *MyPort, pass *PassParam) {
+	value := "0"
+	modifyDevice(myport, pass, "WifiPriorWrite", value, false)
+}
+
 func setDevice(myport *MyPort, pass *PassParam, colName string) {
 	switch colName {
 	case "SetType":
@@ -190,6 +195,8 @@ func setDevice(myport *MyPort, pass *PassParam, colName string) {
 		setMainIp(myport, pass)
 	case "ApnWrite":
 		setApn(myport, pass)
+	case "WifiPriorWrite":
+		setWifiPrior(myport, pass)
 	}
 }
 
@@ -200,7 +207,7 @@ func writeItems(myport *MyPort, items []TestItem, pass *PassParam) {
 	bForceStop := false
 	for _, item := range items {
 		//设置操作此处处理，下面的是读取值
-		if ContainsOne(item.ModelColName, "SetType", "ViceIpWrite", "ProtocolWrite", "MainIpWrite", "ApnWrite") {
+		if ContainsOne(item.ModelColName, "SetType", "ViceIpWrite", "ProtocolWrite", "MainIpWrite", "ApnWrite", "WifiPriorWrite") {
 			setDevice(myport, pass, item.ModelColName)
 			continue
 		}
