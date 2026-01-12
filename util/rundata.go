@@ -408,6 +408,7 @@ func makeRecord(item MyTableRow, result string) db.TestRecord {
 	record.UploadWay = "0"
 	record.PlanId = uint(network.CurrentPlan.Id)
 	record.SetApn = item.ApnWrite
+	record.SetWifiPrior = item.WifiPriorWrite
 	return record
 }
 
