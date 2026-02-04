@@ -23,7 +23,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var version = "V2.6"
+var version = "V2.7"
 
 var tv *walk.TableView
 var tableColumns []TableViewColumn
@@ -242,9 +242,11 @@ func refreshType() {
 	modifyIp.SetText(fmt.Sprintf("%v:%v", selectedType.MainIp, selectedType.MainPort))
 	modifyApn.SetText(selectedType.APN)
 	network.DoGetDeviceType(selectedType.DeviceType)
-	if network.CurrentType.SnType == "1" {
-		textHeader.SetText(network.CurrentType.ImeiPrefix)
-	}
+	/*
+		if network.CurrentType.SnType == "1" {
+			textHeader.SetText(network.CurrentType.ImeiPrefix)
+		}
+	*/
 	if network.CurrentType.WriteSn == "1" {
 		checkSn.SetChecked(true)
 	}

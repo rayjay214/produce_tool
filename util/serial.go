@@ -321,9 +321,11 @@ func writeItems(myport *MyPort, items []TestItem, pass *PassParam) {
 		}
 
 		if item.ModelColName == "Sn" {
-			if showValue == "13100018888" || len(showValue) != 11 {
-				showValue = fmt.Sprintf("%v(失败)", showValue)
-			}
+			/*
+				if showValue == "13100018888" || len(showValue) != 11 {
+					showValue = fmt.Sprintf("%v(失败)", showValue)
+				}
+			*/
 		}
 
 		if item.IsShow {

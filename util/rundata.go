@@ -369,7 +369,7 @@ func DoFinish(myport *MyPort, item *MyTableRow) {
 		}
 	}
 
-	if bPass && item.Sn != "" && item.Sn != "13100018888" {
+	if bPass && (item.Sn != "" || item.Imei != "") {
 		conf.CntMutex.Lock()
 		conf.PassedCnt += 1
 		conf.CntMutex.Unlock()
