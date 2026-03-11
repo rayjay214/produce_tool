@@ -73,6 +73,7 @@ func init() {
 		{"设置型号", "SetType", "AT+SET=\r\n", []string{"OK", "ERROR"}, "\n\rat+set=", 2000, true},
 		{"设置副IP", "ViceIpWrite", "AT+IP2=%v\r\n", []string{"OK", "ERROR"}, "IP2=", 1000, true},
 		{"电量", "Power", "AT+STATUS\r\n", []string{"ADC"}, "AT+STATUS", 1000, true},
+		{"设置APN", "ApnWrite", "AT+APN=%v\r\n", []string{"OK"}, "APN=", 1000, true},
 	}
 
 	allModifyDeviceItems = []TestItem{
@@ -80,6 +81,7 @@ func init() {
 		{"SN", "Sn", "AT+SN=%v\r\n", []string{"OK", "ERROR"}, "SN:", 1000, true},
 		{"设置型号", "SetType", "AT+SET=%v\r\n", []string{"OK", "ERROR"}, "\n\rat+set=", 1000, true},
 		{"设置副IP", "ViceIpWrite", "AT+IP2=%v\r\n", []string{"OK", "ERROR"}, "IP2=", 1000, false},
+		{"设置APN", "ApnWrite", "AT+APN=%v\r\n", []string{"OK"}, "APN=", 1000, true},
 	}
 
 	compareSnTestItems = []TestItem{
@@ -263,6 +265,10 @@ func SyncTestItems() {
 			}
 		case "Power":
 			if SelectedDeviceType.PowerOpen > 0 {
+				CurrTestItems = append(CurrTestItems, item)
+			}
+		case "ApnWrite":
+			if SelectedDeviceType.ApnWriteOpen > 0 {
 				CurrTestItems = append(CurrTestItems, item)
 			}
 		}

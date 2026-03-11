@@ -153,6 +153,11 @@ func setViceIp(myport *MyPort, pass *PassParam) {
 	modifyDevice(myport, pass, "ViceIpWrite", value, false)
 }
 
+func setApn(myport *MyPort, pass *PassParam) {
+	value := fmt.Sprintf("%v", SelectedDeviceType.APN)
+	modifyDevice(myport, pass, "ApnWrite", value, false)
+}
+
 func writeItems(myport *MyPort, items []TestItem, pass *PassParam) {
 	var wg sync.WaitGroup
 	model := GetTableModel()
@@ -166,6 +171,11 @@ func writeItems(myport *MyPort, items []TestItem, pass *PassParam) {
 
 		if item.ModelColName == "ViceIpWrite" {
 			setViceIp(myport, pass)
+			continue
+		}
+
+		if item.ModelColName == "ApnWrite" {
+			setApn(myport, pass)
 			continue
 		}
 

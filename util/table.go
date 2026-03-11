@@ -22,6 +22,7 @@ type MyTableRow struct {
 	SetType     string
 	ViceIpWrite string
 	Power       string
+	ApnWrite    string
 }
 
 type MyTableModel struct {
