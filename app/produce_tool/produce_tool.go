@@ -23,7 +23,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var version = "V2.7"
+var version = "V2.8"
 
 var tv *walk.TableView
 var tableColumns []TableViewColumn
@@ -376,7 +376,7 @@ func runMainWindow() {
 					*/
 					GroupBox{
 						MinSize: Size{Width: 80, Height: 100},
-						MaxSize: Size{Width: 250, Height: 100},
+						MaxSize: Size{Width: 350, Height: 100},
 						Title:   "请选择生产计划:",
 						Font:    Font{PointSize: 12, Family: fontFamily},
 						Layout:  HBox{},
@@ -387,7 +387,7 @@ func runMainWindow() {
 								Model:         model.AllPlans,
 								BindingMember: "Id",
 								DisplayMember: "DisplayName",
-								MaxSize:       Size{Width: 200, Height: btnHeight},
+								MaxSize:       Size{Width: 320, Height: btnHeight},
 
 								OnCurrentIndexChanged: refreshPlan,
 							},
