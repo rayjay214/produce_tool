@@ -35,7 +35,7 @@ func initLog() {
 	}
 }
 
-var version = "V2.2"
+var version = "V2.3"
 var selectedPlan *walk.ComboBox
 var boxSn *walk.LineEdit
 var deviceSn *walk.LineEdit
@@ -89,7 +89,7 @@ func runSnCompareWindow() {
 		AssignTo: &mw,
 		Title:    fmt.Sprintf("彩盒标机身标比对工具%v", version),
 		Font:     Font{PointSize: viceFontSize, Family: fontFamily},
-		Size:     Size{Width: 600, Height: 350},
+		Size:     Size{Width: 700, Height: 350},
 		Layout:   VBox{Alignment: AlignHNearVNear},
 		OnSizeChanged: func() {
 			screenWidth := int(win.GetSystemMetrics(win.SM_CXSCREEN))
@@ -123,7 +123,7 @@ func runSnCompareWindow() {
 								BindingMember:         "Id",
 								DisplayMember:         "DisplayName",
 								OnCurrentIndexChanged: refreshPlan,
-								MaxSize:               Size{Width: 45},
+								MaxSize:               Size{Width: 300},
 							},
 							Label{
 								Text:    "彩盒SN:",
@@ -135,7 +135,7 @@ func runSnCompareWindow() {
 								AssignTo: &boxSn,
 								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
 								MinSize:  Size{Width: 50},
-								MaxSize:  Size{Width: 200},
+								MaxSize:  Size{Width: 300},
 								OnMouseDown: func(x, y int, button walk.MouseButton) {
 									boxSn.SetText("")
 								},
@@ -155,7 +155,7 @@ func runSnCompareWindow() {
 								AssignTo: &deviceSn,
 								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
 								MinSize:  Size{Width: 35},
-								MaxSize:  Size{Width: 200},
+								MaxSize:  Size{Width: 300},
 								OnMouseDown: func(x, y int, button walk.MouseButton) {
 									deviceSn.SetText("")
 								},

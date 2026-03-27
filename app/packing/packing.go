@@ -41,7 +41,7 @@ func initLog() {
 	}
 }
 
-var version = "V3.0"
+var version = "V3.1"
 var selectedPlan *walk.ComboBox
 var selectedCount *walk.ComboBox
 var customCount *walk.LineEdit
@@ -237,7 +237,7 @@ func runSnCompareWindow() {
 								BindingMember:         "Id",
 								DisplayMember:         "DisplayName",
 								OnCurrentIndexChanged: refreshPlan,
-								MaxSize:               Size{Width: 45},
+								MaxSize:               Size{Width: 300},
 							},
 							Label{
 								Text:    "选择数量:",
@@ -249,7 +249,7 @@ func runSnCompareWindow() {
 								AssignTo: &selectedCount,
 								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
 								Model:    []string{"50", "70", "100", "10", "5"},
-								MaxSize:  Size{Width: 45},
+								MaxSize:  Size{Width: 300},
 							},
 							CheckBox{
 								AssignTo: &customCheck,
@@ -271,7 +271,7 @@ func runSnCompareWindow() {
 							LineEdit{
 								AssignTo: &customCount,
 								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
-								MaxSize:  Size{Width: 45},
+								MaxSize:  Size{Width: 300},
 								Enabled:  false,
 							},
 							Label{
@@ -284,7 +284,7 @@ func runSnCompareWindow() {
 								AssignTo: &itemDesc,
 								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
 								MinSize:  Size{Width: 50},
-								MaxSize:  Size{Width: 200},
+								MaxSize:  Size{Width: 300},
 							},
 							Label{
 								Text:    "产品编码:",
@@ -296,7 +296,7 @@ func runSnCompareWindow() {
 								AssignTo: &itemCode,
 								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
 								MinSize:  Size{Width: 50},
-								MaxSize:  Size{Width: 200},
+								MaxSize:  Size{Width: 300},
 							},
 							Label{
 								Text:    "备注:",
@@ -308,7 +308,7 @@ func runSnCompareWindow() {
 								AssignTo: &remark,
 								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
 								MinSize:  Size{Width: 50},
-								MaxSize:  Size{Width: 200},
+								MaxSize:  Size{Width: 300},
 							},
 							Label{
 								Text:    "扫描SN:",
@@ -320,7 +320,7 @@ func runSnCompareWindow() {
 								AssignTo: &scanSn,
 								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
 								MinSize:  Size{Width: 35},
-								MaxSize:  Size{Width: 200},
+								MaxSize:  Size{Width: 300},
 								OnMouseDown: func(x, y int, button walk.MouseButton) {
 									scanSn.SetText("")
 								},

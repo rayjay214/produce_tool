@@ -38,7 +38,7 @@ func initLog() {
 	}
 }
 
-var version = "V2.7"
+var version = "V2.9"
 var selectedPlan *walk.ComboBox
 var scanSn *walk.LineEdit
 var resultEdit *walk.LineEdit
@@ -62,7 +62,7 @@ func runPrintWindow(btAppDispatch *ole.IDispatch) {
 		AssignTo: &mw,
 		Title:    fmt.Sprintf("标签打印工具%v", version),
 		Font:     Font{PointSize: viceFontSize, Family: fontFamily},
-		Size:     Size{Width: 600, Height: 200},
+		Size:     Size{Width: 750, Height: 200},
 		Layout:   VBox{Alignment: AlignHNearVNear},
 		OnSizeChanged: func() {
 			screenWidth := int(win.GetSystemMetrics(win.SM_CXSCREEN))
@@ -96,7 +96,7 @@ func runPrintWindow(btAppDispatch *ole.IDispatch) {
 								BindingMember:         "Id",
 								DisplayMember:         "DisplayName",
 								OnCurrentIndexChanged: refreshPlan,
-								MaxSize:               Size{Width: 45},
+								MaxSize:               Size{Width: 300},
 							},
 							Label{
 								Text:    "扫描打印:",
@@ -108,7 +108,7 @@ func runPrintWindow(btAppDispatch *ole.IDispatch) {
 								AssignTo: &scanSn,
 								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
 								MinSize:  Size{Width: 35},
-								MaxSize:  Size{Width: 200},
+								MaxSize:  Size{Width: 300},
 								OnMouseDown: func(x, y int, button walk.MouseButton) {
 									scanSn.SetText("")
 								},
@@ -151,7 +151,7 @@ func runPrintWindow(btAppDispatch *ole.IDispatch) {
 								AssignTo: &printCnt,
 								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
 								MinSize:  Size{Width: 35},
-								MaxSize:  Size{Width: 200},
+								MaxSize:  Size{Width: 300},
 								Text:     "1",
 							},
 						},

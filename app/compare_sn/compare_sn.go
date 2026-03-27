@@ -37,7 +37,7 @@ func initLog() {
 	}
 }
 
-var version = "V2.6"
+var version = "V2.7"
 var selectedPlan *walk.ComboBox
 var selectedCom *walk.ComboBox
 var scanSn *walk.LineEdit
@@ -89,7 +89,7 @@ func runSnCompareWindow() {
 		AssignTo: &mw,
 		Title:    fmt.Sprintf("SN比对工具%v", version),
 		Font:     Font{PointSize: viceFontSize, Family: fontFamily},
-		Size:     Size{Width: 750, Height: 350},
+		Size:     Size{Width: 850, Height: 350},
 		Layout:   VBox{Alignment: AlignHNearVNear},
 		OnSizeChanged: func() {
 			screenWidth := int(win.GetSystemMetrics(win.SM_CXSCREEN))
@@ -114,7 +114,7 @@ func runSnCompareWindow() {
 								Text:    "选择生产计划:",
 								Font:    Font{PointSize: viceFontSize, Family: fontFamily},
 								MinSize: Size{Width: 35},
-								MaxSize: Size{Width: 90},
+								MaxSize: Size{Width: 120},
 							},
 							ComboBox{
 								AssignTo:              &selectedPlan,
@@ -123,7 +123,7 @@ func runSnCompareWindow() {
 								BindingMember:         "Id",
 								DisplayMember:         "DisplayName",
 								OnCurrentIndexChanged: refreshPlan,
-								MaxSize:               Size{Width: 45},
+								MaxSize:               Size{Width: 300},
 							},
 							Label{
 								Text:    "选择端口:",
@@ -148,7 +148,7 @@ func runSnCompareWindow() {
 								AssignTo: &scanSn,
 								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
 								MinSize:  Size{Width: 50},
-								MaxSize:  Size{Width: 200},
+								MaxSize:  Size{Width: 300},
 								OnKeyPress: func(key walk.Key) {
 									if key == walk.KeyReturn {
 										if network.CurrentPlan.Id == 0 {
@@ -172,7 +172,7 @@ func runSnCompareWindow() {
 								AssignTo: &readSn,
 								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
 								MinSize:  Size{Width: 35},
-								MaxSize:  Size{Width: 200},
+								MaxSize:  Size{Width: 300},
 								ReadOnly: true,
 							},
 							Label{
@@ -185,7 +185,7 @@ func runSnCompareWindow() {
 								AssignTo: &readImei,
 								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
 								MinSize:  Size{Width: 35},
-								MaxSize:  Size{Width: 200},
+								MaxSize:  Size{Width: 300},
 								ReadOnly: true,
 							},
 							Label{
@@ -198,7 +198,7 @@ func runSnCompareWindow() {
 								AssignTo: &imeiPrefix,
 								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
 								MinSize:  Size{Width: 35},
-								MaxSize:  Size{Width: 200},
+								MaxSize:  Size{Width: 300},
 							},
 							CheckBox{
 								Text:       "只比对SN",
