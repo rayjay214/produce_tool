@@ -37,7 +37,7 @@ func initLog() {
 	}
 }
 
-var version = "V2.7"
+var version = "V2.8"
 var selectedPlan *walk.ComboBox
 var selectedCom *walk.ComboBox
 var scanSn *walk.LineEdit
@@ -51,6 +51,9 @@ var onlyCompareSn *walk.CheckBox
 
 var totalCnt *walk.Label
 var passedCnt *walk.Label
+
+// usb模式
+var usbMode *walk.CheckBox
 
 func refreshPlan() {
 	if selectedPlan.CurrentIndex() == -1 {
@@ -155,6 +158,9 @@ func runSnCompareWindow() {
 											walk.MsgBox(nil, "Error", "请选择生产计划", walk.MsgBoxIconError)
 											return
 										}
+										if util.IsUsbMode {
+											util.CheckPorts() //USB的需要重新打开端口，串口的不需要，可以不调用此函数
+										}
 										util.DoTestOnePortCompareSn(selectedCom.Text(), scanSn, imeiPrefix.Text(), readSn, readImei, resultEdit, onlyCompareSn.Checked())
 									}
 								},
@@ -201,13 +207,22 @@ func runSnCompareWindow() {
 								MaxSize:  Size{Width: 300},
 							},
 							CheckBox{
-								Text:       "只比对SN",
-								Font:       Font{PointSize: viceFontSize, Family: fontFamily},
-								AssignTo:   &onlyCompareSn,
-								MinSize:    Size{Width: 60, Height: 25},
-								MaxSize:    Size{Width: 200, Height: 25},
-								Enabled:    true,
-								ColumnSpan: 2,
+								Text:     "只比对SN",
+								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
+								AssignTo: &onlyCompareSn,
+								MinSize:  Size{Width: 60, Height: 25},
+								MaxSize:  Size{Width: 200, Height: 25},
+								Enabled:  true,
+							},
+							CheckBox{
+								AssignTo: &usbMode,
+								Text:     "usb模式",
+								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
+								MinSize:  Size{Width: 30, Height: 25},
+								MaxSize:  Size{Width: 80, Height: 25},
+								OnCheckedChanged: func() {
+									util.IsUsbMode = usbMode.Checked()
+								},
 							},
 							Label{
 								AssignTo: &totalCnt,
