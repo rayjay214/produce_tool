@@ -55,6 +55,7 @@ var CompareMainIp string
 var CompareViceIp string
 
 var PoweroffAfterTest bool
+var IsUsbMode bool
 
 func init() {
 	allTestItems = []TestItem{

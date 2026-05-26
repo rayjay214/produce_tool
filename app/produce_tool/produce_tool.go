@@ -40,6 +40,9 @@ var blockedCom *walk.TextEdit
 // 测完是否关机
 var checkPowerOff *walk.CheckBox
 
+// usb模式
+var usbMode *walk.CheckBox
+
 // 阈值校验
 var checkSignalMin *walk.TextEdit
 var checkSignalMax *walk.TextEdit
@@ -396,6 +399,16 @@ func runMainWindow() {
 									util.PoweroffAfterTest = checkPowerOff.Checked()
 								},
 							},
+							CheckBox{
+								AssignTo: &usbMode,
+								Text:     "usb模式",
+								Font:     Font{PointSize: 10, Family: fontFamily},
+								MinSize:  Size{Width: 30, Height: 25},
+								MaxSize:  Size{Width: 80, Height: 25},
+								OnCheckedChanged: func() {
+									util.IsUsbMode = usbMode.Checked()
+								},
+							},
 						},
 					},
 				},
@@ -504,6 +517,9 @@ func runMainWindow() {
 										ColumnSpan: 2,
 										Enabled:    false,
 										OnKeyPress: func(key walk.Key) {
+											if util.IsUsbMode {
+												util.CheckPorts() //USB的需要重新打开端口，串口的不需要，可以不调用此函数
+											}
 											if key == walk.KeyReturn {
 												if tv.CurrentIndex() < 0 || tv.CurrentIndex() > tv.Model().(*util.MyTableModel).RowCount() {
 													log.Infof("row %v invalid", tv.CurrentIndex())
@@ -546,6 +562,9 @@ func runMainWindow() {
 										return
 									}
 									//util.CheckPorts() //USB的需要重新打开端口，串口的不需要，可以不调用此函数
+									if util.IsUsbMode {
+										util.CheckPorts() //USB的需要重新打开端口，串口的不需要，可以不调用此函数
+									}
 									util.DoTestAllPortsAllItems()
 								},
 							},
