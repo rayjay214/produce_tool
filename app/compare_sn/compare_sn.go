@@ -37,13 +37,15 @@ func initLog() {
 	}
 }
 
-var version = "V2.8"
+var version = "V2.9"
 var selectedPlan *walk.ComboBox
 var selectedCom *walk.ComboBox
 var scanSn *walk.LineEdit
 var readSn *walk.LineEdit
 var readImei *walk.LineEdit
 var imeiPrefix *walk.LineEdit
+var modeLabel *walk.Label
+var mode *walk.LineEdit
 
 // var resultButton *walk.PushButton
 var resultEdit *walk.LineEdit
@@ -65,6 +67,13 @@ func refreshPlan() {
 		onlyCompareSn.SetChecked(true)
 	}
 	network.DoGetDeviceType(plan.DeviceType)
+	if network.CurrentType.IsUltraLong == "1" {
+		modeLabel.SetVisible(true)
+		mode.SetVisible(true)
+	} else {
+		modeLabel.SetVisible(false)
+		mode.SetVisible(false)
+	}
 	network.DoGetTotalNum()
 	totalCnt.SetText(fmt.Sprintf("总体(%v)", network.TotalCount))
 }
@@ -161,7 +170,23 @@ func runSnCompareWindow() {
 										if util.IsUsbMode {
 											util.CheckPorts() //USB的需要重新打开端口，串口的不需要，可以不调用此函数
 										}
-										util.DoTestOnePortCompareSn(selectedCom.Text(), scanSn, imeiPrefix.Text(), readSn, readImei, resultEdit, onlyCompareSn.Checked())
+										param := util.CompareSnParams{
+											PortName:      selectedCom.Text(),
+											ScanSnEdit:    scanSn,
+											ImeiPrefix:    imeiPrefix.Text(),
+											ReadSnEdit:    readSn,
+											ReadImeiEdit:  readImei,
+											ResultEdit:    resultEdit,
+											ModeEdit:      mode,
+											OnlyCompareSn: onlyCompareSn.Checked(),
+											SetMode:       false,
+										}
+										//超长待机设备要切换成超长待机模式
+										if network.CurrentType.IsUltraLong == "1" {
+											param.SetMode = true
+										}
+
+										util.DoTestOnePortCompareSn(param)
 									}
 								},
 								OnMouseDown: func(x, y int, button walk.MouseButton) {
@@ -206,6 +231,22 @@ func runSnCompareWindow() {
 								MinSize:  Size{Width: 35},
 								MaxSize:  Size{Width: 300},
 							},
+							Label{
+								AssignTo: &modeLabel,
+								Text:     "模式:",
+								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
+								MinSize:  Size{Width: 35},
+								MaxSize:  Size{Width: 80},
+								Visible:  false,
+							},
+							LineEdit{
+								AssignTo: &mode,
+								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
+								MinSize:  Size{Width: 35},
+								MaxSize:  Size{Width: 300},
+								Visible:  false,
+								ReadOnly: true,
+							},
 							CheckBox{
 								Text:     "只比对SN",
 								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
@@ -248,17 +289,6 @@ func runSnCompareWindow() {
 							PointSize: 30,
 						},
 					},
-
-					/*
-						PushButton{
-							AssignTo: &resultButton,
-							Font: Font{
-								PointSize: 20,
-								Family:    fontFamily,
-							},
-							Enabled: false,
-						},
-					*/
 				},
 			},
 		},

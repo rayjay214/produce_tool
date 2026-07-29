@@ -44,6 +44,7 @@ var allModifyDeviceItems []TestItem
 
 // 用于sn对比工具
 var compareSnTestItems []TestItem
+var compareSnWithModeTestItems []TestItem
 
 // 用于写号工具
 var readSnTestItems []TestItem
@@ -109,6 +110,13 @@ func init() {
 		{"SN", "Sn", "AT+SN?\r\n", []string{"OK", "ERROR"}, "SN:", 200, true},
 	}
 
+	compareSnWithModeTestItems = []TestItem{
+		{"开启回显", "Back", "ATE1\r\n", []string{"OK"}, "", 200, false},
+		{"IMEI", "Imei", "AT+IMEI\r\n", []string{"OK", "ERROR"}, "AT+IMEI", 200, true},
+		{"SN", "Sn", "AT+SN?\r\n", []string{"OK", "ERROR"}, "SN:", 200, true},
+		{"MODE", "Mode", "AT+MODE=0\r\n", []string{"OK", "ERROR"}, "MODE:", 200, true},
+	}
+
 	readSnTestItems = []TestItem{
 		//{"开启回显", "Back", "ATE1\r\n", []string{"OK"}, "", 2000, false},
 		{"SN", "Sn", "AT+SN?\r\n", []string{"OK", "ERROR"}, "SN:", 2000, true},
@@ -148,6 +156,10 @@ func GetAllTestItems() []TestItem {
 
 func GetCompareSnTestItems() []TestItem {
 	return compareSnTestItems
+}
+
+func GetCompareSnWithModeTestItems() []TestItem {
+	return compareSnWithModeTestItems
 }
 
 func GetReadSnTestItems() []TestItem {

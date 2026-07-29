@@ -17,8 +17,8 @@ import (
 	"time"
 )
 
-func readSnImei(myport *MyPort, items []TestItem, pass *PassParam) (string, string) {
-	var sn, imei string
+func readSnImei(myport *MyPort, items []TestItem, pass *PassParam) (string, string, string) {
+	var sn, imei, mode string
 	for _, item := range items {
 		b := writeComm(myport, item, pass)
 		_, respValue := getValue(pass.str, item.ShowKey)
@@ -39,51 +39,63 @@ func readSnImei(myport *MyPort, items []TestItem, pass *PassParam) (string, stri
 			sn = showValue
 		}
 
+		if item.Desc == "MODE" {
+			mode = showValue
+		}
 	}
 	pass.stopReader = true
 	pass.stopWriter = true
 
-	return sn, imei
+	return sn, imei, mode
 }
 
-func compareSn(onlyCompareSn bool, prefix, sn, imei, scanSn string, scanSnEdit, resultEdit *walk.LineEdit, record db.CheckSnRecord) {
-	if onlyCompareSn {
+func compareSn(p CompareSnParams, sn, imei, scanSn string, record db.CheckSnRecord) {
+	if p.OnlyCompareSn {
 		if sn == scanSn {
 			err := db.CheckCompareSn(sn, network.CurrentPlan.Id)
 			if err != nil {
 				brush, _ := walk.NewSolidColorBrush(walk.RGB(255, 0, 0))
-				resultEdit.SetBackground(brush)
-				resultEdit.SetText(err.Error())
+				p.ResultEdit.SetBackground(brush)
+				p.ResultEdit.SetText(err.Error())
 			} else {
+				if p.SetMode {
+					if p.ModeResult != "0" {
+						brush, _ := walk.NewSolidColorBrush(walk.RGB(255, 0, 0))
+						p.ResultEdit.SetBackground(brush)
+						p.ResultEdit.SetText("模式设置失败")
+						p.ScanSnEdit.SetText("")
+						return
+					}
+				}
 				brush, _ := walk.NewSolidColorBrush(walk.RGB(0, 255, 0))
-				resultEdit.SetBackground(brush)
-				resultEdit.SetText("PASS")
-				scanSnEdit.SetText("")
+				p.ResultEdit.SetBackground(brush)
+				p.ResultEdit.SetText("PASS")
+				p.ScanSnEdit.SetText("")
 				db.WriteCheckSnLog(record)
 				db.CompareStatus(sn)
 			}
 		} else if sn != scanSn {
 			brush, _ := walk.NewSolidColorBrush(walk.RGB(255, 0, 0))
-			resultEdit.SetBackground(brush)
-			resultEdit.SetText("比对失败")
+			p.ResultEdit.SetBackground(brush)
+			p.ResultEdit.SetText("比对失败")
 			db.InsertCompareFailedRecord(sn, scanSn, "0", "0")
 		} else {
 			brush, _ := walk.NewSolidColorBrush(walk.RGB(255, 0, 0))
-			resultEdit.SetBackground(brush)
-			resultEdit.SetText("FAIL")
+			p.ResultEdit.SetBackground(brush)
+			p.ResultEdit.SetText("FAIL")
 		}
 	} else {
-		if sn == scanSn && imei == (prefix+scanSn) {
+		if sn == scanSn && imei == (p.ImeiPrefix+scanSn) {
 			err := db.CheckCompareSn(sn, network.CurrentPlan.Id)
 			if err != nil {
 				brush, _ := walk.NewSolidColorBrush(walk.RGB(255, 0, 0))
-				resultEdit.SetBackground(brush)
-				resultEdit.SetText(err.Error())
+				p.ResultEdit.SetBackground(brush)
+				p.ResultEdit.SetText(err.Error())
 			} else {
 				brush, _ := walk.NewSolidColorBrush(walk.RGB(0, 255, 0))
-				resultEdit.SetBackground(brush)
-				resultEdit.SetText("PASS")
-				scanSnEdit.SetText("")
+				p.ResultEdit.SetBackground(brush)
+				p.ResultEdit.SetText("PASS")
+				p.ScanSnEdit.SetText("")
 				db.WriteCheckSnLog(record)
 				if network.CurrentPlan.SnType == "1" {
 					db.CompareStatus(imei)
@@ -93,65 +105,85 @@ func compareSn(onlyCompareSn bool, prefix, sn, imei, scanSn string, scanSnEdit, 
 			}
 		} else if sn != scanSn {
 			brush, _ := walk.NewSolidColorBrush(walk.RGB(255, 0, 0))
-			resultEdit.SetBackground(brush)
-			resultEdit.SetText("比对失败")
-			db.InsertCompareFailedRecord(sn, scanSn, imei, prefix+scanSn)
-		} else if imei != (prefix + scanSn) {
+			p.ResultEdit.SetBackground(brush)
+			p.ResultEdit.SetText("比对失败")
+			db.InsertCompareFailedRecord(sn, scanSn, imei, p.ImeiPrefix+scanSn)
+		} else if imei != (p.ImeiPrefix + scanSn) {
 			brush, _ := walk.NewSolidColorBrush(walk.RGB(255, 0, 0))
-			resultEdit.SetBackground(brush)
-			resultEdit.SetText("IMEI前缀错误")
-			db.InsertCompareFailedRecord(sn, scanSn, imei, prefix+scanSn)
+			p.ResultEdit.SetBackground(brush)
+			p.ResultEdit.SetText("IMEI前缀错误")
+			db.InsertCompareFailedRecord(sn, scanSn, imei, p.ImeiPrefix+scanSn)
 		} else {
 			brush, _ := walk.NewSolidColorBrush(walk.RGB(255, 0, 0))
-			resultEdit.SetBackground(brush)
-			resultEdit.SetText("FAIL")
+			p.ResultEdit.SetBackground(brush)
+			p.ResultEdit.SetText("FAIL")
 		}
 	}
 }
 
-func compareImei(prefix, imei, scanSn string, scanSnEdit, resultEdit *walk.LineEdit, record db.CheckSnRecord) {
+func compareImei(p CompareSnParams, imei, scanSn string, record db.CheckSnRecord) {
 	if imei == scanSn {
 		err := db.CheckCompareSn(imei, network.CurrentPlan.Id)
 		if err != nil {
 			brush, _ := walk.NewSolidColorBrush(walk.RGB(255, 0, 0))
-			resultEdit.SetBackground(brush)
-			resultEdit.SetText(err.Error())
+			p.ResultEdit.SetBackground(brush)
+			p.ResultEdit.SetText(err.Error())
 		} else {
 			brush, _ := walk.NewSolidColorBrush(walk.RGB(0, 255, 0))
-			resultEdit.SetBackground(brush)
-			resultEdit.SetText("PASS")
-			scanSnEdit.SetText("")
+			p.ResultEdit.SetBackground(brush)
+			p.ResultEdit.SetText("PASS")
+			p.ScanSnEdit.SetText("")
 			db.WriteCheckSnLog(record)
 			db.CompareStatus(imei)
 		}
 	} else if imei != scanSn {
 		brush, _ := walk.NewSolidColorBrush(walk.RGB(255, 0, 0))
-		resultEdit.SetBackground(brush)
-		resultEdit.SetText("比对失败")
-		db.InsertCompareFailedRecord(imei, scanSn, imei, prefix+scanSn)
+		p.ResultEdit.SetBackground(brush)
+		p.ResultEdit.SetText("比对失败")
+		db.InsertCompareFailedRecord(imei, scanSn, imei, p.ImeiPrefix+scanSn)
 	} else {
 		brush, _ := walk.NewSolidColorBrush(walk.RGB(255, 0, 0))
-		resultEdit.SetBackground(brush)
-		resultEdit.SetText("FAIL")
+		p.ResultEdit.SetBackground(brush)
+		p.ResultEdit.SetText("FAIL")
 	}
 }
 
-// 用于SN比较工具
-func DoTestOnePortCompareSn(portName string, scanSnEdit *walk.LineEdit, prefix string,
-	readSn *walk.LineEdit, readImei *walk.LineEdit, resultEdit *walk.LineEdit, onlyCompareSn bool) {
-	var sn, imei string
+type CompareSnParams struct {
+	PortName      string
+	ScanSnEdit    *walk.LineEdit
+	ImeiPrefix    string
+	ReadSnEdit    *walk.LineEdit
+	ReadImeiEdit  *walk.LineEdit
+	ResultEdit    *walk.LineEdit
+	ModeEdit      *walk.LineEdit
+	OnlyCompareSn bool
+	SetMode       bool
+	ModeResult    string
+}
 
-	items := GetCompareSnTestItems()
-	myPort := GetPort(portName)
-	if myPort.Name == portName {
+// 用于SN比较工具
+func DoTestOnePortCompareSn(p CompareSnParams) {
+	var sn, imei, mode string
+
+	var items []TestItem
+	if p.SetMode {
+		items = GetCompareSnWithModeTestItems()
+	} else {
+		items = GetCompareSnTestItems()
+	}
+
+	myPort := GetPort(p.PortName)
+	if myPort.Name == p.PortName {
 		pass := new(PassParam)
 		go readPort(myPort, pass)
-		sn, imei = readSnImei(myPort, items, pass)
+		sn, imei, mode = readSnImei(myPort, items, pass)
 	}
-	readSn.SetText(sn)
-	readImei.SetText(imei)
+	p.ReadSnEdit.SetText(sn)
+	p.ReadImeiEdit.SetText(imei)
+	p.ModeEdit.SetText(mode)
+	p.ModeResult = mode
 
-	scanSn := scanSnEdit.Text()
+	scanSn := p.ScanSnEdit.Text()
 
 	record := db.CheckSnRecord{
 		RST:        "通过",
@@ -161,9 +193,9 @@ func DoTestOnePortCompareSn(portName string, scanSnEdit *walk.LineEdit, prefix s
 	}
 
 	if network.CurrentType.SnType == "1" {
-		compareImei(prefix, imei, scanSn, scanSnEdit, resultEdit, record)
+		compareImei(p, imei, scanSn, record)
 	} else {
-		compareSn(onlyCompareSn, prefix, sn, imei, scanSn, scanSnEdit, resultEdit, record)
+		compareSn(p, sn, imei, scanSn, record)
 	}
 }
 
