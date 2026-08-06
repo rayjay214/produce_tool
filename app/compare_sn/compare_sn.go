@@ -37,7 +37,7 @@ func initLog() {
 	}
 }
 
-var version = "V2.9"
+var version = "V3.0"
 var selectedPlan *walk.ComboBox
 var selectedCom *walk.ComboBox
 var scanSn *walk.LineEdit

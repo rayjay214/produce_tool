@@ -114,7 +114,7 @@ func init() {
 		{"开启回显", "Back", "ATE1\r\n", []string{"OK"}, "", 200, false},
 		{"IMEI", "Imei", "AT+IMEI\r\n", []string{"OK", "ERROR"}, "AT+IMEI", 200, true},
 		{"SN", "Sn", "AT+SN?\r\n", []string{"OK", "ERROR"}, "SN:", 200, true},
-		{"MODE", "Mode", "AT+MODE=0\r\n", []string{"OK", "ERROR"}, "MODE:", 200, true},
+		{"MODE", "Mode", "AT+MODE=0\r\n", []string{"OK", "ERROR"}, "MODE:", 500, true},
 	}
 
 	readSnTestItems = []TestItem{
