@@ -69,6 +69,7 @@ func init() {
 	initRefreshTimer()
 	initSyncConfTimer()
 	initConf()
+	db.InitMysql()
 	db.LoadTestRstCsv()
 }
 

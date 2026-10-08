@@ -17,7 +17,6 @@ func initNewCsv() (*os.File, error) {
 	writer := csv.NewWriter(file)
 	headers := []string{
 		"是否通过",
-		"MES",
 		"版本号",
 		"SIM卡",
 		"IMEI",
@@ -58,7 +57,6 @@ func InsertRecordCsv(record TestRecord) {
 	strSim := fmt.Sprintf("S:%v", record.Sim)
 	data := []string{}
 	data = append(data, record.Pass)
-	data = append(data, record.Mes)
 	data = append(data, record.Version)
 	data = append(data, strSim)
 	data = append(data, record.Imei)

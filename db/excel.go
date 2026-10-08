@@ -20,7 +20,6 @@ func initNewExcel() (*excelize.File, error) {
 	}
 	headers := []string{
 		"是否通过",
-		"MES",
 		"版本号",
 		"SIM卡",
 		"IMEI",
@@ -81,7 +80,6 @@ func InsertRecordExcel(record TestRecord) {
 		}
 	*/
 	data = append(data, record.Pass)
-	data = append(data, record.Mes)
 	data = append(data, record.Version)
 	data = append(data, record.Sim)
 	data = append(data, record.Imei)
