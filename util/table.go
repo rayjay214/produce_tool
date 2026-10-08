@@ -9,6 +9,8 @@ type MyTableRow struct {
 	Com         string
 	Pass        string
 	Version     string
+	Uuid        string
+	CaliBand    string
 	Signal      string
 	Wifi        string
 	Sim         string

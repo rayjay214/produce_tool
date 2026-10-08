@@ -51,15 +51,6 @@ type DeviceTypeInfo struct {
 
 var DeviceTypeInfoMap map[string]DeviceTypeInfo
 
-func LoadDeviceType() {
-	DeviceTypeInfoMap = make(map[string]DeviceTypeInfo, 0)
-	types := GetDeviceTypes()
-	AllTypes = make([]DeviceTypeInfo, 0)
-	for _, value := range types {
-		AllTypes = append(AllTypes, value)
-	}
-}
-
 func getBit(num, pos int) int {
 	mask := 1 << uint(pos)
 	if (num & mask) != 0 {

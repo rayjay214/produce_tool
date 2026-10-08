@@ -66,7 +66,6 @@ func init() {
 	initSyncConfTimer()
 	initConf()
 	db.InitMysql()
-	//model.LoadDeviceType()
 	db.LoadTestRstCsv()
 }
 
@@ -267,6 +266,9 @@ func refreshType() {
 	if selectedType.PowerOpen <= 0 {
 		tv.Columns().ByName("Power").SetVisible(false)
 	}
+	if selectedType.ApnWriteOpen <= 0 {
+		tv.Columns().ByName("ApnWrite").SetVisible(false)
+	}
 	/*
 		if selectedType.DialOpen <= 0 {
 			tv.Columns().ByName("Dial").SetVisible(false)
@@ -346,16 +348,6 @@ func runMainWindow() {
 									passedCnt.SetText(fmt.Sprintf("当前测试通过数量:%v", conf.PassedCnt))
 								},
 							},
-						},
-					},
-					PushButton{
-						Text:      "管理型号",
-						Font:      Font{PointSize: 14, Family: fontFamily},
-						Alignment: AlignHNearVCenter,
-						MinSize:   Size{Width: 60, Height: 100},
-						MaxSize:   Size{Width: 100, Height: 100},
-						OnClicked: func() {
-							model.RunCheckPwdDialog(mw, selectedCb)
 						},
 					},
 					GroupBox{

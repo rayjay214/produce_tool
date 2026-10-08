@@ -61,6 +61,8 @@ func init() {
 	allTestItems = []TestItem{
 		{"开启回显", "Back", "ATE1\r\n", []string{"OK"}, "", 2000, false},
 		{"版本号", "Version", "AT+ATI\r\n", []string{"OK"}, "ATI\r\n", 2000, true},
+		{"UUID", "Uuid", "AT+GETUID\r\n", []string{"AT+GETUID"}, "AT+GETUID\r\n", 2000, true},
+		{"校准", "CaliBand", "AT+CALIBAND?\r\n", []string{"OK"}, "+CALIBAND=", 2000, true},
 		{"SIM卡", "Sim", "AT+CCID\r\n", []string{"OK", "ERROR"}, "AT+CCID", 2000, true},
 		{"IMEI", "Imei", "AT+IMEI\r\n", []string{"OK", "ERROR"}, "AT+IMEI", 2000, true},
 		{"SN", "Sn", "AT+SN?\r\n", []string{"OK", "ERROR"}, "SN:", 2000, true},
@@ -216,6 +218,10 @@ func SyncTestItems() {
 			CurrTestItems = append(CurrTestItems, item)
 		case "Version":
 			CurrTestItems = append(CurrTestItems, item)
+		case "Uuid":
+			CurrTestItems = append(CurrTestItems, item)
+		case "CaliBand":
+			CurrTestItems = append(CurrTestItems, item)
 		case "Sim":
 			if SelectedDeviceType.SimOpen > 0 {
 				CurrTestItems = append(CurrTestItems, item)
@@ -298,7 +304,7 @@ func DoFinish(myport *MyPort, item *MyTableRow) {
 			continue
 		}
 
-		if fieldTypeTableRow.Name == "Version" {
+		if fieldTypeTableRow.Name == "Version" || fieldTypeTableRow.Name == "Uuid" || fieldTypeTableRow.Name == "CaliBand" {
 			if ContainsOne(fieldValueTableRow.String(), "失败", "超时", "等待") {
 				bPass = false
 				break
