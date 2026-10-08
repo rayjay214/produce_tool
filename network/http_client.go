@@ -32,7 +32,7 @@ func DoLogin(username, password string) (bool, string, string) {
 
 func DoGetDeviceTypes() ([]DeviceTypeDetail, error) {
 	var getPageResp DeviceTypeGetPageResponse
-	success, errMsg := DoFormRequest("GET", "http://factory.gps555.net/api/v1/function", nil, &getPageResp)
+	success, errMsg := DoFormRequest("GET", "http://factory.gps555.net/api/v1/function?isForSmt=1", nil, &getPageResp)
 	if !success {
 		return nil, fmt.Errorf(errMsg)
 	}

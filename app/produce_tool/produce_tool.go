@@ -308,7 +308,7 @@ func runMainWindow() {
 
 	MainWindow{
 		AssignTo: &mw,
-		Title:    "生产测试工具",
+		Title:    "生产测试工具_V1.1",
 		Font:     Font{PointSize: viceFontSize, Family: fontFamily},
 		Size:     Size{Width: 900, Height: 650},
 		Layout:   VBox{Alignment: AlignHNearVNear},
