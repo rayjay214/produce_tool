@@ -66,7 +66,7 @@ func init() {
 	initSyncConfTimer()
 	initConf()
 	db.InitMysql()
-	model.LoadDeviceType()
+	//model.LoadDeviceType()
 	db.LoadTestRstCsv()
 }
 
@@ -806,6 +806,15 @@ func main() {
 		walk.InteractionEffect, _ = walk.NewDropShadowEffect(walk.RGB(63, 63, 63))
 		walk.ValidationErrorEffect, _ = walk.NewBorderGlowEffect(walk.RGB(255, 0, 0))
 	})
+
+	// 显示登录对话框
+	loginResult := model.ShowLoginDialog()
+
+	// 检查登录结果
+	if !loginResult.Success {
+		fmt.Println("登录失败:", loginResult.Message)
+		os.Exit(1)
+	}
 
 	runMainWindow()
 }

@@ -7,7 +7,7 @@ import (
 )
 
 func KnownTypesString() []string {
-	mptypes := GetDeviceTypes()
+	mptypes := DeviceTypeInfoMap
 	types := make([]string, 0)
 	for key, _ := range mptypes {
 		types = append(types, key)
@@ -16,7 +16,7 @@ func KnownTypesString() []string {
 }
 
 func KnownTypes() []DeviceTypeInfo {
-	mptypes := GetDeviceTypes()
+	mptypes := DeviceTypeInfoMap
 	types := make([]DeviceTypeInfo, 0)
 	for _, value := range mptypes {
 		types = append(types, value)
@@ -104,7 +104,10 @@ func RunDialogAddType(owner walk.Form, selectedCb *walk.ComboBox) (int, error) {
 	var acceptPB, cancelPB *walk.PushButton
 	var selected *walk.ComboBox
 
-	types := GetDeviceTypes()
+	types := DeviceTypeInfoMap
+	if types == nil {
+		types = make(map[string]DeviceTypeInfo)
+	}
 
 	return Dialog{
 		AssignTo:      &dlg,
@@ -947,8 +950,8 @@ func RunDialogAddType(owner walk.Form, selectedCb *walk.ComboBox) (int, error) {
 							} else {
 								if deviceType.DeviceType != "" {
 									types[deviceType.DeviceType] = *deviceType
+									DeviceTypeInfoMap = types
 									SyncDeviceTypes(types)
-									types := GetDeviceTypes()
 									AllTypes = make([]DeviceTypeInfo, 0)
 									for _, value := range types {
 										AllTypes = append(AllTypes, value)
