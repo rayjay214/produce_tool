@@ -255,10 +255,6 @@ func SyncTestItems() {
 			if SelectedDeviceType.LightOpen > 0 {
 				CurrTestItems = append(CurrTestItems, item)
 			}
-		case "SetType":
-			if SelectedDeviceType.SetTypeOpen > 0 {
-				CurrTestItems = append(CurrTestItems, item)
-			}
 		case "MainIp":
 			if SelectedDeviceType.MainIpReadOpen > 0 {
 				CurrTestItems = append(CurrTestItems, item)
@@ -267,16 +263,8 @@ func SyncTestItems() {
 			if SelectedDeviceType.ViceIpReadOpen > 0 {
 				CurrTestItems = append(CurrTestItems, item)
 			}
-		case "ViceIpWrite":
-			if SelectedDeviceType.ViceIpWriteOpen > 0 {
-				CurrTestItems = append(CurrTestItems, item)
-			}
 		case "Power":
 			if SelectedDeviceType.PowerOpen > 0 {
-				CurrTestItems = append(CurrTestItems, item)
-			}
-		case "ApnWrite":
-			if SelectedDeviceType.ApnWriteOpen > 0 {
 				CurrTestItems = append(CurrTestItems, item)
 			}
 		}
@@ -305,8 +293,16 @@ func DoFinish(myport *MyPort, item *MyTableRow) {
 			continue
 		}
 
+		if fieldTypeTableRow.Name == "SetType" || fieldTypeTableRow.Name == "ViceIpWrite" || fieldTypeTableRow.Name == "ApnWrite" {
+			continue
+		}
+
 		if fieldTypeTableRow.Name == "Version" || fieldTypeTableRow.Name == "Uuid" || fieldTypeTableRow.Name == "CaliBand" {
 			if ContainsOne(fieldValueTableRow.String(), "失败", "超时", "等待") {
+				bPass = false
+				break
+			}
+			if fieldTypeTableRow.Name == "CaliBand" && fieldValueTableRow.String() == "" {
 				bPass = false
 				break
 			}

@@ -195,6 +195,10 @@ func writeItems(myport *MyPort, items []TestItem, pass *PassParam) {
 			showValue = "失败"
 		}
 
+		if b && respValue == "" && item.ModelColName == "CaliBand" {
+			showValue = "失败"
+		}
+
 		if b && respValue != "" && (item.ModelColName == "Gsensor" || item.ModelColName == "Light") {
 			showValue = "等待中"
 			wg.Add(1)

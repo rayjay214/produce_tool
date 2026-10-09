@@ -258,24 +258,18 @@ func refreshType() {
 	if selectedType.GsensorOpen <= 0 {
 		tv.Columns().ByName("Gsensor").SetVisible(false)
 	}
-	if selectedType.SetTypeOpen <= 0 {
-		tv.Columns().ByName("SetType").SetVisible(false)
-	}
+	tv.Columns().ByName("SetType").SetVisible(false)
 	if selectedType.MainIpReadOpen <= 0 {
 		tv.Columns().ByName("MainIp").SetVisible(false)
 	}
 	if selectedType.ViceIpReadOpen <= 0 {
 		tv.Columns().ByName("ViceIp").SetVisible(false)
 	}
-	if selectedType.ViceIpWriteOpen <= 0 {
-		tv.Columns().ByName("ViceIpWrite").SetVisible(false)
-	}
+	tv.Columns().ByName("ViceIpWrite").SetVisible(false)
 	if selectedType.PowerOpen <= 0 {
 		tv.Columns().ByName("Power").SetVisible(false)
 	}
-	if selectedType.ApnWriteOpen <= 0 {
-		tv.Columns().ByName("ApnWrite").SetVisible(false)
-	}
+	tv.Columns().ByName("ApnWrite").SetVisible(false)
 	/*
 		if selectedType.DialOpen <= 0 {
 			tv.Columns().ByName("Dial").SetVisible(false)
@@ -308,7 +302,7 @@ func runMainWindow() {
 
 	MainWindow{
 		AssignTo: &mw,
-		Title:    "生产测试工具_V1.1",
+		Title:    "生产测试工具_V1.3",
 		Font:     Font{PointSize: viceFontSize, Family: fontFamily},
 		Size:     Size{Width: 900, Height: 650},
 		Layout:   VBox{Alignment: AlignHNearVNear},
@@ -324,6 +318,7 @@ func runMainWindow() {
 				MaxSize: Size{Width: 1100, Height: 80},
 				Children: []Widget{
 					Composite{
+
 						MinSize: Size{Width: 100, Height: 80},
 						MaxSize: Size{Width: 150, Height: 80},
 						Layout: Grid{

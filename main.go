@@ -251,24 +251,18 @@ func refreshType() {
 	if selectedType.GsensorOpen <= 0 {
 		tv.Columns().ByName("Gsensor").SetVisible(false)
 	}
-	if selectedType.SetTypeOpen <= 0 {
-		tv.Columns().ByName("SetType").SetVisible(false)
-	}
+	tv.Columns().ByName("SetType").SetVisible(false)
 	if selectedType.MainIpReadOpen <= 0 {
 		tv.Columns().ByName("MainIp").SetVisible(false)
 	}
 	if selectedType.ViceIpReadOpen <= 0 {
 		tv.Columns().ByName("ViceIp").SetVisible(false)
 	}
-	if selectedType.ViceIpWriteOpen <= 0 {
-		tv.Columns().ByName("ViceIpWrite").SetVisible(false)
-	}
+	tv.Columns().ByName("ViceIpWrite").SetVisible(false)
 	if selectedType.PowerOpen <= 0 {
 		tv.Columns().ByName("Power").SetVisible(false)
 	}
-	if selectedType.ApnWriteOpen <= 0 {
-		tv.Columns().ByName("ApnWrite").SetVisible(false)
-	}
+	tv.Columns().ByName("ApnWrite").SetVisible(false)
 	/*
 		if selectedType.DialOpen <= 0 {
 			tv.Columns().ByName("Dial").SetVisible(false)
