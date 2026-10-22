@@ -220,9 +220,13 @@ func SyncTestItems() {
 		case "Version":
 			CurrTestItems = append(CurrTestItems, item)
 		case "Uuid":
-			CurrTestItems = append(CurrTestItems, item)
+			if SelectedDeviceType.SmtParam != "2" {
+				CurrTestItems = append(CurrTestItems, item)
+			}
 		case "CaliBand":
-			CurrTestItems = append(CurrTestItems, item)
+			if SelectedDeviceType.SmtParam != "2" {
+				CurrTestItems = append(CurrTestItems, item)
+			}
 		case "Sim":
 			if SelectedDeviceType.SimOpen > 0 {
 				CurrTestItems = append(CurrTestItems, item)
@@ -298,6 +302,9 @@ func DoFinish(myport *MyPort, item *MyTableRow) {
 		}
 
 		if fieldTypeTableRow.Name == "Version" || fieldTypeTableRow.Name == "Uuid" || fieldTypeTableRow.Name == "CaliBand" {
+			if (fieldTypeTableRow.Name == "Uuid" || fieldTypeTableRow.Name == "CaliBand") && SelectedDeviceType.SmtParam == "2" {
+				continue
+			}
 			if ContainsOne(fieldValueTableRow.String(), "失败", "超时", "等待") {
 				bPass = false
 				break

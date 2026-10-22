@@ -270,6 +270,10 @@ func refreshType() {
 		tv.Columns().ByName("Power").SetVisible(false)
 	}
 	tv.Columns().ByName("ApnWrite").SetVisible(false)
+	if selectedType.SmtParam == "2" {
+		tv.Columns().ByName("Uuid").SetVisible(false)
+		tv.Columns().ByName("CaliBand").SetVisible(false)
+	}
 	/*
 		if selectedType.DialOpen <= 0 {
 			tv.Columns().ByName("Dial").SetVisible(false)
@@ -302,7 +306,7 @@ func runMainWindow() {
 
 	MainWindow{
 		AssignTo: &mw,
-		Title:    "生产测试工具_V1.3",
+		Title:    "生产测试工具_V1.4",
 		Font:     Font{PointSize: viceFontSize, Family: fontFamily},
 		Size:     Size{Width: 900, Height: 650},
 		Layout:   VBox{Alignment: AlignHNearVNear},

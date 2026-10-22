@@ -55,7 +55,8 @@ type DeviceTypeDetail struct {
 	WriteApn          string      `json:"writeApn"`
 	Apn               string      `json:"apn"`
 	WriteWifiPrior    string      `json:"writeWifiPrior"`
-	IsUltraLong       string      `json:"IsUltraLong"`
+	IsUltraLong       string      `json:"isUltraLong"`
+	SmtParam          string      `json:"smtParam"`
 	CreatedAt         string      `json:"createdAt"`
 	UpdatedAt         string      `json:"updatedAt"`
 	DeletedAt         interface{} `json:"deletedAt"`

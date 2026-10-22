@@ -47,6 +47,7 @@ type DeviceTypeInfo struct {
 	ApnWriteOpen    int    //是否开启写入APN
 	ViceIpWriteOpen int    //是否开启写入副IP
 	PowerMin        string //电量测试通过的最小值
+	SmtParam        string //smt参数，为2时隐藏校准和UUID列
 }
 
 var DeviceTypeInfoMap map[string]DeviceTypeInfo
@@ -185,6 +186,7 @@ func LoadDeviceTypeNetwork() {
 			LowpowerAlarm:   lowpowerAlarm,
 			ApnWriteOpen:    apnWriteOpen,
 			APN:             item.Apn,
+			SmtParam:        item.SmtParam,
 		}
 
 		deviceTypes[item.DeviceType] = deviceInfo
