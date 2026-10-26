@@ -9,6 +9,7 @@ import (
 	"produce_tool/mes"
 	//"log"
 	"reflect"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -241,8 +242,10 @@ func writeItems(myport *MyPort, items []TestItem, pass *PassParam) {
 			mpResult := GetFromStatus(respValue)
 			nPowerMin, err := strconv.Atoi(SelectedDeviceType.PowerMin)
 			log.Infof("rayjay value %v, result %v", showValue, mpResult)
-			if value, ok := mpResult["ADC"]; ok && err == nil && nPowerMin != 0 {
-				nValue, _ := strconv.Atoi(value)
+			if value, ok := mpResult["voltage"]; ok && err == nil && nPowerMin != 0 {
+				re := regexp.MustCompile(`\d+`)
+				noValue := re.FindString(value)
+				nValue, _ := strconv.Atoi(noValue)
 				if nValue >= nPowerMin {
 					showValue = fmt.Sprintf("通过(%vmV)", nValue)
 				} else {
