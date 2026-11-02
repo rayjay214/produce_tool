@@ -41,7 +41,7 @@ func initLog() {
 	}
 }
 
-var version = "V3.1"
+var version = "V3.2"
 var selectedPlan *walk.ComboBox
 var selectedCount *walk.ComboBox
 var customCount *walk.LineEdit
@@ -248,7 +248,7 @@ func runSnCompareWindow() {
 							ComboBox{
 								AssignTo: &selectedCount,
 								Font:     Font{PointSize: viceFontSize, Family: fontFamily},
-								Model:    []string{"50", "70", "100", "10", "5"},
+								Model:    []string{"50", "70", "90", "100"},
 								MaxSize:  Size{Width: 300},
 							},
 							CheckBox{
